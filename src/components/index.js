@@ -1,6 +1,6 @@
 import AnalyticsCard from "./AnalyticsCard";
 import BarChart from "./BarChart";
-import DarkModeToggle from "./DarkModeToggle";
+// import DarkModeToggle from "./DarkModeToggle";
 import ExportBar from "./ExportBar";
 import GenerateReportBar from "./GenerateReportBar";
 import Leaderboard from "./Leaderboard";
@@ -45,7 +45,7 @@ import LeaderboardRow from "./LeaderboardRow";
 export {
   AnalyticsCard,
   BarChart,
-  DarkModeToggle,
+  // DarkModeToggle,
   ExportBar,
   GenerateReportBar,
   Leaderboard,

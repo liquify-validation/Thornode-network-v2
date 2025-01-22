@@ -9,7 +9,7 @@ import {
   ArrowIcon,
   ThorIcon,
 } from "../assets";
-import DarkModeToggle from "../components/DarkModeToggle";
+// import DarkModeToggle from "../components/DarkModeToggle";
 
 const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const location = useLocation();
