@@ -90,6 +90,9 @@ export const secondsToTimeObject = (seconds) => {
 export const calculateApy = (item, ratioRewardsAPY, churnsInYear) => {
   const currentAward = item.current_award / ratioRewardsAPY / 1e8;
   const bond = item.bond / 1e8;
+
+  if (bond === 0) return "0.00%"; // Prevent division by zero
+
   const apy = ((currentAward * churnsInYear) / bond) * 100;
   return `${apy.toFixed(2)}%`;
 };

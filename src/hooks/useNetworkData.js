@@ -4,7 +4,11 @@ import { secondsToTimeObject } from "../utilities/commonFunctions";
 
 function computeNetworkData(raw) {
   const coingeckoArray = JSON.parse(raw.coingecko || "[]");
+  console.log("coingeckoArray:", coingeckoArray); // Check the exact structure
+
   const coingecko = coingeckoArray[0] || {};
+
+  console.log("coingecko:", coingecko); // See which keys exist
 
   const churnAtBlock = raw.lastChurn + raw.churnInterval;
   const blocksUntilChurn = churnAtBlock - raw.maxHeight;

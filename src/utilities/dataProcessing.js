@@ -3,23 +3,23 @@ import { findChurnIns, findChurnOuts } from "./churnFunctions";
 export const processData = (
   data,
   globalData,
+  maxVersion,
   favoriteNodes = [],
   searchTerm = ""
 ) => {
-  // Map data to include favorites
-  const dataWithFavorites = data.map((node) => ({
+  const enhancedNodes = enhanceNodesWithAgeAndApy(data, globalData);
+  const dataWithFavorites = enhancedNodes.map((node) => ({
     ...node,
     fave: favoriteNodes.includes(node.node_address) ? 1 : 0,
   }));
 
-  // Filter nodes
   const activeNodes = dataWithFavorites.filter(
     (node) => node.status === "Active"
   );
   const standbyNodes = dataWithFavorites.filter(
     (node) =>
       (node.status === "Standby" || node.status === "Ready") &&
-      node.version === globalData.maxVersion
+      node.version === maxVersion
   );
 
   const activeStandbyAddresses = [
@@ -31,11 +31,9 @@ export const processData = (
     (node) => !activeStandbyAddresses.includes(node.node_address)
   );
 
-  // Process ChurnIns and ChurnOuts
   const processedActiveNodes = findChurnOuts(activeNodes, globalData);
   const processedStandbyNodes = findChurnIns(standbyNodes);
 
-  // Apply search term filtering
   const filteredActiveNodes = returnSearchedData(
     processedActiveNodes,
     searchTerm
@@ -57,7 +55,35 @@ export const processData = (
   };
 };
 
-// Helper function to filter nodes based on search term
+function enhanceNodesWithAgeAndApy(nodes, globalData) {
+  const blockTime = parseFloat(globalData.secondsPerBlock || 6);
+  const ratioRewardsAPY = globalData.ratioRewardsAPY ?? 1;
+  const churnInterval = globalData.churnInterval ?? 43200;
+
+  const churnsInYear = 365 / ((blockTime * churnInterval) / (60 * 60 * 24));
+
+  return nodes.map((node) => {
+    if (!node.status_since) {
+      node.age = 0;
+    } else {
+      const blocksSinceStatus = globalData.maxHeight - node.status_since;
+      node.age = (blocksSinceStatus * blockTime) / 3600 / 24;
+    }
+
+    const bondRune = node.bond / 1e8;
+    if (!bondRune) {
+      node.apy = "0.00%";
+    } else {
+      const currentAwardAnnualised =
+        (node.current_award / ratioRewardsAPY / 1e8) * churnsInYear;
+      const apyFloat = (currentAwardAnnualised / bondRune) * 100;
+      node.apy = apyFloat.toFixed(2) + "%";
+    }
+
+    return node;
+  });
+}
+
 const returnSearchedData = (data, searchTerm) => {
   if (!searchTerm) return data;
 

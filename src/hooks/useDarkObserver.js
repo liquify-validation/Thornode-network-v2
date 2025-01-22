@@ -6,12 +6,6 @@ export function useDarkObserver() {
   });
 
   useEffect(() => {
-    console.log("HTML Classes:", document.documentElement.classList);
-  }, []);
-
-  console.log("is dark?", isDark);
-
-  useEffect(() => {
     const htmlEl = document.documentElement;
 
     const observer = new MutationObserver(() => {
