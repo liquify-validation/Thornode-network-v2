@@ -8,7 +8,9 @@ import {
   LoadingSpinner,
 } from "../components";
 import { GlobalDataContext } from "../context/GlobalDataContext";
-import { useThorChainData } from "../hooks/useThorChainData";
+import { useNetworkData } from "../hooks/useNetworkData";
+import { useNodeData } from "../hooks/useNodeData";
+
 import { processData } from "../utilities/dataProcessing";
 
 const Nodes = () => {
@@ -22,28 +24,36 @@ const Nodes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTab, setCurrentTab] = useState(tab || "active");
   const [allColumns, setAllColumns] = useState([]);
+  const {
+    data: globalData,
+    isLoading: netLoading,
+    isError: netError,
+  } = useNetworkData();
 
-  const { data: thorData, isLoading, isError } = useThorChainData();
-
-  console.log("thorData", thorData);
+  const {
+    data: nodeResult,
+    isLoading: nodeLoading,
+    isError: nodeError,
+  } = useNodeData(globalData);
 
   useEffect(() => {
-    if (!thorData) return;
-
-    const newData = processData(
-      thorData.data,
-      thorData.globalData,
-      favoriteNodes,
-      searchTerm
-    );
-    setProcessedData(newData);
-  }, [thorData, favoriteNodes, searchTerm]);
+    if (nodeResult) {
+      const newData = processData(
+        nodeResult.processedNodes,
+        globalData,
+        nodeResult.maxVersion,
+        favoriteNodes,
+        searchTerm
+      );
+      setProcessedData(newData);
+    }
+  }, [nodeResult, favoriteNodes, searchTerm, globalData]);
 
   useEffect(() => {
     setCurrentTab(tab || "active");
   }, [tab]);
 
-  const getCurrentTabData = () => {
+  function getCurrentTabData() {
     switch (currentTab.toLowerCase()) {
       case "active":
         return processedData.activeNodes;
@@ -54,15 +64,20 @@ const Nodes = () => {
       default:
         return processedData.activeNodes;
     }
-  };
+  }
 
-  if (isLoading) {
+  if (netLoading || nodeLoading) {
     return <LoadingSpinner />;
   }
-  if (isError) {
-    console.log("Error fetching nodes:", isError.message);
+  if (netError) {
+    return <div>Error fetching networkData</div>;
+  }
+  if (nodeError) {
+    return <div>Error fetching nodeData</div>;
   }
 
+  // Access maxChainHeights from nodeResult
+  const maxChainHeights = nodeResult.maxChainHeights;
   return (
     <>
       <Helmet>
@@ -91,8 +106,8 @@ const Nodes = () => {
           <NodesTable
             data={getCurrentTabData()}
             setAllColumns={setAllColumns}
-            maxChainHeights={thorData.maxChainHeights}
-            globalData={thorData.globalData}
+            maxChainHeights={maxChainHeights}
+            globalData={globalData}
           />
         </div>
       </div>

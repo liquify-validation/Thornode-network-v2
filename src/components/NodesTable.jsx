@@ -8,6 +8,7 @@ import {
   ModernLineChart,
   InfoPopover,
   LoadingSpinner,
+  ModernScatterChart,
 } from "../components";
 import {
   chainIcons,
@@ -67,7 +68,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
 
   const coingeckoData = React.useMemo(() => {
     if (!globalData || !globalData.coingecko) return {};
-    return parseCoingeckoData(globalData.coingecko);
+    return globalData.coingecko;
   }, [globalData]);
 
   const runeCurrentPrice = coingeckoData.current_price || 0;
@@ -91,6 +92,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
   };
 
   const renderChartContent = () => {
+    // Map each chart type to its associated data query
     const queryMap = {
       bond: bondDataQuery,
       rewards: rewardsDataQuery,
@@ -105,6 +107,35 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
     if (isLoading) return <LoadingSpinner />;
     if (error) return <div className="text-red-400">{error.message}</div>;
 
+    // If selected chart type is "position", render a scatter chart
+    if (selectedChartType === "position") {
+      const scatterPoints = [
+        {
+          dataKey: "position",
+          name: "Position",
+          fillColor: "#FFAE4C",
+        },
+        {
+          dataKey: "maxPosition",
+          name: "Max Position",
+          fillColor: "#8884d8",
+        },
+      ];
+
+      return (
+        <ModernScatterChart
+          data={data}
+          title="POSITION Over Time"
+          xAxisKey="blockHeight"
+          yAxisKey="position" // The main data key on each data object
+          scatterPoints={scatterPoints}
+          xAxisLabel="Block Height"
+          yAxisLabel="Position"
+        />
+      );
+    }
+
+    // Otherwise, fall back to your usual line chart
     const chartLines = {
       bond: [
         {
@@ -120,20 +151,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           name: "Rewards",
           strokeColor: "#C45985",
           gradientStartColor: "#C45985",
-        },
-      ],
-      position: [
-        {
-          dataKey: "position",
-          name: "Position",
-          strokeColor: "#FFAE4C",
-          gradientStartColor: "#FFAE4C",
-        },
-        {
-          dataKey: "maxPosition",
-          name: "Max Position",
-          strokeColor: "#8884d8",
-          gradientStartColor: "#8884d8",
         },
       ],
       slashes: [
@@ -246,12 +263,18 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
 
           if (isLoading || !bondData || bondData.length === 0) return "-";
 
-          const latestBond = bondData[bondData.length - 1].bondValue;
+          const latestBond = Math.round(row.original.bond / 1e8);
+          const latestDollarBond = (
+            latestBond * runeCurrentPrice
+          ).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
 
           return (
             <InfoPopover
-              title="Bond Value"
-              text={`Latest Bond: ᚱ${latestBond.toLocaleString()}`}
+              title="Bond Value in $"
+              text={`$${latestDollarBond.toLocaleString()}`}
             >
               <span
                 className="cursor-pointer underline"
@@ -272,13 +295,15 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
             useNodeRewardsData(nodeAddress);
 
           if (isLoading || !rewardsData || rewardsData.length === 0) return "-";
-
-          const latestReward = rewardsData[rewardsData.length - 1].rewardsValue;
+          const latestReward = Math.round(row.original.current_award / 1e8);
+          const latestDollarReward = (latestReward * runeCurrentPrice).toFixed(
+            2
+          );
 
           return (
             <InfoPopover
-              title="Rewards Value"
-              text={`Latest Reward: ᚱ${latestReward.toLocaleString()}`}
+              title="Rewards in ($) Value"
+              text={`$${latestDollarReward.toLocaleString()}`}
             >
               <span
                 className="cursor-pointer underline"

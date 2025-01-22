@@ -3,7 +3,6 @@ import { fetchHistoricPerformers } from "../services/apiService";
 
 async function fetchAndTransform(churnCount) {
   const raw = await fetchHistoricPerformers(churnCount);
-  console.log("Performer data", raw);
   return raw;
 }
 

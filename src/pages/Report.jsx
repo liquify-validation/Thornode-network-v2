@@ -17,7 +17,6 @@ function Report() {
   const [reportData, setReportData] = useState(null);
 
   function handleReportGenerated(data) {
-    console.log("Report data from API:", data);
     setReportData(data);
   }
 

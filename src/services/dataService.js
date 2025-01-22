@@ -6,14 +6,12 @@ import {
   getMaxHeightForChain,
 } from "../utilities/commonFunctions";
 
+// TO DO CHECK NOT IN USE AND DELETE
+
 export const getData = async () => {
   try {
     const response = await fetch("https://api.liquify.com/thor/api/grabData");
     const val = await response.json();
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("DEV ONLY: Raw getData API Call Results:", val);
-    }
 
     let { globalData, data } = val;
 
