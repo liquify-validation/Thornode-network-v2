@@ -72,10 +72,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
           {isExpanded && <span className="text-sm font-medium">Contact</span>}
         </Link>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <DarkModeToggle />
           {isExpanded && <span className="text-sm font-medium"></span>}
-        </div>
+        </div> */}
 
         <button
           onClick={toggleSidebar}
