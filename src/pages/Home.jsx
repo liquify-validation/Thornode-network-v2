@@ -34,7 +34,7 @@ function Home() {
     data: nodeDataResult,
     isLoading: nodeLoading,
     isError: nodeError,
-  } = useNodeData();
+  } = useNodeData(netData);
 
   const { data: totalBondOverTimeData = [], isLoading: totalBondLoading } =
     useBondData();
@@ -95,7 +95,6 @@ function Home() {
           <h2 className="font-bold text-2xl mx-3">Analytics Overview</h2>
         </div>
 
-        {/* Example pie charts */}
         <div className="flex flex-wrap mt-6 mb-4 items-stretch">
           <div className="w-full lg:w-1/2 px-2 mb-4 flex flex-col">
             <ModernPieChart

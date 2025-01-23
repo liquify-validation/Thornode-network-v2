@@ -4,11 +4,7 @@ import { secondsToTimeObject } from "../utilities/commonFunctions";
 
 function computeNetworkData(raw) {
   const coingeckoArray = JSON.parse(raw.coingecko || "[]");
-  console.log("coingeckoArray:", coingeckoArray); // Check the exact structure
-
   const coingecko = coingeckoArray[0] || {};
-
-  console.log("coingecko:", coingecko); // See which keys exist
 
   const churnAtBlock = raw.lastChurn + raw.churnInterval;
   const blocksUntilChurn = churnAtBlock - raw.maxHeight;
@@ -23,6 +19,10 @@ function computeNetworkData(raw) {
   const ratioRewardsAPY =
     (raw.churnInterval - blocksUntilChurn) / raw.churnInterval;
 
+  const churnsInYear =
+    365 /
+    ((parseFloat(raw.secondsPerBlock) * raw.churnInterval) / (60 * 60 * 24));
+
   return {
     ...raw,
     coingecko,
@@ -34,6 +34,7 @@ function computeNetworkData(raw) {
     timeUntilRetry,
     churnTry: secondsUntilChurn < 0,
     ratioRewardsAPY,
+    churnsInYear,
     blocksSinceLastChurn: raw.maxHeight - raw.lastChurn,
   };
 }
