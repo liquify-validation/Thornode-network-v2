@@ -1,3 +1,4 @@
+// Sidebar.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -9,17 +10,16 @@ import {
   ArrowIcon,
   ThorIcon,
 } from "../assets";
-// import DarkModeToggle from "../components/DarkModeToggle";
+import DarkModeToggle from "../components/DarkModeToggle";
 
-const Sidebar = ({ isExpanded, setIsExpanded }) => {
+const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
   const location = useLocation();
 
   const menuItems = [
     { name: "Thornodes", icon: ThorIcon, path: "/" },
     { name: "Home", icon: HomeIcon, path: "/" },
     { name: "Nodes", icon: NodesIcon, path: "/nodes" },
-    // { name: "Network", icon: NetworkIcon, path: "/network" },
-    // { name: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
+    // ...
   ];
 
   const toggleSidebar = () => {
@@ -29,7 +29,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   return (
     <nav
       className={`fixed top-[45%] left-6 transform -translate-y-1/2 z-20 flex flex-col justify-between
-        bg-white/50 dark:bg-slate-800/50 glass-effect p-2.5 shadow-2xl
+          rounded-[15px] bg-slate-700 text-white p-2.5 shadow-2xl
         ${isExpanded ? "w-48" : "w-16"} transition-all duration-300 h-[85%]`}
     >
       <div className="flex flex-col gap-4">
@@ -37,7 +37,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700
+            className={`flex items-center gap-2 p-2 rounded-md hover:bg-slate-600
               ${location.pathname === item.path ? "" : ""}`}
           >
             <img
@@ -57,10 +57,10 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       <div className="flex flex-col gap-4 mt-60">
         <Link
           to="mailto:contact@liquify.io"
-          className={`flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700
+          className={`flex items-center gap-2 p-2 rounded-md hover:bg-slate-600
             ${
               location.pathname === "mailto:contact@liquify.io"
-                ? "bg-gray-200 dark:bg-slate-600"
+                ? "bg-slate-600"
                 : ""
             }`}
         >
@@ -72,14 +72,15 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
           {isExpanded && <span className="text-sm font-medium">Contact</span>}
         </Link>
 
-        {/* <div className="flex items-center gap-2">
-          <DarkModeToggle />
+        {/*  Pass isDark and onToggleTheme into DarkModeToggle */}
+        <div className="flex items-center gap-2">
+          <DarkModeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
           {isExpanded && <span className="text-sm font-medium"></span>}
-        </div> */}
+        </div>
 
         <button
           onClick={toggleSidebar}
-          className="flex items-center  gap-2 p-2 bg-transparent rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 icon-button"
+          className="flex items-center  gap-2 p-2 bg-transparent rounded-md hover:bg-slate-600 icon-button"
         >
           <img
             src={ArrowIcon}

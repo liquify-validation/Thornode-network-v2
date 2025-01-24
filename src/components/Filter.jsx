@@ -48,7 +48,7 @@ const Filter = ({ allColumns, onClose }) => {
 
       <div className="flex justify-end mt-8">
         <button
-          className="bg-[#28f3b0] text-black mr-4 px-4 py-2 rounded hover:shadow-md focus:outline-none"
+          className="bg-[#28f3b0] text-gray-700 mr-4 px-4 py-2 rounded hover:shadow-md focus:outline-none"
           onClick={handleSave}
         >
           Save

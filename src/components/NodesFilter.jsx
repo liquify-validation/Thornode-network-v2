@@ -8,8 +8,8 @@ const NodesFilter = ({ currentTab }) => {
         to={`/nodes/active`}
         className={`px-4 py-2 rounded-l-xl ${
           currentTab === "active"
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect drop-shadow-none text-gray-800 dark:text-gray-50"
         }`}
       >
         Active
@@ -18,8 +18,8 @@ const NodesFilter = ({ currentTab }) => {
         to={`/nodes/standby`}
         className={`px-4 py-2 ${
           currentTab === "standby"
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect drop-shadow-none text-gray-800 dark:text-gray-50"
         }`}
       >
         Standby
@@ -28,8 +28,8 @@ const NodesFilter = ({ currentTab }) => {
         to={`/nodes/other`}
         className={`px-4 py-2 rounded-r-xl ${
           currentTab === "other"
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect drop-shadow-none text-gray-800 dark:text-gray-50"
         }`}
       >
         Other

@@ -16,22 +16,48 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.add("dark");
+    const storedTheme = localStorage.getItem("theme");
+    const dark = !storedTheme || storedTheme === "dark";
+    setIsDark(dark);
+
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
+
+  const handleToggleTheme = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    localStorage.setItem("theme", newIsDark ? "dark" : "light");
+
+    if (newIsDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   return (
     <Router>
       <div className="flex relative">
-        <Sidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+        <Sidebar
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+          isDark={isDark}
+          onToggleTheme={handleToggleTheme}
+        />
         <div
           className={`w-full transition-all duration-300 ${
             isExpanded ? "ml-60" : "ml-32"
           }`}
         >
           <div className="flex flex-col min-h-screen relative">
-            <MapBg />
+            {isDark && <MapBg />}
 
             <Header />
 

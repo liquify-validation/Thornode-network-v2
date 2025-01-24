@@ -3,12 +3,9 @@ import React, { createContext, useState, useEffect } from "react";
 export const GlobalDataContext = createContext();
 
 export const GlobalDataProvider = ({ children }) => {
-  const [favoriteNodes, setFavoriteNodes] = useState([]);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("favoriteNodes")) || [];
-    setFavoriteNodes(stored);
-  }, []);
+  const [favoriteNodes, setFavoriteNodes] = useState(() => {
+    return JSON.parse(localStorage.getItem("favoriteNodes")) || [];
+  });
 
   useEffect(() => {
     localStorage.setItem("favoriteNodes", JSON.stringify(favoriteNodes));

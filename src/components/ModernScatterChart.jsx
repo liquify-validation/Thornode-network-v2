@@ -55,10 +55,10 @@ const ModernScatterChart = ({
               value: xAxisLabel || xAxisKey,
               position: "insideBottomRight",
               offset: -10,
-              fill: "#fff",
+              fill: "fill-gray-700 dark:fill-white",
               fontSize: 14,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
           />
           <YAxis
             domain={[0, yAxisMax || "auto"]}
@@ -66,10 +66,10 @@ const ModernScatterChart = ({
               value: yAxisLabel || yAxisKey,
               angle: -90,
               position: "insideLeft",
-              fill: "#fff",
+              fill: "fill-gray-700 dark:fill-white",
               fontSize: 14,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
           />
 
           <Tooltip

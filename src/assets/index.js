@@ -2,6 +2,7 @@ import DayHighIcon from "./24hrhighicon.svg";
 import DayLowIcon from "./24hrlowicon.svg";
 import DayVolumeIcon from "./24hrvolumeicon.svg";
 import AnalyticsIcon from "./analyticsicon.svg";
+import AnalyticsLeaderboardIcon from "./analyticsleaderboardicon.svg";
 import ArrowIcon from "./arrowIconRight.svg";
 import AtomIcon from "./atomicon.svg";
 import AvalancheIcon from "./avalancheicon.svg";
@@ -82,6 +83,7 @@ import JailIcon from "./prison.svg";
 import LeaveIcon from "./exit-outline.svg";
 import VersionIcon from "./versionicon.svg";
 import WarningIcon from "./warningicon.svg";
+import MagnifyingGlass from "./magnifyinglass.svg";
 
 export {
   DayHighIcon,
@@ -168,4 +170,6 @@ export {
   LeaveIcon,
   VersionIcon,
   WarningIcon,
+  AnalyticsLeaderboardIcon,
+  MagnifyingGlass,
 };

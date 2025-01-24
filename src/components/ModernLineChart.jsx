@@ -15,27 +15,21 @@ import ModernDivider from "./ModernDivider";
 const ModernLineChart = ({
   data,
   title,
-  /**
-   * For single-line usage:
-   */
   lineColor = "#8884d8",
   gradientStartColor,
   yAxisKey = "bondValue",
-  /**
-   * For multi-line usage:
-   * If provided, overrides single-line props.
-   */
   lines,
   xAxisKey = "blockHeight",
   xAxisLabel,
   yAxisLabel,
   yAxisMax,
+
+  convertToMillions = false,
 }) => {
   const linesToRender = React.useMemo(() => {
     if (Array.isArray(lines) && lines.length > 0) {
       return lines;
     }
-
     return [
       {
         dataKey: yAxisKey,
@@ -45,6 +39,21 @@ const ModernLineChart = ({
       },
     ];
   }, [lines, yAxisKey, yAxisLabel, lineColor, gradientStartColor]);
+
+  function formatYAxisValue(val) {
+    if (!convertToMillions) {
+      return val;
+    }
+    return val / 1_000_000;
+  }
+
+  function handleTooltipFormatter(value, name) {
+    const rawNum = Number(value || 0);
+    if (!convertToMillions) {
+      return [rawNum.toFixed(2), name];
+    }
+    return [(rawNum / 1_000_000).toFixed(2), name];
+  }
 
   const sanitize = (val) => String(val || "").replace(/\s+/g, "");
 
@@ -56,20 +65,23 @@ const ModernLineChart = ({
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
+          margin={{ top: 10, right: 20, left: 10, bottom: 30 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
+
           <XAxis
             dataKey={xAxisKey}
             label={{
               value: xAxisLabel || xAxisKey,
               position: "insideBottomRight",
-              offset: -10,
-              fill: "#fff",
+              offset: -20,
+              fill: "fill-gray-700 dark:fill-white",
               fontSize: 14,
+              dx: -20,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
           />
+
           <YAxis
             type="number"
             domain={["auto", "auto"]}
@@ -79,12 +91,16 @@ const ModernLineChart = ({
               value: yAxisLabel || yAxisKey,
               angle: -90,
               position: "insideLeft",
-              fill: "#fff",
+              fill: "fill-gray-700 dark:fill-white",
               fontSize: 14,
+              dy: 20,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
+            tickFormatter={(val) => formatYAxisValue(val)}
           />
+
           <Tooltip
+            formatter={handleTooltipFormatter}
             contentStyle={{
               backgroundColor: "#333333",
               borderRadius: "6px",
@@ -94,8 +110,9 @@ const ModernLineChart = ({
             labelStyle={{ color: "#ffffff", fontWeight: "bold" }}
             cursor={{ stroke: "#8884d8", strokeWidth: 2 }}
           />
-          ;
+
           <Legend />
+
           {linesToRender.map((lineObj, idx) => {
             const gradId = `color_${sanitize(title)}_${sanitize(
               lineObj.dataKey

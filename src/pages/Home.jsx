@@ -131,7 +131,8 @@ function Home() {
               yAxisKey="bondValue"
               yAxisMax={200}
               xAxisLabel="Block Height"
-              yAxisLabel="Stake Amount"
+              yAxisLabel="Stake Amount (ᚱ) (Millions)"
+              convertToMillions
             />
           </div>
           <div className="w-full lg:w-1/2 px-2 mb-4">
@@ -144,7 +145,8 @@ function Home() {
               yAxisKey="bondValue"
               yAxisMax={200}
               xAxisLabel="Block Height"
-              yAxisLabel="Bond Value"
+              yAxisLabel="Bond Value (ᚱ) (Millions)"
+              convertToMillions
             />
           </div>
         </div>

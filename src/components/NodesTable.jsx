@@ -92,7 +92,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
   };
 
   const renderChartContent = () => {
-    // Map each chart type to its associated data query
     const queryMap = {
       bond: bondDataQuery,
       rewards: rewardsDataQuery,
@@ -107,7 +106,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
     if (isLoading) return <LoadingSpinner />;
     if (error) return <div className="text-red-400">{error.message}</div>;
 
-    // If selected chart type is "position", render a scatter chart
     if (selectedChartType === "position") {
       const scatterPoints = [
         {
@@ -127,7 +125,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           data={data}
           title="POSITION Over Time"
           xAxisKey="blockHeight"
-          yAxisKey="position" // The main data key on each data object
+          yAxisKey="position"
           scatterPoints={scatterPoints}
           xAxisLabel="Block Height"
           yAxisLabel="Position"
@@ -135,7 +133,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       );
     }
 
-    // Otherwise, fall back to your usual line chart
     const chartLines = {
       bond: [
         {
@@ -351,6 +348,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               alt="Leave Icon"
               width={"25px"}
               height={"25px"}
+              className="invert dark:invert-0"
             />
           </div>
         ),
@@ -379,7 +377,11 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                   </>
                 }
               >
-                <img src={JailIcon} alt="Jail Icon" className="mx-auto" />
+                <img
+                  src={JailIcon}
+                  alt="Jail Icon"
+                  className="mx-auto invert dark:invert-0"
+                />
               </InfoPopover>
             );
           }
@@ -398,7 +400,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: "white",
+                color: "white dark:black",
               }}
             >
               *
@@ -419,7 +421,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: "white",
+                color: "white dark:black",
               }}
             >
               *
@@ -506,10 +508,10 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-t-lg mt-8 ">
+      <div className="overflow-x-auto overflow-y-auto rounded-t-lg mt-8 max-h-[600px] scrollbar-custom">
         <table
           {...getTableProps()}
-          className="min-w-full table-auto divide-y-4 text-center divide-gray-500"
+          className="min-w-full table-auto divide-y-4 text-center divide-gray-500 "
         >
           <thead>
             {headerGroups.map((headerGroup) => {
@@ -527,7 +529,8 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                       <th
                         key={columnKey}
                         {...restHeaderProps}
-                        className="px-4 py-4 text-center text-md text-gray-50 tracking-wider inner-glass-effect "
+                        // 2) Make it sticky and ensure it sits above rows with a z-index
+                        className="sticky top-0 z-10 px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider"
                       >
                         {column.render("Header")}
                         <span>
@@ -546,7 +549,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           </thead>
           <tbody
             {...getTableBodyProps()}
-            className="inner-glass-effect divide-y-2 divide-gray-700"
+            className="divide-y-2 divide-gray-700 "
           >
             {page.map((row) => {
               prepareRow(row);
@@ -555,7 +558,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               return (
                 <tr
                   key={rowKey}
-                  className="hover:bg-[#4dc89f]"
+                  className="hover:bg-[#4dc89f] inner-glass-effect"
                   {...restRowProps}
                 >
                   {row.cells.map((cell) => {
@@ -565,7 +568,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                       <td
                         key={cellKey}
                         {...restCellProps}
-                        className="px-4 py-4 whitespace-nowrap text-sm text-gray-50 "
+                        className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50"
                       >
                         {cell.render("Cell")}
                       </td>
