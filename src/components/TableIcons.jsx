@@ -100,7 +100,7 @@ const TableIcons = ({ node, onOpenChart }) => {
       <img
         src={favorite ? FavouriteIcon : UnfavouriteIcon}
         alt="Favorite"
-        className="w-5 h-5 cursor-pointer"
+        className="w-5 h-5 cursor-pointer invert dark:invert-0"
         onClick={handleFavoriteClick}
       />
     </div>

@@ -20,7 +20,7 @@ import {
   shortenIspData,
 } from "../utilities/commonFunctions";
 
-function Home() {
+function Home({ isDark }) {
   const [churnCount, setChurnCount] = useState(1);
 
   const {
@@ -105,6 +105,7 @@ function Home() {
               legendPosition="right"
               showValueInLegend
               disclaimerText="Based on public IP address"
+              isDark={isDark}
             />
           </div>
 
@@ -133,6 +134,7 @@ function Home() {
               xAxisLabel="Block Height"
               yAxisLabel="Stake Amount (ᚱ) (Millions)"
               convertToMillions
+              isDark={isDark}
             />
           </div>
           <div className="w-full lg:w-1/2 px-2 mb-4">
@@ -147,6 +149,7 @@ function Home() {
               xAxisLabel="Block Height"
               yAxisLabel="Bond Value (ᚱ) (Millions)"
               convertToMillions
+              isDark={isDark}
             />
           </div>
         </div>
@@ -162,17 +165,26 @@ function Home() {
             yAxisKey="price"
             yAxisMax={200}
             xAxisLabel="Date"
-            yAxisLabel="Price"
+            yAxisLabel="Price ($)"
+            isDark={isDark}
           />
         </div>
 
         {/* Leaderboard */}
         <div className="flex flex-wrap mt-6 mb-4">
           <div className="w-full lg:w-1/2 px-2 mb-4">
-            <Leaderboard type="top" title="Top 5 Performing Nodes" />
+            <Leaderboard
+              type="top"
+              title="Top 5 Performing Nodes"
+              isDark={isDark}
+            />
           </div>
           <div className="w-full lg:w-1/2 px-2 mb-4">
-            <Leaderboard type="bottom" title="Bottom 5 Performing Nodes" />
+            <Leaderboard
+              type="bottom"
+              title="Bottom 5 Performing Nodes"
+              isDark={isDark}
+            />
           </div>
         </div>
       </div>

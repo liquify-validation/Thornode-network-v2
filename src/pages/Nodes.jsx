@@ -13,7 +13,7 @@ import { useNodeData } from "../hooks/useNodeData";
 
 import { processData } from "../utilities/dataProcessing";
 
-const Nodes = () => {
+const Nodes = ({ isDark }) => {
   const { tab } = useParams();
   const { favoriteNodes } = useContext(GlobalDataContext);
   const [processedData, setProcessedData] = useState({
@@ -108,6 +108,7 @@ const Nodes = () => {
             setAllColumns={setAllColumns}
             maxChainHeights={maxChainHeights}
             globalData={globalData}
+            isDark={isDark}
           />
         </div>
       </div>

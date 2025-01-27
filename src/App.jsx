@@ -63,8 +63,8 @@ function App() {
 
             <main className="flex-grow p-4 relative">
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/nodes" element={<Nodes />} />
+                <Route path="/" element={<Home isDark={isDark} />} />
+                <Route path="/nodes" element={<Nodes isDark={isDark} />} />
                 <Route path="/nodes/:tab" element={<Nodes />} />
                 <Route path="/network/*" element={<Network />} />
                 <Route path="/analytics" element={<Analytics />} />
@@ -78,7 +78,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route
                   path="/nodes/report/:thornodeAddress"
-                  element={<Report />}
+                  element={<Report isDark={isDark} />}
                 />
               </Routes>
             </main>

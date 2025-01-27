@@ -9,6 +9,7 @@ import {
   MailIcon,
   ArrowIcon,
   ThorIcon,
+  LiquifyIcon,
 } from "../assets";
 import DarkModeToggle from "../components/DarkModeToggle";
 
@@ -46,7 +47,7 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
               className="w-6 h-6 transition-transform duration-300 transform hover:scale-110"
             />
             {isExpanded && (
-              <span className="text-sm font-semibold ml-2 text-[#A9F3DB]">
+              <span className="text-sm font-semibold ml-2 text-gray-50">
                 {item.name}
               </span>
             )}
@@ -69,10 +70,13 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
             alt="Contact icon"
             className="w-6 h-6 transition-transform duration-300 transform hover:scale-110"
           />
-          {isExpanded && <span className="text-sm font-medium">Contact</span>}
+          {isExpanded && (
+            <span className="text-sm font-medium text-gray-50 ml-2">
+              Contact
+            </span>
+          )}
         </Link>
 
-        {/*  Pass isDark and onToggleTheme into DarkModeToggle */}
         <div className="flex items-center gap-2">
           <DarkModeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
           {isExpanded && <span className="text-sm font-medium"></span>}
@@ -95,6 +99,28 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
             </span>
           )}
         </button>
+        <hr className="border-gray-50"></hr>
+
+        <Link
+          to="https://www.liquify.io"
+          className={`flex items-center gap-2 p-2 rounded-md hover:bg-slate-600
+            ${
+              location.pathname === "https://www.liquify.io"
+                ? "bg-slate-600"
+                : ""
+            }`}
+        >
+          <img
+            src={LiquifyIcon}
+            alt="Contact icon"
+            className="w-6 h-6 transition-transform duration-300 transform hover:scale-110"
+          />
+          {isExpanded && (
+            <span className="text-sm font-medium text-gray-50 ml-1">
+              Built by Liquify
+            </span>
+          )}
+        </Link>
       </div>
     </nav>
   );

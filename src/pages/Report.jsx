@@ -12,7 +12,7 @@ import {
 } from "../components";
 import { transformGraphData } from "../utilities/commonFunctions";
 
-function Report() {
+function Report({ isDark }) {
   const { thornodeAddress } = useParams();
   const [reportData, setReportData] = useState(null);
 
@@ -28,7 +28,7 @@ function Report() {
       height,
       date: date[idx],
       price: parseFloat(price[idx]).toFixed(2),
-      rewardRune: rewards[idx]?.toFixed(2),
+      rewardRune: parseFloat(rewards[idx] || 0),
       rewardUSD: dollarValue[idx]?.toFixed(2),
     }));
   }
@@ -52,15 +52,17 @@ function Report() {
       </Helmet>
       <div className="p-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl text-white font-bold">Report</h1>
+          <h1 className="text-2xl text-gray-800 dark:text-white font-bold">
+            Report
+          </h1>
           <BackButton />
         </div>
 
         <div className="flex items-center mt-8">
-          <span className="bg-[#FFFFFC] text-black px-3 py-2 rounded-l-xl font-bold">
+          <span className="bg-gray-800 dark:bg-[#FFFFFC] text-gray-50 dark:text-black px-3 py-2 rounded-l-xl font-bold">
             Generate Report for Address:
           </span>
-          <span className="inner-glass-effect px-3 py-2 text-white break-all rounded-r-xl">
+          <span className="inner-glass-effect px-3 py-2 text-gray-800 dark:text-white break-all rounded-r-xl">
             {thornodeAddress}
           </span>
         </div>
@@ -94,7 +96,8 @@ function Report() {
                 xAxisKey="blockHeight"
                 yAxisKey="bond"
                 xAxisLabel="Block Height"
-                yAxisLabel="Bond"
+                yAxisLabel="Bond (ᚱ)"
+                isDark={isDark}
               />
 
               {/* <ModernLineChart
@@ -141,6 +144,7 @@ function Report() {
                 ]}
                 xAxisLabel="Block Height"
                 yAxisLabel="Position"
+                isDark={isDark}
               />
 
               <ModernLineChart
@@ -151,7 +155,8 @@ function Report() {
                 xAxisKey="blockHeight"
                 yAxisKey="rewards"
                 xAxisLabel="Block Height"
-                yAxisLabel="Rewards"
+                yAxisLabel="Rewards (ᚱ)"
+                isDark={isDark}
               />
             </div>
           )}

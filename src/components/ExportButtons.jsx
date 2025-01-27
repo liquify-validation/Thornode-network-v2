@@ -70,14 +70,14 @@ const ExportButtons = ({ getTableRows, fileName }) => {
     <div className="flex gap-2 mb-4">
       <button
         onClick={handleExportCSV}
-        className="bg-[#28f3b0] w-full text-gray-700 px-4 py-2
+        className="bg-gray-900 dark:bg-[#28f3b0] w-full text-gray-50 dark:text-gray-700 px-4 py-2
           rounded-xl"
       >
         Export CSV
       </button>
       <button
         onClick={handleExportPDF}
-        className="bg-[#28f3b0] w-full text-grey-700 px-4 py-2
+        className="bg-gray-900 dark:bg-[#28f3b0] w-full text-gray-50 dark:text-gray-700 px-4 py-2
           rounded-xl"
       >
         Export PDF

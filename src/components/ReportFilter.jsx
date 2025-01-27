@@ -195,7 +195,7 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
         onClick={handleSubmit}
         disabled={generatingReport}
         className="
-          bg-[#28f3b0] text-black px-4 py-2
+          bg-gray-900 dark:bg-[#28f3b0] text-gray-50 dark:text-black px-4 py-2
           rounded hover:shadow-md focus:outline-none
         "
       >

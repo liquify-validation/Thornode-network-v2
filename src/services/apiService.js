@@ -28,7 +28,7 @@ export async function fetchTotalBondData() {
 }
 
 export async function fetchMaxEffectiveStakeData() {
-  const res = await fetch(`${ApiUrl}/historic/network/totalBond`);
+  const res = await fetch(`${ApiUrl}/historic/network/maxEffectiveStake`);
   if (!res.ok) {
     throw new Error("Failed to fetch maxEffectiveStake data");
   }

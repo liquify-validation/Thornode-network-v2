@@ -1,12 +1,17 @@
-import React, { useContext } from "react";
 import { StatsCard, InfoPopover } from "../components";
-import { GlobalDataContext } from "../context/GlobalDataContext";
 
-import { BlockIcon, BondIcon, BondOverTimeIcon } from "../assets";
+import {
+  BondOverTimeIcon,
+  StartBlockIcon,
+  EndBlockIcon,
+  StartBondIcon,
+  EndBondIcon,
+  MaxPositionIcon,
+  ReportRewardsIcon,
+  PositionAverageIcon,
+} from "../assets";
 
 const ReportStatsCardSection = ({ reportData }) => {
-  const { globalData } = useContext(GlobalDataContext);
-
   if (!reportData) return null;
 
   const {
@@ -16,63 +21,78 @@ const ReportStatsCardSection = ({ reportData }) => {
     endBlock,
     endBond,
     position,
+    maxPosition,
     totalRewards,
+    tableData,
   } = reportData;
 
-  let coingeckoData = {};
-  try {
-    const arr = JSON.parse(globalData?.coingecko || "[]");
-    coingeckoData = arr[0] || {};
-  } catch (err) {
-    console.error("Error parsing coingecko data:", err);
-    coingeckoData = {};
-  }
-
-  const currentPrice = coingeckoData.current_price || 0;
-
   const totalRewardsRune = totalRewards / 1e8;
-  const totalRewardsUsd = totalRewardsRune * currentPrice;
+  let totalRewardsUsdFromTable = 0;
+  if (tableData && Array.isArray(tableData.dollarValue)) {
+    totalRewardsUsdFromTable = tableData.dollarValue.reduce(
+      (acc, val) => acc + (val || 0),
+      0
+    );
+  }
 
   const statsItems = [
     {
-      icon: BlockIcon,
+      icon: StartBlockIcon,
       title: "Start Block",
       stat: startBlock?.toLocaleString(),
     },
     {
-      icon: BondIcon,
+      icon: StartBondIcon,
       title: "Start Bond",
-      stat: `ᚱ${(startBond / 1e8).toLocaleString()}`,
+      stat: `ᚱ${(startBond / 1e8).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}`,
     },
     {
       icon: BondOverTimeIcon,
       title: "Bond Change",
-      stat: `ᚱ${(BondIncrease / 1e8).toLocaleString()}`,
+      stat: `ᚱ${(BondIncrease / 1e8).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}`,
     },
     {
-      icon: BondIcon,
+      icon: EndBlockIcon,
       title: "End Block",
       stat: endBlock?.toLocaleString(),
     },
     {
-      icon: BondIcon,
+      icon: EndBondIcon,
       title: "End Bond",
-      stat: `ᚱ${(endBond / 1e8).toLocaleString()}`,
+      stat: `ᚱ${(endBond / 1e8).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}`,
     },
     {
-      icon: BondIcon,
+      icon: PositionAverageIcon,
       title: "Position (Average)",
       stat: position?.toLocaleString(),
     },
     {
-      icon: BondIcon,
+      icon: MaxPositionIcon,
+      title: "Max Position",
+      stat: maxPosition?.toLocaleString(),
+    },
+    {
+      icon: ReportRewardsIcon,
       title: "Total Rewards",
       stat: (
         <InfoPopover
-          title="Dollar Value"
-          text={`$${totalRewardsUsd.toLocaleString()}`}
+          title="Total Rewards ($)"
+          text={`$${totalRewardsUsdFromTable.toLocaleString(undefined, {
+            maximumFractionDigits: 2,
+          })}`}
         >
-          <span>ᚱ{totalRewardsRune.toLocaleString()}</span>
+          <span>
+            ᚱ
+            {totalRewardsRune.toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
+          </span>
         </InfoPopover>
       ),
     },

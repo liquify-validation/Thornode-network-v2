@@ -84,6 +84,14 @@ import LeaveIcon from "./exit-outline.svg";
 import VersionIcon from "./versionicon.svg";
 import WarningIcon from "./warningicon.svg";
 import MagnifyingGlass from "./magnifyinglass.svg";
+import LiquifyIcon from "./liquify_icon.png";
+import StartBlockIcon from "./start_block.svg";
+import EndBlockIcon from "./end_block.svg";
+import StartBondIcon from "./start_bond.svg";
+import EndBondIcon from "./end_bond.svg";
+import MaxPositionIcon from "./max_position.svg";
+import ReportRewardsIcon from "./rewards.svg";
+import PositionAverageIcon from "./position_average.svg";
 
 export {
   DayHighIcon,
@@ -172,4 +180,12 @@ export {
   WarningIcon,
   AnalyticsLeaderboardIcon,
   MagnifyingGlass,
+  LiquifyIcon,
+  StartBlockIcon,
+  EndBlockIcon,
+  StartBondIcon,
+  EndBondIcon,
+  MaxPositionIcon,
+  ReportRewardsIcon,
+  PositionAverageIcon,
 };

@@ -12,7 +12,7 @@ import LeaderboardRow from "./LeaderboardRow";
 // Import the position data hook
 import { useNodePositionData } from "../hooks/useNodePositionData";
 
-const Leaderboard = ({ title, type = "top" }) => {
+const Leaderboard = ({ title, type = "top", isDark }) => {
   const [churnCount, setChurnCount] = useState(1);
   const [showChartModal, setShowChartModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -81,6 +81,7 @@ const Leaderboard = ({ title, type = "top" }) => {
         ]}
         xAxisLabel="Block Height"
         yAxisLabel="Position"
+        isDark={isDark}
       />
     );
   };

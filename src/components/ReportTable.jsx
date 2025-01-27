@@ -18,7 +18,7 @@ const ReportTable = ({ data }) => {
         Cell: ({ value }) => `$${value.toLocaleString()}`,
       },
       {
-        Header: "Reward (RUNE)",
+        Header: "Reward (ᚱ)",
         accessor: "rewardRune",
         Cell: ({ value }) => `${value.toLocaleString()} RUNE`,
       },
@@ -72,7 +72,7 @@ const ReportTable = ({ data }) => {
                   <th
                     key={column.id}
                     {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className="px-6 py-3 text-left text-md text-gray-50 tracking-wider inner-glass-effect"
+                    className="px-6 py-3 text-left text-md text-gray-800 dark:text-gray-50 tracking-wider inner-glass-effect"
                   >
                     {column.render("Header")}
                     {column.isSorted
@@ -97,7 +97,7 @@ const ReportTable = ({ data }) => {
                     <td
                       key={cell.column.id}
                       {...cell.getCellProps()}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-50"
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-50"
                     >
                       {cell.render("Cell")}
                     </td>

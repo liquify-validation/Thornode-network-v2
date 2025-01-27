@@ -24,40 +24,13 @@ import { useNodePositionData } from "../hooks/useNodePositionData";
 import { useNodeSlashesData } from "../hooks/useNodeSlashesData";
 import { JailIcon, LeaveIcon } from "../assets";
 
-{
-  /* <td
-                    className={getCellClassName("rpc")}
-                    style={{ ...tdStyle, textAlign: "center" }}
-                  >
-                    <a
-                      style={{
-                        color: theme === "light" ? "rgba(0,0,0,0.85)" : "white",
-                      }}
-                      href={`http://${item.ip_address}:27147/health?`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.rpc !== "null" ? "*" : "Bad"}
-                    </a>
-                  </td>
-                  <td
-                    className={getCellClassName("bfr")}
-                    style={{ ...tdStyle, textAlign: "center" }}
-                  >
-                    <a
-                      style={{
-                        color: theme === "light" ? "rgba(0,0,0,0.85)" : "white",
-                      }}
-                      href={`http://${item.ip_address}:6040/p2pid`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.bifrost !== "null" ? "*" : "Bad"}
-                    </a>
-                  </td> */
-}
-
-const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
+const NodesTable = ({
+  data,
+  setAllColumns,
+  maxChainHeights,
+  globalData,
+  isDark,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [showModal, setShowModal] = useState(false);
@@ -129,6 +102,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           scatterPoints={scatterPoints}
           xAxisLabel="Block Height"
           yAxisLabel="Position"
+          isDark={isDark}
         />
       );
     }
@@ -167,6 +141,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
         xAxisKey="blockHeight"
         yAxisLabel={selectedChartType}
         lines={chartLines[selectedChartType]}
+        isDark={isDark}
       />
     );
   };

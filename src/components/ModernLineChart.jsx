@@ -23,9 +23,15 @@ const ModernLineChart = ({
   xAxisLabel,
   yAxisLabel,
   yAxisMax,
-
   convertToMillions = false,
+
+  isDark = false,
 }) => {
+  const axisColor = isDark ? "#ffffff" : "#374151";
+  const tooltipBgColor = isDark ? "#333333" : "#fafafa";
+  const tooltipBorderColor = isDark ? "#555555" : "#cccccc";
+  const textColor = isDark ? "#ffffff" : "#000000";
+
   const linesToRender = React.useMemo(() => {
     if (Array.isArray(lines) && lines.length > 0) {
       return lines;
@@ -67,7 +73,7 @@ const ModernLineChart = ({
           data={data}
           margin={{ top: 10, right: 20, left: 10, bottom: 30 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke={axisColor} />
 
           <XAxis
             dataKey={xAxisKey}
@@ -75,11 +81,12 @@ const ModernLineChart = ({
               value: xAxisLabel || xAxisKey,
               position: "insideBottomRight",
               offset: -20,
-              fill: "fill-gray-700 dark:fill-white",
+              fill: axisColor,
               fontSize: 14,
               dx: -20,
             }}
-            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
+            tick={{ fill: axisColor, fontSize: 11 }}
+            stroke={axisColor}
           />
 
           <YAxis
@@ -91,27 +98,32 @@ const ModernLineChart = ({
               value: yAxisLabel || yAxisKey,
               angle: -90,
               position: "insideLeft",
-              fill: "fill-gray-700 dark:fill-white",
+              fill: axisColor,
               fontSize: 14,
               dy: 20,
             }}
-            tick={{ fill: "fill-gray-700 dark:fill-white", fontSize: 11 }}
-            tickFormatter={(val) => formatYAxisValue(val)}
+            tick={{ fill: axisColor, fontSize: 11 }}
+            tickFormatter={formatYAxisValue}
+            stroke={axisColor}
           />
 
           <Tooltip
             formatter={handleTooltipFormatter}
             contentStyle={{
-              backgroundColor: "#333333",
+              backgroundColor: tooltipBgColor,
               borderRadius: "6px",
-              border: "1px solid #555",
+              border: `1px solid ${tooltipBorderColor}`,
             }}
-            itemStyle={{ color: "#ffffff" }}
-            labelStyle={{ color: "#ffffff", fontWeight: "bold" }}
+            itemStyle={{ color: textColor }}
+            labelStyle={{ color: textColor, fontWeight: "bold" }}
             cursor={{ stroke: "#8884d8", strokeWidth: 2 }}
           />
 
-          <Legend />
+          <Legend
+            wrapperStyle={{
+              color: axisColor,
+            }}
+          />
 
           {linesToRender.map((lineObj, idx) => {
             const gradId = `color_${sanitize(title)}_${sanitize(
