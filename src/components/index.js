@@ -41,6 +41,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import LeaderboardFilter from "./LeaderboardFilter";
 import ModernScatterChart from "./ModernScatterChart";
 import LeaderboardRow from "./LeaderboardRow";
+import BondProvidersTable from "./BondProvidersTable";
 
 export {
   AnalyticsCard,
@@ -86,4 +87,5 @@ export {
   LeaderboardFilter,
   ModernScatterChart,
   LeaderboardRow,
+  BondProvidersTable,
 };

@@ -4,19 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "../assets";
-
-function getCookieValue(name) {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[2]) : null;
-}
-
-function setCookie(name, value, days = 365) {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(
-    value
-  )}; expires=${date.toUTCString()}; path=/`;
-}
+import { getCookieValue, setCookie } from "../utilities/commonFunctions";
 
 const Pagination = ({
   canPreviousPage,
@@ -29,6 +17,9 @@ const Pagination = ({
   setPageSize,
   pageIndex,
   pageSize,
+  expandTable,
+  onExpandChange,
+  hideExpandOption = false,
 }) => {
   const [localPageSize, setLocalPageSize] = useState(pageSize);
 
@@ -59,6 +50,13 @@ const Pagination = ({
       setCookie("pageSize", num.toString());
     }
   };
+
+  function handleExpandToggle(e) {
+    const checked = e.target.checked;
+    if (onExpandChange) {
+      onExpandChange(checked);
+    }
+  }
 
   const pageNumbers = React.useMemo(() => {
     const totalPageCount = pageOptions.length;
@@ -98,6 +96,16 @@ const Pagination = ({
           <option value="all">All</option>
         </select>
         <span>results per page</span>
+        {!hideExpandOption && (
+          <div className="pl-12">
+            <input
+              type="checkbox"
+              checked={expandTable}
+              onChange={handleExpandToggle}
+            />
+            <span>Expand Table</span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center space-x-1 flex-grow justify-center ">

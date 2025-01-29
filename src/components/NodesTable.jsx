@@ -9,6 +9,7 @@ import {
   InfoPopover,
   LoadingSpinner,
   ModernScatterChart,
+  BondProvidersTable,
 } from "../components";
 import {
   chainIcons,
@@ -30,12 +31,15 @@ const NodesTable = ({
   maxChainHeights,
   globalData,
   isDark,
+  expandTable,
+  onExpandChange,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [selectedNodeAddress, setSelectedNodeAddress] = useState(null);
   const [selectedChartType, setSelectedChartType] = useState(null);
+  const [showProvidersModal, setShowProvidersModal] = useState(false);
+  const [providersData, setProvidersData] = useState([]);
 
   const [chartData, setChartData] = useState([]);
 
@@ -160,6 +164,7 @@ const NodesTable = ({
       {
         Header: "Nodes",
         accessor: "node_address",
+        disableSortBy: true,
         Cell: ({ value }) => {
           const last4 = value.slice(-4);
 
@@ -179,6 +184,7 @@ const NodesTable = ({
       {
         Header: "Features",
         accessor: "icons",
+        disableSortBy: true,
         Cell: ({ row }) => (
           <div className="overflow-visible">
             <TableIcons node={row.original} onOpenChart={handleOpenChart} />
@@ -224,7 +230,26 @@ const NodesTable = ({
       },
       {
         Header: "Providers",
-        accessor: "bond_providers.providers.length",
+        accessor: (row) => row.bond_providers?.providers?.length || 0,
+        Cell: ({ row }) => {
+          const bondProvidersData = row.original.bond_providers;
+          if (!bondProvidersData || !bondProvidersData.providers) return "-";
+
+          const providers = bondProvidersData.providers;
+          if (!Array.isArray(providers) || providers.length === 0) return "0";
+
+          function handleClick() {
+            setProvidersData(providers);
+            setShowProvidersModal(true);
+          }
+
+          return (
+            <span className="underline cursor-pointer" onClick={handleClick}>
+              {providers.length}{" "}
+              {providers.length === 1 ? "Provider" : "Providers"}
+            </span>
+          );
+        },
       },
       {
         Header: "Bond",
@@ -289,7 +314,7 @@ const NodesTable = ({
       },
       {
         Header: "Slashes",
-        accessor: "slashes",
+        accessor: (row) => row.slash_points,
         Cell: ({ row }) => {
           const nodeAddress = row.original.node_address;
           const slashes = row.original.slash_points;
@@ -367,6 +392,7 @@ const NodesTable = ({
       {
         Header: "RPC",
         accessor: "rpc",
+        disableSortBy: true,
         Cell: ({ row }) => {
           const { ip_address, rpc } = row.original;
           return rpc !== "null" ? (
@@ -388,6 +414,7 @@ const NodesTable = ({
       {
         Header: "BFR",
         accessor: "bfr",
+        disableSortBy: true,
         Cell: ({ row }) => {
           const { ip_address, bifrost } = row.original;
           return bifrost !== "null" ? (
@@ -452,6 +479,7 @@ const NodesTable = ({
       columns: allColumnsDef,
       data,
       initialState: { pageSize: 10 },
+      autoResetSortBy: false,
     },
     useSortBy,
     usePagination
@@ -483,7 +511,13 @@ const NodesTable = ({
 
   return (
     <>
-      <div className="overflow-x-auto overflow-y-auto rounded-t-lg mt-8 max-h-[600px] scrollbar-custom">
+      <div
+        className={`
+       overflow-x-auto
+       rounded-t-lg mt-8
+       ${expandTable ? "" : "overflow-y-auto max-h-[600px] scrollbar-custom"}
+     `}
+      >
         <table
           {...getTableProps()}
           className="min-w-full table-auto divide-y-4 text-center divide-gray-500 "
@@ -504,8 +538,10 @@ const NodesTable = ({
                       <th
                         key={columnKey}
                         {...restHeaderProps}
-                        // 2) Make it sticky and ensure it sits above rows with a z-index
-                        className="sticky top-0 z-10 px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider"
+                        className={`
+                          px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider
+                          ${expandTable ? "" : "sticky top-0 z-10"}
+                        `}
                       >
                         {column.render("Header")}
                         <span>
@@ -567,6 +603,8 @@ const NodesTable = ({
         setPageSize={setPageSize}
         pageIndex={pageIndex}
         pageSize={pageSize}
+        expandTable={expandTable}
+        onExpandChange={onExpandChange}
       />
 
       {showModal && (
@@ -577,6 +615,11 @@ const NodesTable = ({
           {renderChartContent()}
         </Modal>
       )}
+      <BondProvidersTable
+        isOpen={showProvidersModal}
+        onClose={() => setShowProvidersModal(false)}
+        providersData={providersData}
+      />
     </>
   );
 };

@@ -138,7 +138,7 @@ const ModernLineChart = ({
                       stopColor={lineObj.gradientStartColor}
                       stopOpacity={1}
                     />
-                    <stop offset="70%" stopColor="#C1DBFB" stopOpacity={0.1} />
+                    <stop offset="96%" stopColor="#C1DBFB" stopOpacity={0.1} />
                     <stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>

@@ -409,8 +409,21 @@ export function chainSort(rowA, rowB, columnId) {
 }
 
 function convertChainValue(value) {
-  if (value === "OK") return 0; // "OK" => numeric 0
-  const parsed = Number(value); // try parse a numeric delta (e.g. -23)
-  if (isNaN(parsed)) return Infinity; // "N/A" or anything else => Infinity
+  if (value === "OK") return 0;
+  const parsed = Number(value);
+  if (isNaN(parsed)) return Infinity;
   return parsed;
+}
+
+export function getCookieValue(name) {
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+export function setCookie(name, value, days = 365) {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; expires=${date.toUTCString()}; path=/`;
 }

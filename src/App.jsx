@@ -11,6 +11,7 @@ import Header from "./global/Header";
 import Footer from "./global/Footer";
 import Sidebar from "./global/Sidebar";
 import MapBg from "./global/MapBg";
+import ScrollToTop from "./global/ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -44,6 +45,8 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
+
       <div className="flex relative">
         <Sidebar
           isExpanded={isExpanded}
