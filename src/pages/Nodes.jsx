@@ -131,6 +131,7 @@ const Nodes = ({ isDark }) => {
             isDark={isDark}
             expandTable={expandTable}
             onExpandChange={handleExpandChange}
+            currentTab={currentTab}
           />
         </div>
       </div>

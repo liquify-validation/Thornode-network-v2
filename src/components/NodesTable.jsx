@@ -33,6 +33,7 @@ const NodesTable = ({
   isDark,
   expandTable,
   onExpandChange,
+  currentTab,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -437,6 +438,9 @@ const NodesTable = ({
   }, [runeCurrentPrice]);
 
   const chainColumns = React.useMemo(() => {
+    if (currentTab !== "active") {
+      return [];
+    }
     const chains = ["BTC", "ETH", "LTC", "BCH", "DOGE", "AVAX", "BSC", "BASE"];
     const haltsData = getHaltsData(globalData);
 
@@ -467,7 +471,7 @@ const NodesTable = ({
       sortType: "basic",
       Cell: ({ value }) => <ChainStatusCell value={value} />,
     }));
-  }, [maxChainHeights]);
+  }, [maxChainHeights, currentTab, globalData]);
 
   const allColumnsDef = React.useMemo(
     () => [...columns, ...chainColumns],
@@ -512,6 +516,7 @@ const NodesTable = ({
   return (
     <>
       <div
+        key={`table-${currentTab}`}
         className={`
        overflow-x-auto
        rounded-t-lg mt-8
