@@ -1,4 +1,4 @@
-# Project Title
+# Thornode Dashboard V2
 
 This project is a React dashboard (bundled via Vite) that monitors THORNode information. It collates data such as active, standby, or “other” (historical/retiring) nodes, network stats, and provider/bond details. The dashboard fetches data from an external (separate) backend API.
 
@@ -16,8 +16,8 @@ This project is a React dashboard (bundled via Vite) that monitors THORNode info
 Clone the Repo:
 
 ```bash
-  git clone https://github.com/liquify-validation/thornode-monitor-frontend.git
-  cd thornode-monitor-frontend
+  git clone https://github.com/liquify-validation/Thornode-network-v2.git 
+  cd Thornode-network-v2
 ```
 
 Install Dependencies:
