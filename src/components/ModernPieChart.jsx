@@ -191,10 +191,21 @@ const ModernPieChart = ({
       </Pie>
 
       <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
-        <tspan x="50%" fontSize="48" fontWeight="bold" fill="#fff">
+        <tspan
+          x="50%"
+          fontSize="48"
+          fontWeight="bold"
+          className="fill-gray-700 dark:fill-white"
+        >
           {resolvedCenterValue}
         </tspan>
-        <tspan x="50%" dy="2.5em" fontSize="14" fontWeight="bold" fill="#fff">
+        <tspan
+          x="50%"
+          dy="2.5em"
+          fontSize="14"
+          fontWeight="bold"
+          className="fill-gray-700 dark:fill-white"
+        >
           {subtitle}
         </tspan>
       </text>
@@ -212,7 +223,7 @@ const ModernPieChart = ({
   );
 
   return (
-    <Box className="chart-card h-full flex flex-col pt-8 pb-16">
+    <Box className="chart-card h-full flex flex-col pt-8 pb-16 relative">
       <h2 className="font-semibold text-md ml-8">{title}</h2>
       <ModernDivider />
 

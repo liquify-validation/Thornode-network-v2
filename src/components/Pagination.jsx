@@ -4,19 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "../assets";
-
-function getCookieValue(name) {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[2]) : null;
-}
-
-function setCookie(name, value, days = 365) {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(
-    value
-  )}; expires=${date.toUTCString()}; path=/`;
-}
+import { getCookieValue, setCookie } from "../utilities/commonFunctions";
 
 const Pagination = ({
   canPreviousPage,
@@ -29,6 +17,9 @@ const Pagination = ({
   setPageSize,
   pageIndex,
   pageSize,
+  expandTable,
+  onExpandChange,
+  hideExpandOption = false,
 }) => {
   const [localPageSize, setLocalPageSize] = useState(pageSize);
 
@@ -59,6 +50,13 @@ const Pagination = ({
       setCookie("pageSize", num.toString());
     }
   };
+
+  function handleExpandToggle(e) {
+    const checked = e.target.checked;
+    if (onExpandChange) {
+      onExpandChange(checked);
+    }
+  }
 
   const pageNumbers = React.useMemo(() => {
     const totalPageCount = pageOptions.length;
@@ -98,6 +96,16 @@ const Pagination = ({
           <option value="all">All</option>
         </select>
         <span>results per page</span>
+        {!hideExpandOption && (
+          <div className="pl-12">
+            <input
+              type="checkbox"
+              checked={expandTable}
+              onChange={handleExpandToggle}
+            />
+            <span>Expand Table</span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center space-x-1 flex-grow justify-center ">
@@ -106,7 +114,11 @@ const Pagination = ({
           disabled={!canPreviousPage}
           className="p-2 bg-transparent"
         >
-          <img src={DoubleArrowLeftIcon} className="w-6 h-6" alt="First Page" />
+          <img
+            src={DoubleArrowLeftIcon}
+            className="w-6 h-6 invert dark:invert-0"
+            alt="First Page"
+          />
         </button>
 
         <button
@@ -116,7 +128,7 @@ const Pagination = ({
         >
           <img
             src={ArrowIcon}
-            className="rotate-180 w-6 h-6"
+            className="rotate-180 w-6 h-6 invert dark:invert-0"
             alt="Previous Page"
           />
         </button>
@@ -129,7 +141,7 @@ const Pagination = ({
               className={`px-2 py-1 rounded ${
                 page === pageIndex
                   ? "bg-[#28f3b0] text-gray-900"
-                  : "bg-transparent text-[#28f3b0] hover:bg-blue-200"
+                  : "bg-transparent text-gray-700 dark:text-[#28f3b0] hover:bg-blue-200"
               }`}
             >
               {page + 1}
@@ -142,7 +154,11 @@ const Pagination = ({
           disabled={!canNextPage}
           className="p-2 bg-transparent"
         >
-          <img src={ArrowIcon} className="w-6 h-6" alt="Next Page" />
+          <img
+            src={ArrowIcon}
+            className="w-6 h-6 invert dark:invert-0"
+            alt="Next Page"
+          />
         </button>
 
         <button
@@ -150,7 +166,11 @@ const Pagination = ({
           disabled={!canNextPage}
           className="p-2 bg-transparent"
         >
-          <img src={DoubleArrowRightIcon} className="w-6 h-6" alt="Last Page" />
+          <img
+            src={DoubleArrowRightIcon}
+            className="w-6 h-6 invert dark:invert-0"
+            alt="Last Page"
+          />
         </button>
       </div>
 

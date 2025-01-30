@@ -17,11 +17,9 @@ export function processNodes(rawNodes, globalData) {
   }
 
   const {
-    maxHeight = 0,
-    secondsPerBlock = "5.0",
-    ratioRewardsAPY = 1,
-    blocksSinceLastChurn = 1,
-    churnsInYear = 365,
+    maxHeight = globalData.maxHeight,
+    secondsPerBlock = globalData.secondsPerBlock,
+    blocksSinceLastChurn = globalData.maxHeight - globalData.lastChurn,
   } = globalData || {};
 
   const versions = rawNodes
@@ -56,6 +54,7 @@ export function processNodes(rawNodes, globalData) {
       : null;
     const obchains = parseObserveChains(observe_chains);
 
+    const { ratioRewardsAPY = 1, churnsInYear = 1 } = globalData;
     const apy = calculateApy(node, ratioRewardsAPY, churnsInYear);
 
     return {

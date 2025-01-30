@@ -21,7 +21,11 @@ import {
 import InfoPopover from "./InfoPopover";
 
 const StatsCardSection = ({ netData, nodeData }) => {
-  const totalBondedValueRune = nodeData.totalBondedValue || 0;
+  const cleanBondedValueString = nodeData.totalBondedValue.replace(
+    /[^0-9.-]+/g,
+    ""
+  );
+  const totalBondedValueRune = Number(cleanBondedValueString) || 0;
 
   const coingeckoData = netData.coingecko || {};
   const currentPrice = coingeckoData.current_price || 0;

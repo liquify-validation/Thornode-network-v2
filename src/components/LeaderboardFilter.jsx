@@ -7,8 +7,8 @@ const LeaderboardFilter = ({ churnCount, onChange }) => {
         onClick={() => onChange(1)}
         className={`px-4 py-2 rounded-l-xl rounded-r-none ${
           churnCount === 1
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect text-gray-800 dark:text-gray-50"
         }`}
       >
         Last Churn
@@ -18,8 +18,8 @@ const LeaderboardFilter = ({ churnCount, onChange }) => {
         onClick={() => onChange(5)}
         className={`px-4 py-2 ${
           churnCount === 5
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50 rounded-none"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect text-gray-800 dark:text-gray-50 rounded-none"
         }`}
       >
         Last 5 Churns
@@ -29,8 +29,8 @@ const LeaderboardFilter = ({ churnCount, onChange }) => {
         onClick={() => onChange(10)}
         className={`px-4 py-2 rounded-r-xl rounded-l-none ${
           churnCount === 10
-            ? "bg-[#28f3b0] text-gray-800"
-            : "inner-glass-effect text-gray-50"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect text-gray-800 dark:text-gray-50"
         }`}
       >
         Last 10 Churns

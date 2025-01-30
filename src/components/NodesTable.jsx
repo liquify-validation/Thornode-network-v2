@@ -9,6 +9,7 @@ import {
   InfoPopover,
   LoadingSpinner,
   ModernScatterChart,
+  BondProvidersTable,
 } from "../components";
 import {
   chainIcons,
@@ -24,45 +25,22 @@ import { useNodePositionData } from "../hooks/useNodePositionData";
 import { useNodeSlashesData } from "../hooks/useNodeSlashesData";
 import { JailIcon, LeaveIcon } from "../assets";
 
-{
-  /* <td
-                    className={getCellClassName("rpc")}
-                    style={{ ...tdStyle, textAlign: "center" }}
-                  >
-                    <a
-                      style={{
-                        color: theme === "light" ? "rgba(0,0,0,0.85)" : "white",
-                      }}
-                      href={`http://${item.ip_address}:27147/health?`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.rpc !== "null" ? "*" : "Bad"}
-                    </a>
-                  </td>
-                  <td
-                    className={getCellClassName("bfr")}
-                    style={{ ...tdStyle, textAlign: "center" }}
-                  >
-                    <a
-                      style={{
-                        color: theme === "light" ? "rgba(0,0,0,0.85)" : "white",
-                      }}
-                      href={`http://${item.ip_address}:6040/p2pid`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.bifrost !== "null" ? "*" : "Bad"}
-                    </a>
-                  </td> */
-}
-
-const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
+const NodesTable = ({
+  data,
+  setAllColumns,
+  maxChainHeights,
+  globalData,
+  isDark,
+  expandTable,
+  onExpandChange,
+  currentTab,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [selectedNodeAddress, setSelectedNodeAddress] = useState(null);
   const [selectedChartType, setSelectedChartType] = useState(null);
+  const [showProvidersModal, setShowProvidersModal] = useState(false);
+  const [providersData, setProvidersData] = useState([]);
 
   const [chartData, setChartData] = useState([]);
 
@@ -92,7 +70,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
   };
 
   const renderChartContent = () => {
-    // Map each chart type to its associated data query
     const queryMap = {
       bond: bondDataQuery,
       rewards: rewardsDataQuery,
@@ -107,7 +84,6 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
     if (isLoading) return <LoadingSpinner />;
     if (error) return <div className="text-red-400">{error.message}</div>;
 
-    // If selected chart type is "position", render a scatter chart
     if (selectedChartType === "position") {
       const scatterPoints = [
         {
@@ -127,15 +103,15 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           data={data}
           title="POSITION Over Time"
           xAxisKey="blockHeight"
-          yAxisKey="position" // The main data key on each data object
+          yAxisKey="position"
           scatterPoints={scatterPoints}
           xAxisLabel="Block Height"
           yAxisLabel="Position"
+          isDark={isDark}
         />
       );
     }
 
-    // Otherwise, fall back to your usual line chart
     const chartLines = {
       bond: [
         {
@@ -170,6 +146,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
         xAxisKey="blockHeight"
         yAxisLabel={selectedChartType}
         lines={chartLines[selectedChartType]}
+        isDark={isDark}
       />
     );
   };
@@ -188,6 +165,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       {
         Header: "Nodes",
         accessor: "node_address",
+        disableSortBy: true,
         Cell: ({ value }) => {
           const last4 = value.slice(-4);
 
@@ -207,6 +185,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       {
         Header: "Features",
         accessor: "icons",
+        disableSortBy: true,
         Cell: ({ row }) => (
           <div className="overflow-visible">
             <TableIcons node={row.original} onOpenChart={handleOpenChart} />
@@ -252,7 +231,26 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       },
       {
         Header: "Providers",
-        accessor: "bond_providers.providers.length",
+        accessor: (row) => row.bond_providers?.providers?.length || 0,
+        Cell: ({ row }) => {
+          const bondProvidersData = row.original.bond_providers;
+          if (!bondProvidersData || !bondProvidersData.providers) return "-";
+
+          const providers = bondProvidersData.providers;
+          if (!Array.isArray(providers) || providers.length === 0) return "0";
+
+          function handleClick() {
+            setProvidersData(providers);
+            setShowProvidersModal(true);
+          }
+
+          return (
+            <span className="underline cursor-pointer" onClick={handleClick}>
+              {providers.length}{" "}
+              {providers.length === 1 ? "Provider" : "Providers"}
+            </span>
+          );
+        },
       },
       {
         Header: "Bond",
@@ -317,7 +315,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       },
       {
         Header: "Slashes",
-        accessor: "slashes",
+        accessor: (row) => row.slash_points,
         Cell: ({ row }) => {
           const nodeAddress = row.original.node_address;
           const slashes = row.original.slash_points;
@@ -351,6 +349,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               alt="Leave Icon"
               width={"25px"}
               height={"25px"}
+              className="invert dark:invert-0"
             />
           </div>
         ),
@@ -379,7 +378,11 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                   </>
                 }
               >
-                <img src={JailIcon} alt="Jail Icon" className="mx-auto" />
+                <img
+                  src={JailIcon}
+                  alt="Jail Icon"
+                  className="mx-auto invert dark:invert-0"
+                />
               </InfoPopover>
             );
           }
@@ -390,6 +393,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       {
         Header: "RPC",
         accessor: "rpc",
+        disableSortBy: true,
         Cell: ({ row }) => {
           const { ip_address, rpc } = row.original;
           return rpc !== "null" ? (
@@ -398,7 +402,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: "white",
+                color: "white dark:black",
               }}
             >
               *
@@ -411,6 +415,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       {
         Header: "BFR",
         accessor: "bfr",
+        disableSortBy: true,
         Cell: ({ row }) => {
           const { ip_address, bifrost } = row.original;
           return bifrost !== "null" ? (
@@ -419,7 +424,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                color: "white",
+                color: "white dark:black",
               }}
             >
               *
@@ -433,6 +438,9 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
   }, [runeCurrentPrice]);
 
   const chainColumns = React.useMemo(() => {
+    if (currentTab !== "active") {
+      return [];
+    }
     const chains = ["BTC", "ETH", "LTC", "BCH", "DOGE", "AVAX", "BSC", "BASE"];
     const haltsData = getHaltsData(globalData);
 
@@ -463,7 +471,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       sortType: "basic",
       Cell: ({ value }) => <ChainStatusCell value={value} />,
     }));
-  }, [maxChainHeights]);
+  }, [maxChainHeights, currentTab, globalData]);
 
   const allColumnsDef = React.useMemo(
     () => [...columns, ...chainColumns],
@@ -475,6 +483,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
       columns: allColumnsDef,
       data,
       initialState: { pageSize: 10 },
+      autoResetSortBy: false,
     },
     useSortBy,
     usePagination
@@ -506,10 +515,17 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-t-lg mt-8 ">
+      <div
+        key={`table-${currentTab}`}
+        className={`
+       overflow-x-auto
+       rounded-t-lg mt-8
+       ${expandTable ? "" : "overflow-y-auto max-h-[600px] scrollbar-custom"}
+     `}
+      >
         <table
           {...getTableProps()}
-          className="min-w-full table-auto divide-y-4 text-center divide-gray-500"
+          className="min-w-full table-auto divide-y-4 text-center divide-gray-500 "
         >
           <thead>
             {headerGroups.map((headerGroup) => {
@@ -527,7 +543,10 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                       <th
                         key={columnKey}
                         {...restHeaderProps}
-                        className="px-4 py-4 text-center text-md text-gray-50 tracking-wider inner-glass-effect "
+                        className={`
+                          px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider
+                          ${expandTable ? "" : "sticky top-0 z-10"}
+                        `}
                       >
                         {column.render("Header")}
                         <span>
@@ -546,7 +565,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           </thead>
           <tbody
             {...getTableBodyProps()}
-            className="inner-glass-effect divide-y-2 divide-gray-700"
+            className="divide-y-2 divide-gray-700 "
           >
             {page.map((row) => {
               prepareRow(row);
@@ -555,7 +574,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
               return (
                 <tr
                   key={rowKey}
-                  className="hover:bg-[#4dc89f]"
+                  className="hover:bg-[#4dc89f] inner-glass-effect"
                   {...restRowProps}
                 >
                   {row.cells.map((cell) => {
@@ -565,7 +584,7 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
                       <td
                         key={cellKey}
                         {...restCellProps}
-                        className="px-4 py-4 whitespace-nowrap text-sm text-gray-50 "
+                        className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50"
                       >
                         {cell.render("Cell")}
                       </td>
@@ -589,6 +608,8 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
         setPageSize={setPageSize}
         pageIndex={pageIndex}
         pageSize={pageSize}
+        expandTable={expandTable}
+        onExpandChange={onExpandChange}
       />
 
       {showModal && (
@@ -599,6 +620,11 @@ const NodesTable = ({ data, setAllColumns, maxChainHeights, globalData }) => {
           {renderChartContent()}
         </Modal>
       )}
+      <BondProvidersTable
+        isOpen={showProvidersModal}
+        onClose={() => setShowProvidersModal(false)}
+        providersData={providersData}
+      />
     </>
   );
 };

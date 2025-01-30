@@ -45,7 +45,7 @@ const TableIcons = ({ node, onOpenChart }) => {
         <img
           src={NodeGraphIcon}
           alt="Chart"
-          className="w-5 h-5 cursor-pointer"
+          className="w-5 h-5 cursor-pointer invert dark:invert-0"
           onClick={() => onOpenChart(node.node_address, "position")}
         />
       </InfoPopover>
@@ -53,7 +53,7 @@ const TableIcons = ({ node, onOpenChart }) => {
         <img
           src={ReportIcon}
           alt="Report"
-          className="w-5 h-5 cursor-pointer"
+          className="w-5 h-5 cursor-pointer invert dark:invert-0"
           onClick={() => {
             navigate(`/nodes/report/${node.node_address}`);
           }}
@@ -65,7 +65,11 @@ const TableIcons = ({ node, onOpenChart }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img src={ExploreIcon} alt="Explore Node" className="w-5 h-5" />
+          <img
+            src={ExploreIcon}
+            alt="Explore Node"
+            className="w-5 h-5 invert dark:invert-0"
+          />
         </a>
       </InfoPopover>
       <InfoPopover title="Thornode API">
@@ -74,7 +78,11 @@ const TableIcons = ({ node, onOpenChart }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img src={ThornodeApiIcon} alt="Thornode API" className="w-5 h-5" />
+          <img
+            src={ThornodeApiIcon}
+            alt="Thornode API"
+            className="w-5 h-5 invert dark:invert-0"
+          />
         </a>
       </InfoPopover>
 
@@ -84,7 +92,7 @@ const TableIcons = ({ node, onOpenChart }) => {
             src={IpAddressIcon}
             alt="IP Address"
             onClick={handleCopyIpAddress}
-            className="w-5 h-5 cursor-pointer"
+            className="w-5 h-5 cursor-pointer invert dark:invert-0"
           />
         </InfoPopover>
       </div>
@@ -92,7 +100,7 @@ const TableIcons = ({ node, onOpenChart }) => {
       <img
         src={favorite ? FavouriteIcon : UnfavouriteIcon}
         alt="Favorite"
-        className="w-5 h-5 cursor-pointer"
+        className="w-5 h-5 cursor-pointer invert dark:invert-0"
         onClick={handleFavoriteClick}
       />
     </div>

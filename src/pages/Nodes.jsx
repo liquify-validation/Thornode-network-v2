@@ -6,14 +6,16 @@ import {
   NodesFilter,
   NodesTable,
   LoadingSpinner,
+  StatsCardSection,
 } from "../components";
 import { GlobalDataContext } from "../context/GlobalDataContext";
 import { useNetworkData } from "../hooks/useNetworkData";
 import { useNodeData } from "../hooks/useNodeData";
 
 import { processData } from "../utilities/dataProcessing";
+import { getCookieValue, setCookie } from "../utilities/commonFunctions";
 
-const Nodes = () => {
+const Nodes = ({ isDark }) => {
   const { tab } = useParams();
   const { favoriteNodes } = useContext(GlobalDataContext);
   const [processedData, setProcessedData] = useState({
@@ -24,6 +26,21 @@ const Nodes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTab, setCurrentTab] = useState(tab || "active");
   const [allColumns, setAllColumns] = useState([]);
+
+  const [expandTable, setExpandTable] = useState(false);
+
+  useEffect(() => {
+    const expandCookie = getCookieValue("expandTable");
+    if (expandCookie === "true") {
+      setExpandTable(true);
+    }
+  }, []);
+
+  function handleExpandChange(checked) {
+    setExpandTable(checked);
+    setCookie("expandTable", checked ? "true" : "false");
+  }
+
   const {
     data: globalData,
     isLoading: netLoading,
@@ -93,6 +110,9 @@ const Nodes = () => {
       </Helmet>
       <div>
         <h1 className="text-xl font-bold">Nodes</h1>
+        <div className="flex items-center justify-between mt-6 pb-6">
+          <StatsCardSection netData={globalData} nodeData={nodeResult} />
+        </div>
         <div className="flex items-center justify-between mt-6">
           <NodesFilter currentTab={currentTab} />
           <SearchBar
@@ -108,6 +128,10 @@ const Nodes = () => {
             setAllColumns={setAllColumns}
             maxChainHeights={maxChainHeights}
             globalData={globalData}
+            isDark={isDark}
+            expandTable={expandTable}
+            onExpandChange={handleExpandChange}
+            currentTab={currentTab}
           />
         </div>
       </div>

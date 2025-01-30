@@ -1,26 +1,17 @@
 import React from "react";
 import {
   GithubIcon,
-  GithubIconLight,
   TwitterIcon,
-  TwitterIconLight,
   FooterMailIcon,
-  EmailIconLight,
   LiquifyLogo,
-  LiquifyLogoLight,
 } from "../assets";
-import { useDarkObserver } from "../hooks/useDarkObserver";
 
 const Footer = () => {
-  const isDark = useDarkObserver();
-
   return (
-    <footer className=" bg-gray-100 dark:bg-[#17364C] py-4 ">
+    <footer className=" bg-[#17364C] py-4 ">
       <div className="flex w-full items-center justify-between px-4 pl-10">
         <div className="flex items-center">
-          <span className="text-gray-600 font-medium text-md dark:text-gray-300">
-            Built by:
-          </span>
+          <span className=" font-medium text-md text-gray-300">Built by:</span>
           <a
             href="https://www.liquify.io/"
             target="_blank"

@@ -22,7 +22,7 @@ const Header = () => {
         <div className="relative inline-block text-left">
           <button
             onClick={toggleDropdown}
-            className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none"
+            className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 dark:hover:bg-gray-600 focus:outline-none"
             aria-haspopup="true"
             aria-expanded={isOpen}
           >
@@ -39,19 +39,19 @@ const Header = () => {
 
           {isOpen && (
             <div
-              className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
+              className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-gray-800 dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
               <div className="py-1">
-                <Link
-                  to="https://www.v2.thornode.network/"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                <a
+                  href="https://www.thornode.network/v1"
+                  className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 dark:hover:bg-gray-600"
                   role="menuitem"
                 >
                   Version 1.8
-                </Link>
+                </a>
               </div>
             </div>
           )}

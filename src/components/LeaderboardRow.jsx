@@ -1,17 +1,15 @@
 import React from "react";
-import { CopyIcon } from "../assets";
+import { AnalyticsLeaderboardIcon, CopyIcon } from "../assets";
 import { copyToClipboard } from "../utilities/commonFunctions";
 import Number from "./Number";
 import InfoPopover from "./InfoPopover";
 import useIsOverflowing from "../hooks/useIsOverflowing";
 
-// This component is responsible for rendering a single row in the leaderboard
-function LeaderboardRow({ address, index }) {
+function LeaderboardRow({ address, index, onAnalyticsClick }) {
   const { ref, isOverflow } = useIsOverflowing(address);
 
   let AddressComponent;
   if (isOverflow) {
-    // If the text is overflowing, we use InfoPopover + truncation
     AddressComponent = (
       <InfoPopover title="Node Address" text={address}>
         <div
@@ -31,7 +29,6 @@ function LeaderboardRow({ address, index }) {
       </InfoPopover>
     );
   } else {
-    // If not overflowing, show it normally
     AddressComponent = (
       <div ref={ref} className="max-w-[150px] overflow-hidden">
         {address}
@@ -41,7 +38,6 @@ function LeaderboardRow({ address, index }) {
 
   return (
     <div
-      key={address}
       className="
         flex items-center 
         inner-glass-effect 
@@ -50,13 +46,32 @@ function LeaderboardRow({ address, index }) {
       "
     >
       <Number number={index + 1} />
-      <div className="flex-grow text-base text-gray-50">{AddressComponent}</div>
+      <div className="flex-grow text-base text-gray-700 dark:text-gray-50">
+        {AddressComponent}
+      </div>
+
       <button
         className="focus:outline-none ml-2 bg-transparent"
+        onClick={onAnalyticsClick}
+        aria-label="Open chart for node performance"
+      >
+        <img
+          src={AnalyticsLeaderboardIcon}
+          alt="Analytics"
+          className="w-6 h-6 invert dark:invert-0"
+        />
+      </button>
+
+      <button
+        className="focus:outline-none bg-transparent"
         onClick={() => copyToClipboard(address)}
         aria-label="Copy node address"
       >
-        <img src={CopyIcon} alt="Copy" className="w-6 h-6" />
+        <img
+          src={CopyIcon}
+          alt="Copy"
+          className="w-6 h-6 invert dark:invert-0"
+        />
       </button>
     </div>
   );

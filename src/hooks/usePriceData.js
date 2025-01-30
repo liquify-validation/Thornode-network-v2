@@ -5,7 +5,7 @@ function processPriceData(raw) {
   if (!raw || !Array.isArray(raw.data)) return [];
 
   const parsedArray = raw.data.map((item) => ({
-    date: item.date,
+    date: item.date.slice(0, 10),
     price: Number(item.price),
   }));
 

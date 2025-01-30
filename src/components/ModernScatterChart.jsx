@@ -8,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  ZAxis,
 } from "recharts";
 import Box from "../ui/Box";
 import ModernDivider from "./ModernDivider";
@@ -22,7 +21,15 @@ const ModernScatterChart = ({
   xAxisLabel,
   yAxisLabel,
   yAxisMax,
+
+  isDark = false,
 }) => {
+  // Conditionally set colors based on isDark
+  const axisColor = isDark ? "#ffffff" : "#374151"; // gray-700 => #374151
+  const tooltipBgColor = isDark ? "#333333" : "#f9f9f9";
+  const tooltipBorderColor = isDark ? "#555555" : "#ccc";
+  const tooltipTextColor = isDark ? "#ffffff" : "#000000";
+
   const scatterSets = React.useMemo(() => {
     if (Array.isArray(scatterPoints) && scatterPoints.length > 0) {
       return scatterPoints;
@@ -47,7 +54,7 @@ const ModernScatterChart = ({
           margin={{ top: 10, right: 20, left: 20, bottom: 30 }}
           data={data}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke={axisColor} />
 
           <XAxis
             dataKey={xAxisKey}
@@ -55,33 +62,41 @@ const ModernScatterChart = ({
               value: xAxisLabel || xAxisKey,
               position: "insideBottomRight",
               offset: -10,
-              fill: "#fff",
+              fill: axisColor,
               fontSize: 14,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: axisColor, fontSize: 11 }}
+            stroke={axisColor}
           />
+
           <YAxis
             domain={[0, yAxisMax || "auto"]}
             label={{
               value: yAxisLabel || yAxisKey,
               angle: -90,
               position: "insideLeft",
-              fill: "#fff",
+              fill: axisColor,
               fontSize: 14,
             }}
-            tick={{ fill: "#fff", fontSize: 11 }}
+            tick={{ fill: axisColor, fontSize: 11 }}
+            stroke={axisColor}
           />
 
           <Tooltip
             contentStyle={{
-              backgroundColor: "#333333",
+              backgroundColor: tooltipBgColor,
               borderRadius: "6px",
-              border: "1px solid #555",
+              border: `1px solid ${tooltipBorderColor}`,
             }}
-            itemStyle={{ color: "#ffffff" }}
-            labelStyle={{ color: "#ffffff", fontWeight: "bold" }}
+            itemStyle={{ color: tooltipTextColor }}
+            labelStyle={{ color: tooltipTextColor, fontWeight: "bold" }}
           />
-          <Legend />
+
+          <Legend
+            wrapperStyle={{
+              color: axisColor,
+            }}
+          />
 
           {scatterSets.map((set, idx) => (
             <Scatter

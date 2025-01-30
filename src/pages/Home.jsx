@@ -20,7 +20,7 @@ import {
   shortenIspData,
 } from "../utilities/commonFunctions";
 
-function Home() {
+function Home({ isDark }) {
   const [churnCount, setChurnCount] = useState(1);
 
   const {
@@ -34,7 +34,7 @@ function Home() {
     data: nodeDataResult,
     isLoading: nodeLoading,
     isError: nodeError,
-  } = useNodeData();
+  } = useNodeData(netData);
 
   const { data: totalBondOverTimeData = [], isLoading: totalBondLoading } =
     useBondData();
@@ -95,7 +95,6 @@ function Home() {
           <h2 className="font-bold text-2xl mx-3">Analytics Overview</h2>
         </div>
 
-        {/* Example pie charts */}
         <div className="flex flex-wrap mt-6 mb-4 items-stretch">
           <div className="w-full lg:w-1/2 px-2 mb-4 flex flex-col">
             <ModernPieChart
@@ -106,6 +105,7 @@ function Home() {
               legendPosition="right"
               showValueInLegend
               disclaimerText="Based on public IP address"
+              isDark={isDark}
             />
           </div>
 
@@ -132,7 +132,9 @@ function Home() {
               yAxisKey="bondValue"
               yAxisMax={200}
               xAxisLabel="Block Height"
-              yAxisLabel="Stake Amount"
+              yAxisLabel="Stake Amount (ᚱ) (Millions)"
+              convertToMillions
+              isDark={isDark}
             />
           </div>
           <div className="w-full lg:w-1/2 px-2 mb-4">
@@ -145,7 +147,9 @@ function Home() {
               yAxisKey="bondValue"
               yAxisMax={200}
               xAxisLabel="Block Height"
-              yAxisLabel="Bond Value"
+              yAxisLabel="Bond Value (ᚱ) (Millions)"
+              convertToMillions
+              isDark={isDark}
             />
           </div>
         </div>
@@ -161,17 +165,26 @@ function Home() {
             yAxisKey="price"
             yAxisMax={200}
             xAxisLabel="Date"
-            yAxisLabel="Price"
+            yAxisLabel="Price ($)"
+            isDark={isDark}
           />
         </div>
 
         {/* Leaderboard */}
         <div className="flex flex-wrap mt-6 mb-4">
           <div className="w-full lg:w-1/2 px-2 mb-4">
-            <Leaderboard type="top" title="Top 5 Performing Nodes" />
+            <Leaderboard
+              type="top"
+              title="Top 5 Performing Nodes"
+              isDark={isDark}
+            />
           </div>
           <div className="w-full lg:w-1/2 px-2 mb-4">
-            <Leaderboard type="bottom" title="Bottom 5 Performing Nodes" />
+            <Leaderboard
+              type="bottom"
+              title="Bottom 5 Performing Nodes"
+              isDark={isDark}
+            />
           </div>
         </div>
       </div>
