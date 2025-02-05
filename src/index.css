@@ -22,7 +22,6 @@
       background: rgba(255, 255, 255, 1) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
-      box-shadow: none !important;
     }
 
     .glass-card::before,
@@ -65,7 +64,26 @@
     background: rgba(255, 255, 255, 1) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .dark .glass-card,
+  .dark .glass-effect,
+  .dark .inner-glass-effect {
+    background: #324154 !important;
+    color: #f9fafb !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .dark .inner-glass-effect {
+    background: #1e3344 !important;
+    color: #f9fafb !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   .glass-card::before,
