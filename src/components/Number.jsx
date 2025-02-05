@@ -9,11 +9,11 @@ const Number = ({ number }) => {
         text-xl 
         sm:text-lg
         font-bold mr-5
-        text-[#28f3b0] bg-slate-700
+        text-[#28f3b0] bg-slate-700 dark:bg-slate-600
         rounded-full
         overflow-hidden
       "
-      style={{ minWidth: "2.5rem" }} // ensures a minimum width for multiple digits
+      style={{ minWidth: "2.5rem" }}
     >
       {number}
     </div>

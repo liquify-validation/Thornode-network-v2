@@ -39,8 +39,10 @@ function LeaderboardRow({ address, index, onAnalyticsClick }) {
   return (
     <div
       className="
-        flex items-center 
-        inner-glass-effect 
+        flex items-center
+        shadow-lg
+       bg-gray-100  
+        dark:bg-slate-700
         rounded-full 
         py-2 px-6 mx-8 mb-4
       "
