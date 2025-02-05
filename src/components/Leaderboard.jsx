@@ -5,11 +5,10 @@ import {
   ModernDivider,
   Modal,
   ModernScatterChart,
+  LeaderboardFilter,
+  LeaderboardRow,
 } from "../components";
-import LeaderboardFilter from "./LeaderboardFilter";
 import { useHistoricPerformers } from "../hooks/useHistoricPerformers";
-import LeaderboardRow from "./LeaderboardRow";
-// Import the position data hook
 import { useNodePositionData } from "../hooks/useNodePositionData";
 
 const Leaderboard = ({ title, type = "top", isDark }) => {

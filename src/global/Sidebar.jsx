@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -20,7 +19,8 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
     { name: "Thornodes", icon: ThorIcon, path: "/" },
     { name: "Home", icon: HomeIcon, path: "/" },
     { name: "Nodes", icon: NodesIcon, path: "/nodes" },
-    // ...
+    // { name: "Network", icon: NetworkIcon, path: "/network" },
+    // { name: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
   ];
 
   const toggleSidebar = () => {

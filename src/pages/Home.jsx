@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import {
   StatsCardSection,
@@ -8,7 +7,6 @@ import {
   LoadingSpinner,
 } from "../components";
 
-import { useHistoricPerformers } from "../hooks/useHistoricPerformers";
 import { useNetworkData } from "../hooks/useNetworkData";
 import { useNodeData } from "../hooks/useNodeData";
 import { useBondData } from "../hooks/useBondData";
@@ -21,8 +19,6 @@ import {
 } from "../utilities/commonFunctions";
 
 function Home({ isDark }) {
-  const [churnCount, setChurnCount] = useState(1);
-
   const {
     data: netData,
     isLoading: netLoading,
@@ -41,12 +37,6 @@ function Home({ isDark }) {
 
   const { data: maxEffectiveStakeData = [], isLoading: maxStakeLoading } =
     useMaxEffectiveStakeData();
-
-  const {
-    data: performerData,
-    isLoading: performersLoading,
-    isError: performerError,
-  } = useHistoricPerformers(churnCount);
 
   const {
     data: priceData = [],

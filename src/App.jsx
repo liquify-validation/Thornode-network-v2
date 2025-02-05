@@ -14,6 +14,12 @@ import MapBg from "./global/MapBg";
 import ScrollToTop from "./global/ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Config from "./pages/Config";
+import Churns from "./pages/Churns";
+import Vaults from "./pages/Vaults";
+import Runepool from "./pages/Runepool";
+import Stats from "./pages/Stats";
+import Voting from "./pages/Voting";
 
 function App() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -69,15 +75,9 @@ function App() {
                 <Route path="/" element={<Home isDark={isDark} />} />
                 <Route path="/nodes" element={<Nodes isDark={isDark} />} />
                 <Route path="/nodes/:tab" element={<Nodes />} />
-                <Route path="/network/*" element={<Network />} />
-                <Route path="/analytics" element={<Analytics />} />
+                {/* <Route path="/network/*" element={<Network />} />
+                <Route path="/analytics" element={<Analytics />} /> */}
 
-                {/* <Route path="/network/config" element={<Config />} />
-                <Route path="/network/churns" element={<Churns />} />
-                <Route path="/network/vaults" element={<Vaults />} />
-                <Route path="/network/runepool" element={<Runepool />} />
-                <Route path="/network/stats" element={<Stats />} />
-                <Route path="/network/voting" element={<Voting />} /> */}
                 <Route path="/contact" element={<Contact />} />
                 <Route
                   path="/nodes/report/:thornodeAddress"
