@@ -372,3 +372,108 @@ export const networkChurnsTableData = [
     duration: "3.46 days",
   },
 ];
+
+export const MAX_VOTES = 100;
+
+export const votingData = [
+  {
+    id: 1,
+    title: "Mimir Setting 1",
+    consensus: 60,
+    votesNeeded: 60,
+    options: [
+      { name: "Yes", value: 40 },
+      { name: "No", value: 15 },
+    ],
+  },
+  {
+    id: 2,
+    title: "Mimir Setting 2",
+    consensus: 75,
+    votesNeeded: 75,
+    options: [
+      { name: "Choice A", value: 25 },
+      { name: "Choice B", value: 10 },
+      { name: "Choice C", value: 15 },
+    ],
+  },
+  {
+    id: 3,
+    title: "Mimir Setting 3",
+    consensus: 50,
+    votesNeeded: 50,
+    options: [{ name: "SingleOption", value: 30 }],
+  },
+  {
+    id: 4,
+    title: "Gas Fee Param",
+    consensus: 66,
+    votesNeeded: 66,
+    options: [
+      { name: "Lower", value: 20 },
+      { name: "Increase", value: 30 },
+    ],
+  },
+  {
+    id: 5,
+    title: "Chain Pause/Resume",
+    consensus: 80,
+    votesNeeded: 80,
+    options: [
+      { name: "Pause", value: 30 },
+      { name: "Resume", value: 40 },
+    ],
+  },
+  {
+    id: 6,
+    title: "Network Upgrade X",
+    consensus: 55,
+    votesNeeded: 55,
+    options: [
+      { name: "Approve", value: 10 },
+      { name: "Reject", value: 5 },
+    ],
+  },
+  {
+    id: 7,
+    title: "Whitelist Asset",
+    consensus: 70,
+    votesNeeded: 70,
+    options: [
+      { name: "BTC", value: 25 },
+      { name: "ETH", value: 30 },
+      { name: "None", value: 5 },
+    ],
+  },
+  {
+    id: 8,
+    title: "Validator Slash Rule",
+    consensus: 50,
+    votesNeeded: 50,
+    options: [
+      { name: "Strict", value: 35 },
+      { name: "Lenient", value: 10 },
+    ],
+  },
+  {
+    id: 9,
+    title: "Block Size Increase",
+    consensus: 60,
+    votesNeeded: 60,
+    options: [
+      { name: "Yes", value: 50 },
+      { name: "No", value: 5 },
+    ],
+  },
+  {
+    id: 10,
+    title: "Custom Param Y",
+    consensus: 90,
+    votesNeeded: 90,
+    options: [
+      { name: "Option1", value: 40 },
+      { name: "Option2", value: 30 },
+      { name: "Option3", value: 10 },
+    ],
+  },
+];

@@ -42,6 +42,9 @@ import LeaderboardFilter from "./LeaderboardFilter";
 import ModernScatterChart from "./ModernScatterChart";
 import LeaderboardRow from "./LeaderboardRow";
 import BondProvidersTable from "./BondProvidersTable";
+import ModernBarChart from "./ModernBarChart";
+import VotingStatusFilter from "./VotingStatustFilter";
+import VotingTable from "./VotingTable";
 
 export {
   AnalyticsCard,
@@ -88,4 +91,7 @@ export {
   ModernScatterChart,
   LeaderboardRow,
   BondProvidersTable,
+  ModernBarChart,
+  VotingStatusFilter,
+  VotingTable,
 };

@@ -9,7 +9,6 @@ import {
   FavouriteIcon,
   UnfavouriteIcon,
 } from "../assets";
-import Popover from "./Popover";
 import { useNavigate } from "react-router-dom";
 import InfoPopover from "./InfoPopover";
 

@@ -17,9 +17,6 @@ const Pagination = ({
   setPageSize,
   pageIndex,
   pageSize,
-  expandTable,
-  onExpandChange,
-  hideExpandOption = false,
 }) => {
   const [localPageSize, setLocalPageSize] = useState(pageSize);
 
@@ -51,13 +48,6 @@ const Pagination = ({
     }
   };
 
-  function handleExpandToggle(e) {
-    const checked = e.target.checked;
-    if (onExpandChange) {
-      onExpandChange(checked);
-    }
-  }
-
   const pageNumbers = React.useMemo(() => {
     const totalPageCount = pageOptions.length;
     const currentPage = pageIndex;
@@ -75,13 +65,12 @@ const Pagination = ({
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-
     return pages;
   }, [pageIndex, pageOptions]);
 
   return (
-    <div className="flex items-center inner-glass-effect py-6 px-4 rounded-b-xl ">
-      <div className="flex items-center space-x-2 ">
+    <div className="flex items-center inner-glass-effect py-6 px-4 rounded-b-xl">
+      <div className="flex items-center space-x-2">
         <span>Show</span>
         <select
           className="border rounded p-1 bg-slate-500"
@@ -96,19 +85,9 @@ const Pagination = ({
           <option value="all">All</option>
         </select>
         <span>results per page</span>
-        {!hideExpandOption && (
-          <div className="pl-12">
-            <input
-              type="checkbox"
-              checked={expandTable}
-              onChange={handleExpandToggle}
-            />
-            <span>Expand Table</span>
-          </div>
-        )}
       </div>
 
-      <div className="flex items-center space-x-1 flex-grow justify-center ">
+      <div className="flex items-center space-x-1 flex-grow justify-center">
         <button
           onClick={() => gotoPage(0)}
           disabled={!canPreviousPage}
@@ -174,7 +153,7 @@ const Pagination = ({
         </button>
       </div>
 
-      <div className="w-32"></div>
+      <div className="w-32" />
     </div>
   );
 };
