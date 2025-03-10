@@ -64,12 +64,12 @@ import ChoopaIcon from "./choopa.png";
 import ZenLayerIcon from "./zenlayer.png";
 import DataCampIcon from "./datacamp.png";
 import HostingerIcon from "./Hostinger.png";
-import CogentIcon from "./cogent_icon.svg";
+import CogentIcon from "./cogent_logo.svg";
 import MicrosoftIcon from "./microsoft_icon.png";
-import OvhIcon from "./ovh_icon.png";
+import OvhIcon from "./ovh_logo.svg";
 import ConstantCompanyIcon from "./constant_icon.jpeg";
 import Level3Icon from "./level3_icon.png";
-import CloudzyIcon from "./cloudzy-light.svg";
+import CloudzyIcon from "./cloudzy_logo.svg";
 import EarthLinkIcon from "./earthlink_icon.svg";
 import AussieBroadbandIcon from "./aussiebroadband_icon.png";
 import ScaleawayIcon from "./scaleaway_icon.png";
@@ -92,6 +92,7 @@ import EndBondIcon from "./end_bond.svg";
 import MaxPositionIcon from "./max_position.svg";
 import ReportRewardsIcon from "./rewards.svg";
 import PositionAverageIcon from "./position_average.svg";
+import TimeWarpIcon from "./timewarp.jpeg";
 
 export {
   DayHighIcon,
@@ -188,4 +189,5 @@ export {
   MaxPositionIcon,
   ReportRewardsIcon,
   PositionAverageIcon,
+  TimeWarpIcon,
 };

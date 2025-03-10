@@ -15,10 +15,12 @@ export const processData = (
   const activeNodes = dataWithFavorites.filter(
     (node) => node.status === "Active"
   );
+  const canonicalVersion = (str = "") => str.trim().replace(/\u00A0/g, "");
+
   const standbyNodes = dataWithFavorites.filter(
     (node) =>
       (node.status === "Standby" || node.status === "Ready") &&
-      node.version === maxVersion
+      canonicalVersion(node.version) === canonicalVersion(maxVersion)
   );
 
   const activeStandbyAddresses = [

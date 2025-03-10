@@ -16,6 +16,7 @@ import {
   copyToClipboard,
   ispLogos,
   parseCoingeckoData,
+  cityToCountryMap,
 } from "../utilities/commonFunctions";
 import { getHaltWarning, getHaltsData } from "../utilities/getHaltWarning";
 
@@ -31,8 +32,6 @@ const NodesTable = ({
   maxChainHeights,
   globalData,
   isDark,
-  expandTable,
-  onExpandChange,
   currentTab,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -160,8 +159,17 @@ const NodesTable = ({
     );
   }, [data, searchTerm]);
 
+  // useEffect(() => {
+  //   console.log("Final table data:", filteredData);
+  // }, [filteredData]);
+
   const columns = React.useMemo(() => {
     return [
+      // {
+      //   Header: "#",
+      //   id: "rowIndex",
+      //   Cell: ({ row }) => row.index + 1,
+      // },
       {
         Header: "Nodes",
         accessor: "node_address",
@@ -195,7 +203,7 @@ const NodesTable = ({
       {
         Header: "Age",
         accessor: "age",
-        Cell: ({ value }) => `${value.toFixed(2)} days`,
+        Cell: ({ value }) => `${value.toFixed(2)}`,
       },
       {
         Header: "Action",
@@ -205,7 +213,7 @@ const NodesTable = ({
         Header: "ISP",
         accessor: "isp",
         Cell: ({ value }) => {
-          const ispName = value || "Unknown";
+          const ispName = value || "-";
           const logo = ispLogos[ispName];
 
           if (logo) {
@@ -215,7 +223,7 @@ const NodesTable = ({
                   <img
                     src={logo}
                     alt={ispName}
-                    className="mx-auto block w-5 h-5"
+                    className="mx-auto block w-6 h-6"
                   />
                 </InfoPopover>
               </div>
@@ -227,10 +235,28 @@ const NodesTable = ({
       },
       {
         Header: "Location",
-        accessor: "location",
+        accessor: (row) => row.location || row.country_code,
+        Cell: ({ row }) => {
+          const { location, country_code } = row.original;
+
+          const city = location || "";
+          const codeFromMap = cityToCountryMap[city] || null;
+
+          const finalCode = codeFromMap || country_code;
+
+          if (!finalCode) {
+            return location || "-";
+          }
+
+          return (
+            <InfoPopover title="City" text={city}>
+              <span>{finalCode}</span>
+            </InfoPopover>
+          );
+        },
       },
       {
-        Header: "Providers",
+        Header: "Bonders",
         accessor: (row) => row.bond_providers?.providers?.length || 0,
         Cell: ({ row }) => {
           const bondProvidersData = row.original.bond_providers;
@@ -247,7 +273,6 @@ const NodesTable = ({
           return (
             <span className="underline cursor-pointer" onClick={handleClick}>
               {providers.length}{" "}
-              {providers.length === 1 ? "Provider" : "Providers"}
             </span>
           );
         },
@@ -518,14 +543,14 @@ const NodesTable = ({
       <div
         key={`table-${currentTab}`}
         className={`
-       overflow-x-auto
        rounded-t-lg mt-8
-       ${expandTable ? "" : "overflow-y-auto max-h-[600px] scrollbar-custom"}
+       w-full
+       
      `}
       >
         <table
           {...getTableProps()}
-          className="min-w-full table-auto divide-y-4 text-center divide-gray-500 "
+          className="min-w-full  table-auto divide-y-4 text-center divide-gray-500"
         >
           <thead>
             {headerGroups.map((headerGroup) => {
@@ -545,7 +570,7 @@ const NodesTable = ({
                         {...restHeaderProps}
                         className={`
                           px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider
-                          ${expandTable ? "" : "sticky top-0 z-10"}
+                          
                         `}
                       >
                         {column.render("Header")}
@@ -565,7 +590,7 @@ const NodesTable = ({
           </thead>
           <tbody
             {...getTableBodyProps()}
-            className="divide-y-2 divide-gray-700 "
+            className="divide-y-2 divide-gray-700"
           >
             {page.map((row) => {
               prepareRow(row);
@@ -584,7 +609,7 @@ const NodesTable = ({
                       <td
                         key={cellKey}
                         {...restCellProps}
-                        className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-50"
+                        className="px-4 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
                       >
                         {cell.render("Cell")}
                       </td>
@@ -608,8 +633,6 @@ const NodesTable = ({
         setPageSize={setPageSize}
         pageIndex={pageIndex}
         pageSize={pageSize}
-        expandTable={expandTable}
-        onExpandChange={onExpandChange}
       />
 
       {showModal && (

@@ -28,12 +28,14 @@ import {
   ScaleawayIcon,
   AussieBroadbandIcon,
   EarthLinkIcon,
+  TimeWarpIcon,
 } from "../assets";
 
 export const ispLogos = {
   "Cogent Communications": CogentIcon,
   "Google LLC": GoogleIcon,
   DigitalOcean: DigitalOceanIcon,
+  DIGITALOCEAN: DigitalOceanIcon,
   "DigitalOcean, LLC": DigitalOceanIcon,
   "Hetzner Online GmbH": HetznerIcon,
   "Microsoft Corporation": MicrosoftAzureIcon,
@@ -42,8 +44,10 @@ export const ispLogos = {
   Amazon: AwsLogo,
   "Amazon Technologies Inc.": AwsLogo,
   "Amazon.com, Inc.": AwsLogo,
+  "Amazon.com": AwsLogo,
   "Level 3 Coummincations, Inc.": Level3Icon,
   "Level 3 Communications, Inc.	": Level3Icon,
+  "Level 3 Communications, Inc.": Level3Icon,
   "The Constant Company": ConstantCompanyIcon,
   "The Constant Company, LLC": ConstantCompanyIcon,
   "Comcast Cable Communications, LLC": ComCastIcon,
@@ -56,6 +60,7 @@ export const ispLogos = {
   "DataCamp Limited": DataCampIcon,
   "Datacamp Limited": DataCampIcon,
   "MEVSPACE sp. z o.o": MevSpaceIcon,
+  "MEVSPACE sp. z o.o.": MevSpaceIcon,
   "IPAX OG": IpaxIcon,
   "Online S.A.S.": ScaleawayIcon, //Scaleway
   "Aussie Broadband": AussieBroadbandIcon,
@@ -63,6 +68,7 @@ export const ispLogos = {
   Hostinger: HostingerIcon,
   "Hostinger International Limited": HostingerIcon,
   HOSTINGER: HostingerIcon,
+  "TIMEWARP IT Consulting GmbH": TimeWarpIcon,
 };
 
 export const chainIcons = {
@@ -344,6 +350,10 @@ export const ispMappings = {
     shortName: "MevSpace",
     icon: MevSpaceIcon,
   },
+  "MEVSPACE sp. z o.o.": {
+    shortName: "MevSpace",
+    icon: MevSpaceIcon,
+  },
   "IPAX OG": {
     shortName: "IPAX",
     icon: IpaxIcon,
@@ -374,10 +384,6 @@ export const ispMappings = {
   },
   "TIMEWARP IT Consulting GmbH": {
     shortName: "Timewarp",
-  },
-  "MEVSPACE sp. z o.o.": {
-    shortName: "MEVSPACE",
-    icon: MevSpaceIcon,
   },
 };
 
@@ -427,3 +433,37 @@ export function setCookie(name, value, days = 365) {
     value
   )}; expires=${date.toUTCString()}; path=/`;
 }
+
+export const cityToCountryMap = {
+  Adelaide: "AU",
+  "San Jose": "US",
+  Amsterdam: "NL",
+  "Santa Clara": "US",
+  Bengaluru: "IN",
+  Hollywood: "US",
+  Vienna: "AT",
+  Falkenstein: "DE",
+  Dublin: "IE",
+  Clifton: "US",
+  Warsaw: "PL",
+  Sydney: "AU",
+  Osaka: "JP",
+  Shinagawa: "JP",
+  Paris: "FR",
+  Melbourne: "AU",
+  Toronto: "CA",
+  Singapore: "SG",
+  Zaandam: "NL",
+  Helsinki: "FI",
+  "Council Bluffs": "US",
+  Lappeenranta: "FI",
+  "Frankfurt am Main": "DE",
+  Ashburn: "US",
+  Monroe: "US",
+  "North Charleston": "US",
+  "San Francisco": "US",
+  Nuremberg: "DE",
+  Roubaix: "FR",
+  Slough: "UK",
+  Bradenton: "US",
+};

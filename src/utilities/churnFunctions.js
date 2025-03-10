@@ -1,18 +1,19 @@
 export const findChurnIns = (standbyNodes) => {
   if (!standbyNodes.length) return [];
 
-  const over300 = standbyNodes.filter((node) => node.bond >= 30000000000000);
-
+  const over300 = standbyNodes.filter((n) => n.bond >= 30000000000000);
   const over300Sorted = over300.sort((a, b) => b.bond - a.bond);
 
-  const nodesToChurnIn = over300Sorted.slice(0, 5).map((node) => ({
+  const top5 = over300Sorted.slice(0, 5).map((node) => ({
     ...node,
     action: "Churn In",
   }));
 
-  const under300 = standbyNodes.filter((node) => node.bond < 30000000000000);
+  const restOver300 = over300Sorted.slice(5);
 
-  return [...nodesToChurnIn, ...under300];
+  const under300 = standbyNodes.filter((n) => n.bond < 30000000000000);
+
+  return [...top5, ...restOver300, ...under300];
 };
 
 export const findChurnOuts = (activeNodes, globalData) => {
@@ -24,7 +25,7 @@ export const findChurnOuts = (activeNodes, globalData) => {
     ...node,
     age:
       ((globalData.maxHeight - node.status_since) * secondsPerBlock) /
-      (60 * 60 * 24), // Convert seconds to days
+      (60 * 60 * 24),
   }));
 
   // Identify Oldest Node
