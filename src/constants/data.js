@@ -477,3 +477,271 @@ export const votingData = [
     ],
   },
 ];
+
+export const runepoolTableColumns = [
+  {
+    Header: "Asset",
+    accessor: "asset",
+  },
+  {
+    Header: "Price",
+    accessor: "price",
+  },
+  {
+    Header: "Balance",
+    accessor: "balance",
+  },
+  {
+    Header: "Valuation",
+    accessor: "valuation",
+  },
+  {
+    Header: "Trade Pool (%)",
+    accessor: "tradePoolPercentage",
+  },
+];
+
+export const runepoolTableData = [
+  {
+    asset: "BTC",
+    price: "$28,600",
+    balance: "100",
+    valuation: "$2,860,000",
+    tradePoolPercentage: "40%",
+  },
+  {
+    asset: "ETH",
+    price: "$1,800",
+    balance: "300",
+    valuation: "$540,000",
+    tradePoolPercentage: "20%",
+  },
+  {
+    asset: "AVAX",
+    price: "$15",
+    balance: "5,000",
+    valuation: "$75,000",
+    tradePoolPercentage: "10%",
+  },
+  {
+    asset: "BCH",
+    price: "$120",
+    balance: "500",
+    valuation: "$60,000",
+    tradePoolPercentage: "10%",
+  },
+  {
+    asset: "LTC",
+    price: "$90",
+    balance: "300",
+    valuation: "$27,000",
+    tradePoolPercentage: "5%",
+  },
+  {
+    asset: "USDT",
+    price: "$1.00",
+    balance: "50,000",
+    valuation: "$50,000",
+    tradePoolPercentage: "5%",
+  },
+  {
+    asset: "BNB",
+    price: "$300",
+    balance: "100",
+    valuation: "$30,000",
+    tradePoolPercentage: "5%",
+  },
+  {
+    asset: "USDC",
+    price: "$1.00",
+    balance: "20,000",
+    valuation: "$20,000",
+    tradePoolPercentage: "5%",
+  },
+];
+
+export const vaultsTableColumns = [
+  {
+    Header: "Status",
+    accessor: "status",
+  },
+  {
+    Header: "Vault",
+    accessor: "vaultName",
+  },
+  {
+    Header: "Favorite",
+    accessor: "favorite",
+  },
+  {
+    Header: "Age",
+    accessor: "age",
+  },
+  {
+    Header: "Height",
+    accessor: "height",
+  },
+  {
+    Header: "Chains",
+    accessor: "chains",
+  },
+  {
+    Header: "Nodes",
+    accessor: "nodes",
+  },
+  {
+    Header: "In",
+    accessor: "inValue",
+  },
+  {
+    Header: "Out",
+    accessor: "outValue",
+  },
+  {
+    Header: "Valuation",
+    accessor: "valuation",
+  },
+];
+
+export const vaultsTableData = [
+  {
+    id: 1,
+    status: "active",
+    vaultName: "Thor Vault #1",
+    age: "12d",
+    height: "730,000",
+    chains: "BTC, ETH",
+    nodes: "24",
+    inValue: "1,200",
+    outValue: "800",
+    valuation: "$50,000",
+  },
+  {
+    id: 2,
+    status: "retired",
+    vaultName: "Thor Vault #2",
+    age: "100d",
+    height: "600,000",
+    chains: "ETH",
+    nodes: "12",
+    inValue: "400",
+    outValue: "300",
+    valuation: "$18,000",
+  },
+  {
+    id: 3,
+    status: "active",
+    vaultName: "Thor Vault #3",
+    age: "5d",
+    height: "950,000",
+    chains: "BTC, AVAX",
+    nodes: "30",
+    inValue: "2,000",
+    outValue: "1,700",
+    valuation: "$75,000",
+  },
+  {
+    id: 4,
+    status: "retired",
+    vaultName: "Thor Vault #4",
+    age: "20d",
+    height: "660,000",
+    chains: "BCH",
+    nodes: "5",
+    inValue: "250",
+    outValue: "400",
+    valuation: "$12,000",
+  },
+];
+
+export const vaultDetailColumns = [
+  { Header: "Asset", accessor: "asset" },
+  { Header: "Address", accessor: "address" },
+  { Header: "Balance", accessor: "balance" },
+  { Header: "Price", accessor: "price" },
+  { Header: "Valuation", accessor: "valuation" },
+];
+
+export const vaultDetailMap = {
+  1: [
+    {
+      asset: "BTC",
+      address: "thor1vwqz5hhh5un28qlz6x5f8zczj39jqwel38q2kc",
+      balance: "2.0",
+      price: "$28,600",
+      valuation: "$57,200",
+    },
+    {
+      asset: "ETH",
+      address: "thor1h6h54d7jutljwt46qzt2w7nnyuswwv045kmshl",
+      balance: "50",
+      price: "$1,800",
+      valuation: "$90,000",
+    },
+  ],
+  2: [
+    {
+      asset: "ETH",
+      address: "thor1m45tc3uw4egzw9v2j39x47ds926ynfducvt9fx",
+      balance: "10",
+      price: "$1,800",
+      valuation: "$18,000",
+    },
+    {
+      asset: "BCH",
+      address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+      balance: "100",
+      price: "$120",
+      valuation: "$12,000",
+    },
+  ],
+  3: [
+    {
+      asset: "BTC",
+      address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+      balance: "5.0",
+      price: "$28,600",
+      valuation: "$143,000",
+    },
+    {
+      asset: "AVAX",
+      address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+      balance: "250",
+      price: "$15",
+      valuation: "$3,750",
+    },
+  ],
+  4: [
+    {
+      asset: "BCH",
+      address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+      balance: "200",
+      price: "$120",
+      valuation: "$24,000",
+    },
+  ],
+};
+
+export const vaultDetailData = [
+  {
+    asset: "BTC",
+    address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+    balance: "5.0",
+    price: "$28,600",
+    valuation: "$143,000",
+  },
+  {
+    asset: "ETH",
+    address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+    balance: "100",
+    price: "$1,800",
+    valuation: "$180,000",
+  },
+  {
+    asset: "USDC",
+    address: "thor12jrhy6mqxtff6utq4kkavtvmqz4qxtztxxnk4j",
+    balance: "2,000",
+    price: "$1.00",
+    valuation: "$2,000",
+  },
+];

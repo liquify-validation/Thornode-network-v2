@@ -3,18 +3,13 @@ import Box from "../ui/Box";
 import {
   LoadingSpinner,
   ModernDivider,
-  Modal,
-  ModernScatterChart,
   LeaderboardFilter,
   LeaderboardRow,
 } from "../components";
 import { useHistoricPerformers } from "../hooks/useHistoricPerformers";
-import { useNodePositionData } from "../hooks/useNodePositionData";
 
-const Leaderboard = ({ title, type = "top", isDark }) => {
+const Leaderboard = ({ title, type = "top", isDark, onAnalyticsClick }) => {
   const [churnCount, setChurnCount] = useState(1);
-  const [showChartModal, setShowChartModal] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const {
     data: performerData,
@@ -23,67 +18,10 @@ const Leaderboard = ({ title, type = "top", isDark }) => {
     error,
   } = useHistoricPerformers(churnCount);
 
-  const {
-    data: positionData,
-    isLoading: chartLoading,
-    isError: chartError,
-  } = useNodePositionData(selectedAddress);
-
   let list = [];
   if (performerData) {
     list = type === "top" ? performerData.topFive : performerData.bottomFive;
   }
-
-  const handleOpenChart = (address) => {
-    setSelectedAddress(address);
-    setShowChartModal(true);
-  };
-
-  const handleCloseChart = () => {
-    setShowChartModal(false);
-    setSelectedAddress(null);
-  };
-
-  const renderChartContent = () => {
-    if (!selectedAddress) {
-      return <div>No address selected</div>;
-    }
-    if (chartLoading) {
-      return <LoadingSpinner />;
-    }
-    if (chartError) {
-      return <div className="text-red-400">Error loading chart data</div>;
-    }
-    if (!positionData || positionData.length === 0) {
-      return <div>No chart data available</div>;
-    }
-
-    return (
-      <ModernScatterChart
-        data={positionData}
-        title={`Positions Over Time for ${selectedAddress}`}
-        xAxisKey="blockHeight"
-        yAxisKey="position"
-        scatterPoints={[
-          {
-            dataKey: "position",
-            name: "Position",
-            fillColor: "#F2AA3B",
-            shape: "circle",
-          },
-          {
-            dataKey: "maxPosition",
-            name: "Max Position",
-            fillColor: "#C45985",
-            shape: "circle",
-          },
-        ]}
-        xAxisLabel="Block Height"
-        yAxisLabel="Position"
-        isDark={isDark}
-      />
-    );
-  };
 
   return (
     <Box className="chart-card pt-8 pb-16">
@@ -105,15 +43,11 @@ const Leaderboard = ({ title, type = "top", isDark }) => {
               key={address}
               address={address}
               index={index}
-              onAnalyticsClick={() => handleOpenChart(address)}
+              onAnalyticsClick={() => onAnalyticsClick(address)}
             />
           ))
         )}
       </div>
-
-      {showChartModal && (
-        <Modal onClose={handleCloseChart}>{renderChartContent()}</Modal>
-      )}
     </Box>
   );
 };

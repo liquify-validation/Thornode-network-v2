@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -14,15 +14,10 @@ import MapBg from "./global/MapBg";
 import ScrollToTop from "./global/ScrollToTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Config from "./pages/Config";
-import Churns from "./pages/Churns";
-import Vaults from "./pages/Vaults";
-import Runepool from "./pages/Runepool";
-import Stats from "./pages/Stats";
-import Voting from "./pages/Voting";
+import Leaderboards from "./pages/Leaderboards";
 
 function App() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -34,6 +29,15 @@ function App() {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
+    }
+
+    const match = document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("sidebarExpanded="));
+
+    if (match) {
+      const cookieValue = match.split("=")[1];
+      setIsExpanded(cookieValue === "true");
     }
   }, []);
 
@@ -49,6 +53,15 @@ function App() {
     }
   };
 
+  const handleToggleSidebar = () => {
+    setIsExpanded((prev) => {
+      const newVal = !prev;
+      document.cookie = `sidebarExpanded=${newVal}; path=/; max-age=31536000`;
+
+      return newVal;
+    });
+  };
+
   return (
     <Router>
       <ScrollToTop />
@@ -56,7 +69,7 @@ function App() {
       <div className="flex relative">
         <Sidebar
           isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
+          onToggleSidebar={handleToggleSidebar}
           isDark={isDark}
           onToggleTheme={handleToggleTheme}
         />
@@ -76,7 +89,8 @@ function App() {
                 <Route path="/nodes" element={<Nodes isDark={isDark} />} />
                 <Route path="/nodes/:tab" element={<Nodes />} />
                 {/* <Route path="/network/*" element={<Network />} />
-                <Route path="/analytics" element={<Analytics />} /> */}
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/leaderboards" element={<Leaderboards />} /> */}
 
                 <Route path="/contact" element={<Contact />} />
                 <Route
@@ -91,7 +105,7 @@ function App() {
 
       <Footer />
 
-      <ToastContainer />
+      <ToastContainer position="top-center" />
     </Router>
   );
 }

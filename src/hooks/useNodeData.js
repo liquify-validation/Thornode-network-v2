@@ -123,6 +123,7 @@ export function useNodeData(globalData) {
   return useQuery({
     queryKey: ["nodeData"],
     queryFn: () => fetchAndProcessNodes(globalData),
+    enabled: !!globalData,
     staleTime: 60_000,
     refetchInterval: 60_000,
   });

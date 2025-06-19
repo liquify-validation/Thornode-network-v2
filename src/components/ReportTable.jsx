@@ -1,5 +1,6 @@
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
+import { DownArrow, UpArrow } from "../assets";
 
 const ReportTable = ({ data }) => {
   const columns = React.useMemo(
@@ -74,12 +75,17 @@ const ReportTable = ({ data }) => {
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                     className="px-6 py-3 text-left text-md text-gray-800 dark:text-gray-50 tracking-wider inner-glass-effect"
                   >
-                    {column.render("Header")}
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? " 🔽"
-                        : " 🔼"
-                      : ""}
+                    <div className="flex items-center justify-center">
+                      {column.render("Header")}
+
+                      {column.isSorted && (
+                        <img
+                          src={column.isSortedDesc ? UpArrow : DownArrow}
+                          alt="Sort Arrow"
+                          className="w-4 h-4 ml-1 inline-block"
+                        />
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>

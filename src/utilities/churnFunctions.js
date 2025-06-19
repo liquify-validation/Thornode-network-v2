@@ -1,62 +1,78 @@
-export const findChurnIns = (standbyNodes) => {
+const DESIRED_VALIDATOR_SET = Number(
+  import.meta.env.VITE_DESIRED_VALIDATOR_SET
+);
+const NUMBER_OF_NEW_NODES_PER_CHURN = Number(
+  import.meta.env.VITE_NUMBER_OF_NEW_NODES_PER_CHURN
+);
+
+export const findChurnIns = (
+  standbyNodes,
+  currentActiveCount,
+  churnOutCount
+) => {
   if (!standbyNodes.length) return [];
 
-  const over300 = standbyNodes.filter((n) => n.bond >= 30000000000000);
-  const over300Sorted = over300.sort((a, b) => b.bond - a.bond);
+  const hardCapNext = Math.min(
+    DESIRED_VALIDATOR_SET,
+    currentActiveCount + NUMBER_OF_NEW_NODES_PER_CHURN
+  );
 
-  const top5 = over300Sorted.slice(0, 5).map((node) => ({
-    ...node,
+  const churnInLimit = Math.max(
+    0,
+    hardCapNext - (currentActiveCount - churnOutCount)
+  );
+
+  const overMinBond = standbyNodes
+    .filter((n) => n.bond >= 30_000_000_000_000)
+    .sort((a, b) => b.bond - a.bond);
+
+  const churnIns = overMinBond.slice(0, churnInLimit).map((n) => ({
+    ...n,
     action: "Churn In",
   }));
 
-  const restOver300 = over300Sorted.slice(5);
+  const rest = standbyNodes
+    .filter((n) => !churnIns.some((c) => c.node_address === n.node_address))
+    .map((n) => ({ ...n, action: "—" }));
 
-  const under300 = standbyNodes.filter((n) => n.bond < 30000000000000);
-
-  return [...top5, ...restOver300, ...under300];
+  return [...churnIns, ...rest];
 };
 
 export const findChurnOuts = (activeNodes, globalData) => {
-  if (!activeNodes.length) return [];
+  if (!activeNodes.length) return { nodes: [], churnOutCount: 0 };
 
-  const secondsPerBlock = parseFloat(globalData.secondsPerBlock);
+  const secsPerBlock = parseFloat(globalData.secondsPerBlock);
 
-  const nodesWithAge = activeNodes.map((node) => ({
-    ...node,
-    age:
-      ((globalData.maxHeight - node.status_since) * secondsPerBlock) /
-      (60 * 60 * 24),
+  const nodesWithAge = activeNodes.map((n) => ({
+    ...n,
+    age: ((globalData.maxHeight - n.status_since) * secsPerBlock) / 86400,
   }));
 
-  // Identify Oldest Node
-  const oldestNode = [...nodesWithAge].sort((a, b) => b.age - a.age)[0];
-  if (oldestNode) oldestNode.action = "Oldest";
-
-  // Identify Node with Smallest Bond
-  const smallestBondNode = [...nodesWithAge].sort((a, b) => a.bond - b.bond)[0];
-  if (smallestBondNode) smallestBondNode.action = "Smallest Bond";
-
-  // Identify Worst Performer (based on score)
+  const oldest = [...nodesWithAge].sort((a, b) => b.age - a.age)[0];
+  const smallestBond = [...nodesWithAge].sort((a, b) => a.bond - b.bond)[0];
   const worstPerformer = [...nodesWithAge].sort((a, b) => a.score - b.score)[0];
-  if (worstPerformer) worstPerformer.action = "Worst Performer";
 
-  // Calculate Bad Validator Redline
-  const greater100Slashes = nodesWithAge.filter(
-    (node) => node.slash_points > 100
-  );
-  const totalScore = greater100Slashes.reduce(
-    (sum, node) => sum + parseFloat(node.score || 0),
-    0
-  );
-  const averageScore = totalScore / (greater100Slashes.length || 1);
-  const validatorLine = averageScore / globalData.BadValidatorRedline;
+  const forced = [oldest, smallestBond, worstPerformer]
+    .filter(Boolean)
+    .reduce((acc, node, idx) => {
+      const label = ["Oldest", "Smallest Bond", "Worst Performer"][idx];
+      if (!acc.some((n) => n.node_address === node.node_address)) {
+        acc.push({ ...node, action: label });
+      }
+      return acc;
+    }, []);
 
-  const nodesWithBadRedline = nodesWithAge.map((node) => {
-    if (parseFloat(node.score || 0) < validatorLine) {
-      return { ...node, action: "Bad Redline" };
-    }
-    return node;
+  nodesWithAge
+    .filter((n) => n.leave)
+    .forEach((n) => {
+      if (!forced.some((x) => x.node_address === n.node_address))
+        forced.push({ ...n, action: "Requested Leave" });
+    });
+
+  const annotated = activeNodes.map((n) => {
+    const flagged = forced.find((f) => f.node_address === n.node_address);
+    return flagged ? flagged : { ...n, action: "—" };
   });
 
-  return nodesWithBadRedline;
+  return { nodes: annotated, churnOutCount: forced.length };
 };

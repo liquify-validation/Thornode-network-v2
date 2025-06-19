@@ -1,42 +1,37 @@
-// components/VotingTable.js
 import React, { useMemo } from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 
 import Box from "../ui/Box";
 import ModernDivider from "./ModernDivider";
+import { DownArrow, UpArrow } from "../assets";
 
 const VotingTable = ({ data, title, maxVotes }) => {
-  // build the columns
   const columns = useMemo(() => {
     return [
       {
         Header: "Vote",
-        accessor: "title", // e.g. "Mimir Setting 1"
+        accessor: "title",
       },
       {
         Header: "Result",
-        accessor: "status", // e.g. "passed", "in_progress"
+        accessor: "status",
         Cell: ({ value }) => {
-          // if value === 'passed', show "Passed"; else "In Progress"
           return value === "passed" ? "Passed" : "In Progress";
         },
       },
       {
         Header: "Vote Poll",
-        accessor: (row) => row, // we'll pass entire row to custom cell
+        accessor: (row) => row,
         Cell: ({ value: rowData }) => {
-          // rowData has shape { title, consensus, votesNeeded, options: [...], etc. }
           const totalVotes = rowData.options.reduce(
             (sum, opt) => sum + opt.value,
             0
           );
           const missingVotes = maxVotes - totalVotes;
-          // compute percentage => (total / maxVotes) * 100
           const percentage = (totalVotes / maxVotes) * 100;
 
           return (
             <div className="flex flex-col items-start">
-              {/* This line: "x / maxVotes" plus progress bar */}
               <div className="w-full mb-1">
                 <span className="mr-2 text-sm">
                   {totalVotes}/{maxVotes} ({percentage.toFixed(1)}%)
@@ -52,7 +47,6 @@ const VotingTable = ({ data, title, maxVotes }) => {
                 </div>
               </div>
 
-              {/* "Not Voted" in red + number of missing */}
               {missingVotes > 0 && (
                 <div className="text-red-500 text-sm">
                   Not Voted: {missingVotes}
@@ -65,15 +59,8 @@ const VotingTable = ({ data, title, maxVotes }) => {
     ];
   }, [maxVotes]);
 
-  // React Table Setup
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    // ... pagination stuff if you need it
-  } = useTable({ columns, data }, useSortBy, usePagination);
+  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } =
+    useTable({ columns, data }, useSortBy, usePagination);
 
   return (
     <Box className="p-6">
@@ -100,14 +87,17 @@ const VotingTable = ({ data, title, maxVotes }) => {
                         {...columnProps}
                         className="px-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] tracking-wider"
                       >
-                        {column.render("Header")}
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? " 🔽"
-                              : " 🔼"
-                            : ""}
-                        </span>
+                        <div className="flex items-center justify-center">
+                          {column.render("Header")}
+
+                          {column.isSorted && (
+                            <img
+                              src={column.isSortedDesc ? UpArrow : DownArrow}
+                              alt="Sort Arrow"
+                              className="w-4 h-4 ml-1 inline-block"
+                            />
+                          )}
+                        </div>
                       </th>
                     );
                   })}

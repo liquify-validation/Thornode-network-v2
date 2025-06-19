@@ -100,6 +100,7 @@ export const getData = async () => {
       "AVAX",
       "BSC",
       "BASE",
+      "XRP",
     ];
     const maxChainHeights = chains.reduce((acc, chain) => {
       acc[chain] = getMaxHeightForChain(observeChainsData, chain);
@@ -121,7 +122,7 @@ export const getData = async () => {
   }
 };
 
-export function getCountriesData(nodes) {
+export function getCountriesData(nodes = []) {
   const countryMap = {};
 
   nodes.forEach((node) => {
@@ -129,9 +130,9 @@ export function getCountriesData(nodes) {
     countryMap[country] = (countryMap[country] || 0) + 1;
   });
 
-  return Object.keys(countryMap).map((country) => ({
+  return Object.entries(countryMap).map(([country, value]) => ({
     name: country,
-    value: countryMap[country],
+    value,
   }));
 }
 

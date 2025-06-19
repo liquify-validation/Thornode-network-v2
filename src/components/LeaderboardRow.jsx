@@ -3,53 +3,25 @@ import { AnalyticsLeaderboardIcon, CopyIcon } from "../assets";
 import { copyToClipboard } from "../utilities/commonFunctions";
 import Number from "./Number";
 import InfoPopover from "./InfoPopover";
-import useIsOverflowing from "../hooks/useIsOverflowing";
 
 function LeaderboardRow({ address, index, onAnalyticsClick }) {
-  const { ref, isOverflow } = useIsOverflowing(address);
-
-  let AddressComponent;
-  if (isOverflow) {
-    AddressComponent = (
-      <InfoPopover title="Node Address" text={address}>
-        <div
-          ref={ref}
-          className="
-            max-w-[150px] 
-            overflow-hidden 
-            whitespace-nowrap 
-            text-ellipsis 
-            direction-rtl 
-            text-left
-          "
-          style={{ direction: "rtl", textAlign: "left" }}
-        >
-          {address}
-        </div>
-      </InfoPopover>
-    );
-  } else {
-    AddressComponent = (
-      <div ref={ref} className="max-w-[150px] overflow-hidden">
-        {address}
-      </div>
-    );
-  }
-
   return (
     <div
       className="
         flex items-center
         shadow-lg
-       bg-gray-100  
+        bg-gray-100  
         dark:bg-slate-700
         rounded-full 
         py-2 px-6 mx-8 mb-4
       "
     >
       <Number number={index + 1} />
+
       <div className="flex-grow text-base text-gray-700 dark:text-gray-50">
-        {AddressComponent}
+        <InfoPopover title="Node Address" text={address}>
+          {address.slice(-4)}
+        </InfoPopover>
       </div>
 
       <button

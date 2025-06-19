@@ -4,15 +4,11 @@ import Modal from "./Modal";
 import Pagination from "./Pagination";
 import { copyToClipboard } from "../utilities/commonFunctions";
 import InfoPopover from "./InfoPopover";
+import { DownArrow, UpArrow } from "../assets";
 
 function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
+    document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -25,15 +21,13 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
   const tableData = useMemo(() => {
     return providersData.map((prov) => {
       const bondVal = Number(prov.bond);
-      const last4 = prov.bond_address.slice(-4);
-      const percent =
-        totalBond > 0 ? ((bondVal / totalBond) * 100).toFixed(2) : "0.00";
+      const numericPercent = totalBond > 0 ? (bondVal / totalBond) * 100 : 0;
       const bondRune = bondVal / 1e8;
 
       return {
         address: prov.bond_address,
-        last4,
-        percent,
+        last4: prov.bond_address.slice(-4),
+        percent: numericPercent,
         bondRune,
       };
     });
@@ -44,6 +38,7 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
       {
         Header: "Node Address",
         accessor: "address",
+        sortType: "basic",
         Cell: ({ value, row }) => {
           const shortText = row.original.last4;
           return (
@@ -53,18 +48,17 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
                 style={{ cursor: "pointer", textDecoration: "underline" }}
                 title="Click to copy"
               >
-                ...{shortText}
+                {shortText}
               </span>
             </InfoPopover>
           );
         },
-        sortType: "basic",
       },
       {
         Header: "Percentage",
         accessor: "percent",
         sortType: "basic",
-        Cell: ({ value }) => `${value}%`,
+        Cell: ({ value }) => `${value.toFixed(2)}%`,
       },
       {
         Header: "Bond (RUNE)",
@@ -108,66 +102,82 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-xl font-bold text-white mb-4">Bond Providers</h2>
-      <div className="overflow-x-auto overflow-y-auto max-h-[400px] scrollbar-custom">
-        <table
-          {...getTableProps()}
-          className="min-w-full table-auto divide-y-2 divide-gray-500 rounded-none text-left glass-effect"
-        >
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => {
-                  const headerProps = column.getHeaderProps(
-                    column.getSortByToggleProps()
-                  );
-                  return (
-                    <th
-                      {...headerProps}
-                      className="px-4 py-2 bg-gray-200 dark:bg-[#1e3344] text-gray-700 dark:text-gray-50 sticky top-0 z-10"
-                    >
-                      {column.render("Header")}
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " 🔽"
-                          : " 🔼"
-                        : ""}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()} className="divide-y divide-gray-600">
-            {page.map((row) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} className="hover:bg-[#4dc89f]">
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()} className="px-4 py-2">
-                      {cell.render("Cell")}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <div className="bg-gray-800 rounded-lg p-4">
+        <h2 className="text-xl font-bold text-white mb-4">Bond Providers</h2>
 
-      <Pagination
-        canPreviousPage={canPreviousPage}
-        canNextPage={canNextPage}
-        pageOptions={pageOptions}
-        pageCount={pageCount}
-        gotoPage={gotoPage}
-        nextPage={nextPage}
-        previousPage={previousPage}
-        setPageSize={setPageSize}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-        hideExpandOption
-      />
+        <div className="bg-gray-700 rounded p-0 max-h-[600px] overflow-y-auto overflow-x-auto scrollbar-custom">
+          <table
+            {...getTableProps()}
+            className="min-w-full table-auto divide-y-2 divide-gray-500 text-left"
+          >
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => {
+                    const headerProps = column.getHeaderProps(
+                      column.getSortByToggleProps()
+                    );
+                    return (
+                      <th
+                        {...headerProps}
+                        className="px-4 py-4 bg-gray-200 dark:bg-[#1e3344] text-gray-700 dark:text-gray-50 sticky top-0 z-10"
+                      >
+                        <div className="flex items-left">
+                          {column.render("Header")}
+
+                          {column.isSorted && (
+                            <img
+                              src={column.isSortedDesc ? UpArrow : DownArrow}
+                              alt="Sort Arrow"
+                              className="w-4 h-4 ml-1 inline-block"
+                            />
+                          )}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody
+              {...getTableBodyProps()}
+              className="divide-y divide-gray-600"
+            >
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} className="hover:bg-[#4dc89f]">
+                    {row.cells.map((cell) => (
+                      <td
+                        {...cell.getCellProps()}
+                        className="px-4 py-2 text-white"
+                      >
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <Pagination
+            canPreviousPage={canPreviousPage}
+            canNextPage={canNextPage}
+            pageOptions={pageOptions}
+            pageCount={pageCount}
+            gotoPage={gotoPage}
+            nextPage={nextPage}
+            previousPage={previousPage}
+            setPageSize={setPageSize}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            hideExpandOption
+          />
+        </div>
+      </div>
     </Modal>
   );
 }

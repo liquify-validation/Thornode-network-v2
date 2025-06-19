@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useTable, useSortBy } from "react-table";
 import { Number, ModernDivider, Pagination } from "../components";
+import { DownArrow, UpArrow } from "../assets";
 
 const NetworkTable = ({ columns, data, title }) => {
   const tableInstance = useTable(
@@ -62,13 +63,13 @@ const NetworkTable = ({ columns, data, title }) => {
         <div className="overflow-x-auto">
           <table
             {...getTableProps()}
-            className="min-w-full divide-y-4 divide-gray-700"
+            className="min-w-full divide-y-2 divide-gray-800"
           >
             <thead>
               {headerGroups.map((headerGroup) => (
                 <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
                   <th
-                    className="px-2 py-3 text-left tracking-wider"
+                    className="px-2 py-3  tracking-wider"
                     style={{ width: "10%" }}
                   ></th>
                   {headerGroup.headers.map((column) => (
@@ -77,14 +78,17 @@ const NetworkTable = ({ columns, data, title }) => {
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       className="px-6 py-3 text-left text-md font-semibold text-[#28F3B0] tracking-wider pb-8"
                     >
-                      {column.render("Header")}
-                      <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? " 🔽"
-                            : " 🔼"
-                          : ""}
-                      </span>
+                      <div className="flex items-center justify-center">
+                        {column.render("Header")}
+
+                        {column.isSorted && (
+                          <img
+                            src={column.isSortedDesc ? UpArrow : DownArrow}
+                            alt="Sort Arrow"
+                            className="w-4 h-4 ml-1 inline-block"
+                          />
+                        )}
+                      </div>
                     </th>
                   ))}
                 </tr>
@@ -92,7 +96,7 @@ const NetworkTable = ({ columns, data, title }) => {
             </thead>
             <tbody
               {...getTableBodyProps()}
-              className="divide-y-4 divide-gray-700"
+              className="divide-y-2 divide-gray-800 text-left"
             >
               {currentRows.map((row, i) => {
                 prepareRow(row);
