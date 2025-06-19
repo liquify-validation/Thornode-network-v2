@@ -6,8 +6,6 @@ import {
   ExploreIcon,
   ThornodeApiIcon,
   IpAddressIcon,
-  FavouriteIcon,
-  UnfavouriteIcon,
 } from "../assets";
 import { useNavigate } from "react-router-dom";
 import InfoPopover from "./InfoPopover";
@@ -16,16 +14,6 @@ const TableIcons = ({ node, onOpenChart }) => {
   const { isFavorite, addToFavorites, removeFromFavorites } =
     useContext(GlobalDataContext);
   const navigate = useNavigate();
-
-  const favorite = isFavorite(node.node_address);
-
-  const handleFavoriteClick = () => {
-    if (favorite) {
-      removeFromFavorites(node.node_address);
-    } else {
-      addToFavorites(node.node_address);
-    }
-  };
 
   const handleCopyIpAddress = () => {
     navigator.clipboard
@@ -48,6 +36,7 @@ const TableIcons = ({ node, onOpenChart }) => {
           onClick={() => onOpenChart(node.node_address, "position")}
         />
       </InfoPopover>
+
       <InfoPopover title="Generate Report">
         <img
           src={ReportIcon}
@@ -58,6 +47,7 @@ const TableIcons = ({ node, onOpenChart }) => {
           }}
         />
       </InfoPopover>
+
       <InfoPopover title="Explore Node">
         <a
           href={`https://viewblock.io/thorchain/address/${node.node_address}`}
@@ -71,6 +61,7 @@ const TableIcons = ({ node, onOpenChart }) => {
           />
         </a>
       </InfoPopover>
+
       <InfoPopover title="Thornode API">
         <a
           href={`https://thornode.ninerealms.com/thorchain/node/${node.node_address}`}
@@ -95,13 +86,6 @@ const TableIcons = ({ node, onOpenChart }) => {
           />
         </InfoPopover>
       </div>
-
-      <img
-        src={favorite ? FavouriteIcon : UnfavouriteIcon}
-        alt="Favorite"
-        className="w-5 h-5 cursor-pointer invert dark:invert-0"
-        onClick={handleFavoriteClick}
-      />
     </div>
   );
 };

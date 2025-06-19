@@ -100,7 +100,17 @@ export function processNodes(rawNodes, globalData) {
 }
 
 export function computeMaxChainHeights(nodes) {
-  const chains = ["BTC", "ETH", "LTC", "BCH", "DOGE", "AVAX", "BSC", "BASE"];
+  const chains = [
+    "BTC",
+    "ETH",
+    "LTC",
+    "BCH",
+    "DOGE",
+    "AVAX",
+    "BSC",
+    "BASE",
+    "XRP",
+  ];
   const observeChainsData = nodes.map((n) => n.observe_chains).filter(Boolean);
 
   const acc = {};

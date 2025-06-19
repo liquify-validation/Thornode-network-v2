@@ -2,30 +2,36 @@ import React, { useState } from "react";
 import Box from "../ui/Box";
 import ModernDivider from "./ModernDivider";
 
-const Filter = ({ allColumns, onClose }) => {
-  const initialVisibility = allColumns.reduce((acc, col) => {
-    acc[col.id] = col.isVisible !== false;
-    return acc;
-  }, {});
+const Filter = ({ allColumns, initialHidden = [], onSave, onClose }) => {
+  const [columnVisibility, setColumnVisibility] = useState(() =>
+    allColumns.reduce((acc, col) => {
+      const visible =
+        !initialHidden.includes(col.id) && col.isVisible !== false;
+      acc[col.id] = visible;
+      return acc;
+    }, {})
+  );
 
-  const [columnVisibility, setColumnVisibility] = useState(initialVisibility);
-
-  const handleCheckboxChange = (colId) => {
-    setColumnVisibility((prev) => ({
-      ...prev,
-      [colId]: !prev[colId],
-    }));
-  };
+  const toggle = (id) =>
+    setColumnVisibility((vis) => ({ ...vis, [id]: !vis[id] }));
 
   const handleSave = () => {
     allColumns.forEach((col) => {
       const shouldBeVisible = columnVisibility[col.id];
       col.toggleHidden?.(!shouldBeVisible);
     });
+
+    if (onSave) {
+      const newHidden = Object.entries(columnVisibility)
+        .filter(([, visible]) => !visible)
+        .map(([id]) => id);
+      onSave(newHidden);
+    }
+
     onClose?.();
   };
 
-  const filteredColumns = allColumns?.filter((col) => !col.icons);
+  const filteredColumns = allColumns.filter((c) => !c.icons);
 
   return (
     <Box className="chart-card pt-8 pb-4 ">
@@ -33,12 +39,12 @@ const Filter = ({ allColumns, onClose }) => {
       <ModernDivider />
 
       <div className="mt-6 grid grid-cols-2 gap-4 ml-8">
-        {filteredColumns?.map((col) => (
+        {filteredColumns.map((col) => (
           <label key={col.id} className="flex items-center cursor-pointer">
             <input
               type="checkbox"
               checked={columnVisibility[col.id] ?? true}
-              onChange={() => handleCheckboxChange(col.id)}
+              onChange={() => toggle(col.id)}
               className="form-checkbox h-4 w-4 text-[#28f3b0]"
             />
             <span className="ml-2">{col.Header || col.id}</span>

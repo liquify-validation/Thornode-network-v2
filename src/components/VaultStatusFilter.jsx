@@ -1,42 +1,40 @@
 import React from "react";
 
-function VotingStatusFilter({ currentTab, onTabChange }) {
+const VaultStatusFilter = ({ statusFilter, onChange }) => {
   return (
     <div className="flex">
       <button
-        onClick={() => onTabChange("all")}
+        onClick={() => onChange("all")}
         className={`px-4 py-2 rounded-l-xl rounded-r-none ${
-          currentTab === "all"
+          statusFilter === "all"
             ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
             : "inner-glass-effect text-gray-800 dark:text-gray-50"
         }`}
       >
         All
       </button>
-
       <button
-        onClick={() => onTabChange("in_progress")}
+        onClick={() => onChange("active")}
         className={`px-4 py-2 ${
-          currentTab === "in_progress"
+          statusFilter === "active"
             ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
             : "inner-glass-effect text-gray-800 dark:text-gray-50 rounded-none"
         }`}
       >
-        In Progress
+        Active
       </button>
-
       <button
-        onClick={() => onTabChange("passed")}
+        onClick={() => onChange("retired")}
         className={`px-4 py-2 rounded-r-xl rounded-l-none ${
-          currentTab === "passed"
+          statusFilter === "retired"
             ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
             : "inner-glass-effect text-gray-800 dark:text-gray-50"
         }`}
       >
-        Passed
+        Retired
       </button>
     </div>
   );
-}
+};
 
-export default VotingStatusFilter;
+export default VaultStatusFilter;

@@ -1,6 +1,8 @@
-function ModernDivider() {
+import React from "react";
+
+function ModernDivider({ mt = "mt-4", mb = "mb-12", ml = "ml-8" }) {
   return (
-    <div className="divider mt-4 mb-12 ml-8">
+    <div className={`divider ${mt} ${mb} ${ml}`}>
       <div className="thick-line"></div>
       <div className="gap"></div>
       <div className="thin-line">

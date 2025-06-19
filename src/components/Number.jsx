@@ -5,7 +5,7 @@ const Number = ({ number }) => {
     <div
       className="
         flex items-center justify-center
-        w-10 h-10
+        w-8 h-8
         text-xl 
         sm:text-lg
         font-bold mr-5
@@ -13,7 +13,7 @@ const Number = ({ number }) => {
         rounded-full
         overflow-hidden
       "
-      style={{ minWidth: "2.5rem" }}
+      style={{ minWidth: "2rem" }}
     >
       {number}
     </div>

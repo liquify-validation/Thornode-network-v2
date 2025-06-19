@@ -11,6 +11,8 @@ import {
 } from "recharts";
 import Box from "../ui/Box";
 import ModernDivider from "./ModernDivider";
+import ExportCSVButton from "./ExportCSVButton";
+import { DownloadIcon } from "../assets";
 
 const ModernLineChart = ({
   data,
@@ -66,7 +68,14 @@ const ModernLineChart = ({
   return (
     <Box className="chart-card pt-8 pb-10 px-12">
       <h2 className="font-semibold text-md ml-8">{title}</h2>
-      <ModernDivider />
+      <ModernDivider mb={0} />
+      <div className="flex justify-end mb-4 pt-0 mr-5">
+        <ExportCSVButton
+          data={data}
+          filename={`${title.replace(/\s+/g, "_")}.csv`}
+          iconSrc={DownloadIcon}
+        />
+      </div>
 
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart

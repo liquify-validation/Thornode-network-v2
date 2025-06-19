@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { votingData, MAX_VOTES } from "../constants/data";
 import { ModernBarChart, VotingStatusFilter, VotingTable } from "../components";
 
+// TODO - Add a search / dropdown filter to filter votes by node address
+
 function Voting() {
   const [currentTab, setCurrentTab] = useState("all");
 
@@ -17,7 +19,6 @@ function Voting() {
       const total = item.options.reduce((sum, opt) => sum + opt.value, 0);
       const missing = MAX_VOTES - total;
 
-      // Build an object with each option name as a key
       const optionsObject = item.options.reduce((acc, opt) => {
         acc[opt.name] = opt.value;
         return acc;
@@ -51,7 +52,7 @@ function Voting() {
         maxVotes={MAX_VOTES}
         title="Mimir Votes"
       />
-      <div className="mt-8">
+      <div className="mt-8 mb-8">
         <VotingStatusFilter
           currentTab={currentTab}
           onTabChange={setCurrentTab}

@@ -45,6 +45,8 @@ import BondProvidersTable from "./BondProvidersTable";
 import ModernBarChart from "./ModernBarChart";
 import VotingStatusFilter from "./VotingStatustFilter";
 import VotingTable from "./VotingTable";
+import NodeSearchBar from "./NodeSearchBar";
+import VaultStatusFilter from "./VaultStatusFilter";
 
 export {
   AnalyticsCard,
@@ -94,4 +96,6 @@ export {
   ModernBarChart,
   VotingStatusFilter,
   VotingTable,
+  NodeSearchBar,
+  VaultStatusFilter,
 };

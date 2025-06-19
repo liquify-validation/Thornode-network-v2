@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 import {
   BitcoinIcon,
   EthIcon,
@@ -29,7 +31,9 @@ import {
   AussieBroadbandIcon,
   EarthLinkIcon,
   TimeWarpIcon,
+  XrpIcon,
 } from "../assets";
+import { useEffect, useState } from "react";
 
 export const ispLogos = {
   "Cogent Communications": CogentIcon,
@@ -80,6 +84,7 @@ export const chainIcons = {
   AVAX: AvalancheIcon,
   BASE: BaseIcon,
   BSC: BnbIcon,
+  XRP: XrpIcon,
 };
 
 // Helper function to convert seconds to a time object
@@ -158,10 +163,10 @@ export const copyToClipboard = (text) => {
   navigator.clipboard
     .writeText(text)
     .then(() => {
-      alert("Node address copied to clipboard!");
+      toast.success("Node address copied to clipboard!");
     })
     .catch(() => {
-      alert("Failed to copy node address.");
+      toast.error("Failed to copy node address.");
     });
 };
 
@@ -467,3 +472,13 @@ export const cityToCountryMap = {
   Slough: "UK",
   Bradenton: "US",
 };
+
+export function useViewport() {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}

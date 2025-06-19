@@ -24,6 +24,10 @@
       -webkit-backdrop-filter: none !important;
     }
 
+    .border-radius-inherit {
+      border-radius: inherit;
+    }
+
     .glass-card::before,
     .glass-effect::before,
     .inner-glass-effect::before {

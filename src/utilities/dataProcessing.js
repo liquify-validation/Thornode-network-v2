@@ -31,8 +31,16 @@ export const processData = (
     (node) => !activeStandbyAddresses.includes(node.node_address)
   );
 
-  const processedActiveNodes = findChurnOuts(activeNodes, globalData);
-  const processedStandbyNodes = findChurnIns(standbyNodes);
+  const { nodes: processedActiveNodes, churnOutCount } = findChurnOuts(
+    activeNodes,
+    globalData
+  );
+
+  const processedStandbyNodes = findChurnIns(
+    standbyNodes,
+    activeNodes.length,
+    churnOutCount
+  );
 
   const filteredActiveNodes = returnSearchedData(
     processedActiveNodes,

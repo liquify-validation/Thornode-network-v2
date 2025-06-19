@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   HomeIcon,
@@ -9,10 +8,11 @@ import {
   ArrowIcon,
   ThorIcon,
   LiquifyIcon,
+  LeaderboardIcon,
 } from "../assets";
 import DarkModeToggle from "../components/DarkModeToggle";
 
-const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
+const Sidebar = ({ isExpanded, onToggleSidebar, isDark, onToggleTheme }) => {
   const location = useLocation();
 
   const menuItems = [
@@ -21,11 +21,8 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
     { name: "Nodes", icon: NodesIcon, path: "/nodes" },
     // { name: "Network", icon: NetworkIcon, path: "/network" },
     // { name: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
+    // { name: "Leaderboards", icon: LeaderboardIcon, path: "/leaderboards" },
   ];
-
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   return (
     <nav
@@ -77,13 +74,18 @@ const Sidebar = ({ isExpanded, setIsExpanded, isDark, onToggleTheme }) => {
           )}
         </Link>
 
-        <div className="flex items-center gap-2">
-          <DarkModeToggle isDark={isDark} onToggleTheme={onToggleTheme} />
-          {isExpanded && <span className="text-sm font-medium"></span>}
-        </div>
+        <button
+          onClick={onToggleTheme}
+          className="flex items-center gap-2 p-2 rounded-md hover:bg-slate-600 icon-button"
+        >
+          <DarkModeToggle isDark={isDark} />
+          {isExpanded && (
+            <span className="text-sm font-medium text-gray-50 ml-2">Theme</span>
+          )}
+        </button>
 
         <button
-          onClick={toggleSidebar}
+          onClick={onToggleSidebar}
           className="flex items-center  gap-2 p-2 bg-transparent rounded-md hover:bg-slate-600 icon-button"
         >
           <img

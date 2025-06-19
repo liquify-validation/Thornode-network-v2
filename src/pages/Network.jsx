@@ -7,6 +7,7 @@ import Churns from "./Churns";
 import Vaults from "./Vaults";
 import Runepool from "./Runepool";
 import Voting from "./Voting";
+import VaultDetail from "./VaultDetail";
 
 const Network = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const Network = () => {
         <Route path="config" element={<Config />} />
         <Route path="churns" element={<Churns />} />
         <Route path="vaults" element={<Vaults />} />
+        <Route path="vaults/:vaultId" element={<VaultDetail />} />
         <Route path="runepool" element={<Runepool />} />
         <Route path="voting" element={<Voting />} />
       </Routes>

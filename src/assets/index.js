@@ -93,6 +93,11 @@ import MaxPositionIcon from "./max_position.svg";
 import ReportRewardsIcon from "./rewards.svg";
 import PositionAverageIcon from "./position_average.svg";
 import TimeWarpIcon from "./timewarp.jpeg";
+import UpArrow from "./arrow_up_icon.svg";
+import DownArrow from "./arrow_down_icon.svg";
+import LeaderboardIcon from "./leaderboard_icon.svg";
+import DownloadIcon from "./file_download.svg";
+import XrpIcon from "./xrp_icon.svg";
 
 export {
   DayHighIcon,
@@ -190,4 +195,9 @@ export {
   ReportRewardsIcon,
   PositionAverageIcon,
   TimeWarpIcon,
+  UpArrow,
+  DownArrow,
+  LeaderboardIcon,
+  DownloadIcon,
+  XrpIcon,
 };

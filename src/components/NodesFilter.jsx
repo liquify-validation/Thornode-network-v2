@@ -5,8 +5,18 @@ const NodesFilter = ({ currentTab }) => {
   return (
     <div className="flex">
       <Link
-        to={`/nodes/active`}
+        to={`/nodes/all`}
         className={`px-4 py-2 rounded-l-xl ${
+          currentTab === "all"
+            ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
+            : "inner-glass-effect drop-shadow-none text-gray-800 dark:text-gray-50"
+        }`}
+      >
+        All
+      </Link>
+      <Link
+        to={`/nodes/active`}
+        className={`px-4 py-2 ${
           currentTab === "active"
             ? "bg-gray-800 dark:bg-[#28f3b0] text-gray-50 dark:text-gray-800"
             : "inner-glass-effect drop-shadow-none text-gray-800 dark:text-gray-50"

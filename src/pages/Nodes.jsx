@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useParams } from "react-router-dom";
 import {
-  SearchBar,
+  NodeSearchBar,
   NodesFilter,
   NodesTable,
   LoadingSpinner,
@@ -24,10 +24,22 @@ const Nodes = ({ isDark }) => {
     otherNodes: [],
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFiltering, setIsFiltering] = useState(true);
   const [currentTab, setCurrentTab] = useState(tab || "active");
   const [allColumns, setAllColumns] = useState([]);
 
   const [expandTable, setExpandTable] = useState(false);
+  const [hiddenColumns, setHiddenColumns] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("nodeHiddenColumns") || "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("nodeHiddenColumns", JSON.stringify(hiddenColumns));
+  }, [hiddenColumns]);
 
   useEffect(() => {
     const expandCookie = getCookieValue("expandTable");
@@ -40,6 +52,15 @@ const Nodes = ({ isDark }) => {
     setExpandTable(checked);
     setCookie("expandTable", checked ? "true" : "false");
   }
+
+  const allNodes = React.useMemo(
+    () => [
+      ...processedData.activeNodes,
+      ...processedData.standbyNodes,
+      ...processedData.otherNodes,
+    ],
+    [processedData]
+  );
 
   const {
     data: globalData,
@@ -63,6 +84,7 @@ const Nodes = ({ isDark }) => {
         searchTerm
       );
       setProcessedData(newData);
+      setIsFiltering(false);
     }
   }, [nodeResult, favoriteNodes, searchTerm, globalData]);
 
@@ -93,8 +115,7 @@ const Nodes = ({ isDark }) => {
     return <div>Error fetching nodeData</div>;
   }
 
-  // Access maxChainHeights from nodeResult
-  const maxChainHeights = nodeResult.maxChainHeights;
+  const maxChainHeights = nodeResult?.maxChainHeights ?? {};
   return (
     <>
       <Helmet>
@@ -113,27 +134,96 @@ const Nodes = ({ isDark }) => {
         <div className="flex items-center justify-between mt-6 pb-6">
           <StatsCardSection netData={globalData} nodeData={nodeResult} />
         </div>
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center justify-between mt-6 pr-8">
           <NodesFilter currentTab={currentTab} />
-          <SearchBar
+          <NodeSearchBar
             searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            setSearchTerm={(v) => {
+              setIsFiltering(true);
+              setSearchTerm(v);
+            }}
+            hiddenColumns={hiddenColumns}
+            setHiddenColumns={setHiddenColumns}
             allColumns={allColumns}
-            nodes={getCurrentTabData()}
+            nodes={currentTab === "all" ? allNodes : getCurrentTabData()}
           />
         </div>
-        <div className="mt-4">
-          <NodesTable
-            data={getCurrentTabData()}
-            setAllColumns={setAllColumns}
-            maxChainHeights={maxChainHeights}
-            globalData={globalData}
-            isDark={isDark}
-            expandTable={expandTable}
-            onExpandChange={handleExpandChange}
-            currentTab={currentTab}
-          />
-        </div>
+
+        {currentTab !== "all" && (
+          <div className="mt-4">
+            <NodesTable
+              data={getCurrentTabData()}
+              setAllColumns={setAllColumns}
+              maxChainHeights={maxChainHeights}
+              globalData={globalData}
+              isDark={isDark}
+              expandTable={expandTable}
+              onExpandChange={handleExpandChange}
+              currentTab={currentTab}
+              isFiltering={isFiltering}
+              hiddenColumns={hiddenColumns}
+            />
+          </div>
+        )}
+
+        {currentTab === "all" && (
+          <>
+            {(() => {
+              const buckets = [
+                {
+                  key: "active",
+                  title: "Active Nodes",
+                  data: processedData.activeNodes,
+                  expand: expandTable,
+                },
+                {
+                  key: "standby",
+                  title: "Standby Nodes",
+                  data: processedData.standbyNodes,
+                  expand: false,
+                },
+                {
+                  key: "other",
+                  title: "Other Nodes",
+                  data: processedData.otherNodes,
+                  expand: false,
+                },
+              ];
+
+              const visibleBuckets = buckets.filter((b) => b.data.length > 0);
+
+              if (!isFiltering && visibleBuckets.length === 0) {
+                return (
+                  <p className="mt-10 text-center text-gray-700 dark:text-gray-50">
+                    No node found for this search
+                  </p>
+                );
+              }
+
+              return (
+                <div className="space-y-16 mt-4">
+                  {visibleBuckets.map(({ key, title, data, expand }) => (
+                    <section key={key}>
+                      <h2 className="text-lg font-semibold mb-4">{title}</h2>
+                      <NodesTable
+                        data={data}
+                        setAllColumns={setAllColumns}
+                        maxChainHeights={maxChainHeights}
+                        globalData={globalData}
+                        isDark={isDark}
+                        expandTable={expand}
+                        onExpandChange={handleExpandChange}
+                        currentTab={key}
+                        isFiltering={isFiltering}
+                        hiddenColumns={hiddenColumns}
+                      />
+                    </section>
+                  ))}
+                </div>
+              );
+            })()}
+          </>
+        )}
       </div>
     </>
   );
