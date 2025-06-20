@@ -83,6 +83,22 @@ const NodesTable = ({
     setShowModal(true);
   };
 
+  const favouriteAwareSort = React.useCallback(
+    (rowA, rowB, columnId, desc) => {
+      const favA = isFavorite(rowA.original.node_address);
+      const favB = isFavorite(rowB.original.node_address);
+
+      if (favA !== favB) {
+        return favA ? (desc ? +1 : -1) : desc ? -1 : +1;
+      }
+
+      const a = rowA.values[columnId];
+      const b = rowB.values[columnId];
+      if (a === b) return 0;
+      return a > b ? 1 : -1;
+    },
+    [isFavorite]
+  );
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedNodeAddress(null);
@@ -193,7 +209,11 @@ const NodesTable = ({
   const columns = React.useMemo(() => {
     let newCols = [
       {
-        Header: "",
+        Header: () => (
+          <span role="img" aria-label="Favourite">
+            ❤️
+          </span>
+        ),
         id: "favourite",
         accessor: "favorite",
         disableSortBy: true,
@@ -633,6 +653,8 @@ const NodesTable = ({
         hiddenColumns: [...(isSmall ? responsiveHidden : []), ...hiddenColumns],
       },
       autoResetSortBy: false,
+      defaultColumn: { sortType: "favouriteAware" },
+      sortTypes: { favouriteAware: favouriteAwareSort },
     },
     useSortBy,
     usePagination
@@ -704,7 +726,7 @@ const NodesTable = ({
 
                           {column.isSorted && (
                             <img
-                              src={column.isSortedDesc ? UpArrow : DownArrow}
+                              src={column.isSortedDesc ? DownArrow : UpArrow}
                               alt="Sort Arrow"
                               className="w-4 h-4 ml-1 inline-block"
                             />
