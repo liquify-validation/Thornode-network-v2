@@ -21,7 +21,7 @@ export function useNodePositionData(nodeAddress) {
     queryKey: ["positionData", nodeAddress],
     queryFn: () => fetchAndProcessPositionData(nodeAddress),
     enabled: !!nodeAddress,
-    refetchInterval: 60_000,
-    staleTime: 60_000,
+    refetchInterval: 30 * 60 * 1000, // 30 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
 }

@@ -20,7 +20,7 @@ export function useNodeRewardsData(nodeAddress) {
     queryKey: ["rewardsData", nodeAddress],
     queryFn: () => fetchAndProcessRewardsData(nodeAddress),
     enabled: !!nodeAddress,
-    refetchInterval: 60_000,
-    staleTime: 60_000,
+    refetchInterval: 30 * 60 * 1000, // 30 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
 }
