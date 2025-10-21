@@ -32,6 +32,7 @@ import {
   EarthLinkIcon,
   TimeWarpIcon,
   XrpIcon,
+  TronIcon,
 } from "../assets";
 import { useEffect, useState } from "react";
 
@@ -85,6 +86,7 @@ export const chainIcons = {
   BASE: BaseIcon,
   BSC: BnbIcon,
   XRP: XrpIcon,
+  TRON: TronIcon,
 };
 
 // Helper function to convert seconds to a time object

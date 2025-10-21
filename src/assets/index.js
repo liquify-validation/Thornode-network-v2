@@ -98,6 +98,7 @@ import DownArrow from "./arrow_down_icon.svg";
 import LeaderboardIcon from "./leaderboard_icon.svg";
 import DownloadIcon from "./file_download.svg";
 import XrpIcon from "./xrp_icon.svg";
+import TronIcon from "./tron_icon.svg";
 
 export {
   DayHighIcon,
@@ -200,4 +201,5 @@ export {
   LeaderboardIcon,
   DownloadIcon,
   XrpIcon,
+  TronIcon,
 };

@@ -609,6 +609,7 @@ const NodesTable = ({
       "BSC",
       "BASE",
       "XRP",
+      "TRON",
     ];
     const haltsData = getHaltsData(globalData);
 
