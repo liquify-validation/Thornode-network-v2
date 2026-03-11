@@ -7,17 +7,17 @@ const ExportButtons = ({ getTableRows, fileName }) => {
     const rows = getTableRows();
     if (!rows.length) return;
 
-    const headers = ["Height", "Date", "Price", "Reward (RUNE)", "Reward ($)"];
+    const headers = ["Date", "Height", "BP Bond", "BP Ratio (%)", "BP Reward (RUNE)", "Reward ($)"];
 
     const csvRows = rows.map((row) => {
-      const safeDate = new Date(row.date).toISOString().split("T")[0];
-      const isoDate = `"${safeDate}"`;
+      const safeDate = row.date ? `"${row.date}"` : "";
       return [
+        safeDate,
         row.height,
-        isoDate,
-        row.price,
-        row.rewardRune,
-        row.rewardUSD,
+        Number(row.bpBond).toFixed(2),
+        Number(row.bpRatio).toFixed(2),
+        Number(row.bpReward).toFixed(4),
+        Number(row.bpRewardDollar).toFixed(4),
       ].join(",");
     });
     const csvString = [headers.join(","), ...csvRows].join("\n");
@@ -41,27 +41,29 @@ const ExportButtons = ({ getTableRows, fileName }) => {
     });
 
     const columns = [
-      { header: "Height", dataKey: "height" },
       { header: "Date", dataKey: "date" },
-      { header: "Price", dataKey: "price" },
-      { header: "Reward (RUNE)", dataKey: "rewardRune" },
-      { header: "Reward ($)", dataKey: "rewardUSD" },
+      { header: "Height", dataKey: "height" },
+      { header: "BP Bond", dataKey: "bpBond" },
+      { header: "BP Ratio (%)", dataKey: "bpRatio" },
+      { header: "BP Reward (RUNE)", dataKey: "bpReward" },
+      { header: "Reward ($)", dataKey: "bpRewardDollar" },
     ];
 
     autoTable(doc, {
       head: [columns.map((col) => col.header)],
       body: rows.map((row) => [
-        row.height,
         row.date,
-        row.price,
-        row.rewardRune,
-        row.rewardUSD,
+        row.height,
+        Number(row.bpBond).toFixed(2),
+        Number(row.bpRatio).toFixed(2),
+        Number(row.bpReward).toFixed(4),
+        `$${Number(row.bpRewardDollar).toFixed(4)}`,
       ]),
       startY: 50,
     });
 
     doc.setFontSize(14);
-    doc.text(`Report`, 40, 40);
+    doc.text("Bond Provider Report", 40, 40);
 
     doc.save(`${fileName || "report"}.pdf`);
   };
