@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useTable, useSortBy, usePagination } from "react-table";
 import {
   TableIcons,
@@ -40,6 +41,50 @@ import {
 import { GlobalDataContext } from "../context/GlobalDataContext";
 import { FavouriteIcon, UnfavouriteIcon } from "../assets";
 
+function NodeAddressCell({ value, last4, node, copyToClipboard, onOpenChart }) {
+  const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (hovered && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 4, left: rect.left });
+    }
+  }, [hovered]);
+
+  return (
+    <>
+      <span
+        ref={ref}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => copyToClipboard(value)}
+        style={{ cursor: "pointer", textDecoration: "underline" }}
+        title="Click to copy"
+      >
+        {last4}
+      </span>
+      {hovered &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: pos.top,
+              left: pos.left,
+            }}
+            className="z-[9999] flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-xl shadow-lg whitespace-nowrap"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            <TableIcons node={node} onOpenChart={onOpenChart} />
+          </div>,
+          document.getElementById("popover-root")
+        )}
+    </>
+  );
+}
+
 const NodesTable = ({
   data,
   setAllColumns,
@@ -58,7 +103,7 @@ const NodesTable = ({
   const [providersData, setProvidersData] = useState([]);
   const width = useViewport();
   const isSmall = width < 1300;
-  const responsiveHidden = ["rpc", "bfr", "leave", "jailed"];
+  const responsiveHidden = ["health"];
 
   const [chartData, setChartData] = useState([]);
 
@@ -244,31 +289,18 @@ const NodesTable = ({
         id: "nodes",
         accessor: "node_address",
         disableSortBy: true,
-        Cell: ({ value }) => {
+        Cell: ({ value, row }) => {
           const last4 = value.slice(-4);
           return (
-            <InfoPopover title="Thornode Address" text={value}>
-              <span
-                onClick={() => copyToClipboard(value)}
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-                title="Click to copy"
-              >
-                {last4}
-              </span>
-            </InfoPopover>
+            <NodeAddressCell
+              value={value}
+              last4={last4}
+              node={row.original}
+              copyToClipboard={copyToClipboard}
+              onOpenChart={handleOpenChart}
+            />
           );
         },
-      },
-      {
-        Header: "Features",
-        id: "features",
-        accessor: "icons",
-        disableSortBy: true,
-        Cell: ({ row }) => (
-          <div className="overflow-visible">
-            <TableIcons node={row.original} onOpenChart={handleOpenChart} />
-          </div>
-        ),
       },
       {
         Header: (
@@ -284,6 +316,28 @@ const NodesTable = ({
         Header: "Info",
         id: "info",
         accessor: "action",
+        Cell: ({ row }) => {
+          const { action, forced_to_leave, requested_to_leave, is_jailed, jail } = row.original;
+          const isLeaving = forced_to_leave === 1 || requested_to_leave === 1;
+          return (
+            <div className="flex items-center justify-center gap-1">
+              <span>{action || "-"}</span>
+              {isLeaving && (
+                <InfoPopover title="Leaving" text={forced_to_leave === 1 ? "Forced to leave" : "Requested to leave"}>
+                  <img src={LeaveIcon} alt="Leave" className="w-4 h-4 inline invert dark:invert-0" />
+                </InfoPopover>
+              )}
+              {is_jailed === 1 && jail && (
+                <InfoPopover
+                  title="Jailed Information"
+                  text={<>Release Height: {jail.release_height}<br />Reason: {jail.reason}</>}
+                >
+                  <img src={JailIcon} alt="Jailed" className="w-4 h-4 inline invert dark:invert-0" />
+                </InfoPopover>
+              )}
+            </div>
+          );
+        },
       },
       {
         Header: (
@@ -293,6 +347,8 @@ const NodesTable = ({
         ),
         id: "isp",
         accessor: "isp",
+        width: 50,
+        maxWidth: 60,
         Cell: ({ value }) => {
           const ispName = value || "-";
           const logo = ispLogos[ispName];
@@ -304,7 +360,7 @@ const NodesTable = ({
                   <img
                     src={logo}
                     alt={ispName}
-                    className="mx-auto block w-6 h-6"
+                    className="mx-auto block w-5 h-5"
                   />
                 </InfoPopover>
               </div>
@@ -487,97 +543,32 @@ const NodesTable = ({
         accessor: "version",
       },
       {
-        Header: "Leave",
-        accessor: "leave",
-        Cell: ({ row }) =>
-          row.original.forced_to_leave === 1 ||
-          row.original.requested_to_leave === 1
-            ? "Yes"
-            : "-",
-      },
-      {
-        Header: "Jailed",
-        id: "jailed",
-        accessor: "is_jailed",
-        Cell: ({ row }) => {
-          const { is_jailed, jail } = row.original;
-          if (is_jailed === 1 && jail) {
-            return (
-              <InfoPopover
-                title="Jailed Information"
-                text={
-                  <>
-                    Release Height: {jail.release_height}
-                    <br />
-                    Reason: {jail.reason}
-                  </>
-                }
-              >
-                <img
-                  src={JailIcon}
-                  alt="Jail Icon"
-                  className="mx-auto invert dark:invert-0"
-                />
-              </InfoPopover>
-            );
-          }
-          return "-";
-        },
-      },
-      {
-        Header: "RPC",
-        id: "rpc",
+        Header: (
+          <InfoPopover title="Health" text="RPC & Bifrost status">
+            <span>Health</span>
+          </InfoPopover>
+        ),
+        id: "health",
         accessor: "rpc",
         disableSortBy: true,
         Cell: ({ row }) => {
-          const { ip_address, rpc } = row.original;
-          const healthy = rpc !== "null";
+          const { ip_address, rpc, bifrost } = row.original;
+          const rpcOk = rpc !== "null";
+          const bfrOk = bifrost !== "null";
+          const linkClass = "font-normal text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-none";
           return (
-            <a
-              href={`http://${ip_address}:27147/health?`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-              font-normal
-              text-gray-700            
-              dark:text-white      
-              visited:text-gray-700
-              dark:visited:text-white
-              hover:underline      
-              focus:outline-none
-            "
-            >
-              {healthy ? "*" : "Bad"}
-            </a>
-          );
-        },
-      },
-      {
-        Header: "BFR",
-        id: "bfr",
-        accessor: "bfr",
-        disableSortBy: true,
-        Cell: ({ row }) => {
-          const { ip_address, bifrost } = row.original;
-          const healthy = bifrost !== "null";
-
-          return (
-            <a
-              href={`http://${ip_address}:6040/p2pid`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-              font-normal
-            text-gray-700            
-            dark:text-white      
-            visited:text-gray-700
-            dark:visited:text-white
-            hover:underline
-            focus:outline-none
-          "
-            >
-              {healthy ? "*" : "Bad"}
-            </a>
+            <div className="flex items-center justify-center gap-1">
+              <InfoPopover title="RPC" text={rpcOk ? "Healthy" : "Unhealthy"}>
+                <a href={`http://${ip_address}:27147/health?`} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  <span className={rpcOk ? "text-green-400" : "text-red-400"}>R</span>
+                </a>
+              </InfoPopover>
+              <InfoPopover title="Bifrost" text={bfrOk ? "Healthy" : "Unhealthy"}>
+                <a href={`http://${ip_address}:6040/p2pid`} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  <span className={bfrOk ? "text-green-400" : "text-red-400"}>B</span>
+                </a>
+              </InfoPopover>
+            </div>
           );
         },
       },
@@ -700,7 +691,7 @@ const NodesTable = ({
           {...getTableProps()}
           className="min-w-full table-auto divide-y-4 text-center divide-gray-500"
         >
-          <thead>
+          <thead className="sticky top-0 z-10">
             {headerGroups.map((headerGroup) => {
               const headerGroupProps = headerGroup.getHeaderGroupProps();
               const { key: headerGroupKey, ...restHeaderGroupProps } =
@@ -708,7 +699,7 @@ const NodesTable = ({
 
               return (
                 <tr key={headerGroupKey} {...restHeaderGroupProps}>
-                  <th className="px-2 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344]"></th>
+                  <th className="px-1 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] w-8"></th>
                   {headerGroup.headers.map((column) => {
                     const headerProps = column.getHeaderProps(
                       column.getSortByToggleProps()
@@ -719,7 +710,7 @@ const NodesTable = ({
                         key={columnKey}
                         {...restHeaderProps}
                         className="
-                          px-4 py-4 text-md text-gray-700 dark:text-gray-50
+                          px-2 py-4 text-md text-gray-700 dark:text-gray-50
                           bg-gray-200 dark:bg-[#1e3344] tracking-wider
                         "
                       >
@@ -777,10 +768,10 @@ const NodesTable = ({
                 return (
                   <tr
                     key={rowKey}
-                    className={`hover:bg-[#4dc89f] inner-glass-effect ${highlightClass}`}
+                    className={`hover:!bg-[#4dc89f] ${highlightClass || (i % 2 === 0 ? "inner-glass-effect" : "bg-gray-300/80 dark:bg-gray-800/80")}`}
                     {...restRowProps}
                   >
-                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-gray-50">
+                    <td className="px-1 py-4 whitespace-nowrap text-sm text-gray-50 w-8 text-center">
                       <Number number={i + 1 + pageIndex * pageSize} />
                     </td>
 
@@ -792,7 +783,7 @@ const NodesTable = ({
                         <td
                           key={cellKey}
                           {...restCellProps}
-                          className="px-4 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
+                          className="px-2 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
                         >
                           {cell.render("Cell")}
                         </td>
