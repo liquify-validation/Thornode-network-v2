@@ -51,7 +51,7 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--sidebar-w",
-      isExpanded ? "12rem" : "4rem"
+      isExpanded ? "14.5rem" : "6.5rem"
     );
   }, [isExpanded]);
 
