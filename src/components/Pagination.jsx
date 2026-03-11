@@ -18,7 +18,7 @@ const Pagination = ({
   pageIndex,
   pageSize,
 }) => {
-  const [localPageSize, setLocalPageSize] = useState(pageSize);
+  const [localPageSize, setLocalPageSize] = useState("all");
 
   useEffect(() => {
     const saved = getCookieValue("pageSize");
@@ -33,6 +33,9 @@ const Pagination = ({
           setLocalPageSize(num);
         }
       }
+    } else {
+      setPageSize(9999999);
+      setLocalPageSize("all");
     }
   }, [setPageSize]);
 
