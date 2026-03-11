@@ -12,6 +12,7 @@ import {
   ModernScatterChart,
   BondProvidersTable,
   Number,
+  NodeDrawer,
 } from "../components";
 
 import {
@@ -101,6 +102,7 @@ const NodesTable = ({
   const [selectedChartType, setSelectedChartType] = useState(null);
   const [showProvidersModal, setShowProvidersModal] = useState(false);
   const [providersData, setProvidersData] = useState([]);
+  const [drawerNode, setDrawerNode] = useState(null);
   const width = useViewport();
   const isSmall = width < 1300;
   const responsiveHidden = ["health"];
@@ -768,7 +770,24 @@ const NodesTable = ({
                 return (
                   <tr
                     key={rowKey}
-                    className={`hover:!bg-[#4dc89f] ${highlightClass || (i % 2 === 0 ? "inner-glass-effect" : "bg-gray-300/80 dark:bg-gray-800/80")}`}
+                    className={`hover:!bg-[#4dc89f] cursor-pointer ${highlightClass || (i % 2 === 0 ? "inner-glass-effect" : "bg-gray-300/80 dark:bg-gray-800/80")}`}
+                    onClick={(e) => {
+                      const el = e.target;
+                      const tr = e.currentTarget;
+                      if (
+                        el.closest("a") ||
+                        el.closest("button") ||
+                        el.closest("[data-interactive]") ||
+                        el.tagName === "IMG" && el.closest(".cursor-pointer") !== tr
+                      ) return;
+                      // Check if clicked element (or ancestor below the row) has underline/cursor-pointer
+                      let node = el;
+                      while (node && node !== tr) {
+                        if (node.classList && (node.classList.contains("underline") || node.classList.contains("cursor-pointer"))) return;
+                        node = node.parentElement;
+                      }
+                      setDrawerNode(row.original);
+                    }}
                     {...restRowProps}
                   >
                     <td className="px-1 py-4 whitespace-nowrap text-sm text-gray-50 w-8 text-center">
@@ -823,6 +842,15 @@ const NodesTable = ({
         onClose={() => setShowProvidersModal(false)}
         providersData={providersData}
       />
+
+      {drawerNode && (
+        <NodeDrawer
+          node={drawerNode}
+          onClose={() => setDrawerNode(null)}
+          isDark={isDark}
+          runePrice={runeCurrentPrice}
+        />
+      )}
     </>
   );
 };

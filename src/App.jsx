@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -24,6 +24,7 @@ import Leaderboards from "./pages/Leaderboards";
 function App() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDark, setIsDark] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -44,6 +45,13 @@ function App() {
       const cookieValue = match.split("=")[1];
       setIsExpanded(cookieValue === "true");
     }
+  }, []);
+
+  // Listen for mobile menu toggle from bottom nav "More" button
+  useEffect(() => {
+    const handler = () => setMobileOpen((prev) => !prev);
+    document.addEventListener("toggleMobileMenu", handler);
+    return () => document.removeEventListener("toggleMobileMenu", handler);
   }, []);
 
   const handleToggleTheme = () => {
@@ -67,6 +75,8 @@ function App() {
     });
   };
 
+  const handleCloseMobile = useCallback(() => setMobileOpen(false), []);
+
   return (
     <Router>
       <ScrollToTop />
@@ -77,11 +87,34 @@ function App() {
           onToggleSidebar={handleToggleSidebar}
           isDark={isDark}
           onToggleTheme={handleToggleTheme}
+          mobileOpen={mobileOpen}
+          onCloseMobile={handleCloseMobile}
         />
+
+        {/* Mobile top bar with hamburger */}
+        <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-slate-700 shadow-md lg:hidden">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="icon-button text-white text-2xl p-1"
+            aria-label="Open menu"
+          >
+            &#9776;
+          </button>
+          <span className="text-white font-semibold text-sm">THORChain Explorer</span>
+          <button
+            onClick={handleToggleTheme}
+            className="icon-button text-white text-xl p-1"
+            aria-label="Toggle theme"
+          >
+            {isDark ? "☀" : "☾"}
+          </button>
+        </div>
+
         <div
-          className={`w-full transition-all duration-300 ${
-            isExpanded ? "ml-60" : "ml-32"
-          }`}
+          className={`w-full transition-all duration-300
+            ml-0 pt-14 pb-16
+            lg:pt-0 lg:pb-0
+            ${isExpanded ? "lg:ml-60" : "lg:ml-32"}`}
         >
           <div className="flex flex-col min-h-screen relative">
             {isDark && <MapBg />}

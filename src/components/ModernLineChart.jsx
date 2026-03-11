@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -13,6 +13,14 @@ import Box from "../ui/Box";
 import ModernDivider from "./ModernDivider";
 import ExportCSVButton from "./ExportCSVButton";
 import { DownloadIcon } from "../assets";
+
+const RANGE_PRESETS = [
+  { label: "50", value: 50 },
+  { label: "100", value: 100 },
+  { label: "250", value: 250 },
+  { label: "500", value: 500 },
+  { label: "All", value: 0 },
+];
 
 const ModernLineChart = ({
   data,
@@ -29,6 +37,14 @@ const ModernLineChart = ({
 
   isDark = false,
 }) => {
+  const [range, setRange] = useState(0);
+
+  const slicedData = useMemo(() => {
+    if (!data || data.length === 0) return data;
+    if (range === 0 || range >= data.length) return data;
+    return data.slice(-range);
+  }, [data, range]);
+
   const axisColor = isDark ? "#ffffff" : "#374151";
   const tooltipBgColor = isDark ? "#333333" : "#fafafa";
   const tooltipBorderColor = isDark ? "#555555" : "#cccccc";
@@ -69,9 +85,29 @@ const ModernLineChart = ({
     <Box className="chart-card pt-8 pb-10 px-12">
       <h2 className="font-semibold text-md ml-8">{title}</h2>
       <ModernDivider mb={0} />
-      <div className="flex justify-end mb-4 pt-0 mr-5">
+      <div className="flex items-center justify-between mb-4 pt-0 mx-5">
+        {/* Range filter */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {data && data.length > 50 && RANGE_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => setRange(p.value)}
+              className={`text-[11px] px-2 py-0.5 rounded-md icon-button border
+                ${range === p.value
+                  ? "bg-[#28f3b0] text-gray-900 border-[#28f3b0]"
+                  : "bg-transparent text-gray-400 border-gray-600 hover:border-gray-400"}`}
+            >
+              {p.label}
+            </button>
+          ))}
+          {data && data.length > 50 && (
+            <span className="text-[10px] text-gray-500 ml-1">
+              {slicedData?.length || 0}/{data.length}
+            </span>
+          )}
+        </div>
         <ExportCSVButton
-          data={data}
+          data={slicedData}
           filename={`${title.replace(/\s+/g, "_")}.csv`}
           iconSrc={DownloadIcon}
         />
@@ -79,7 +115,7 @@ const ModernLineChart = ({
 
       <ResponsiveContainer width="100%" height={400}>
         <AreaChart
-          data={data}
+          data={slicedData}
           margin={{ top: 10, right: 20, left: 10, bottom: 30 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke={axisColor} />

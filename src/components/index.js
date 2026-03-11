@@ -47,6 +47,7 @@ import VotingStatusFilter from "./VotingStatustFilter";
 import VotingTable from "./VotingTable";
 import NodeSearchBar from "./NodeSearchBar";
 import VaultStatusFilter from "./VaultStatusFilter";
+import NodeDrawer from "./NodeDrawer";
 
 export {
   AnalyticsCard,
@@ -98,4 +99,5 @@ export {
   VotingTable,
   NodeSearchBar,
   VaultStatusFilter,
+  NodeDrawer,
 };
