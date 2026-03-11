@@ -48,7 +48,7 @@ const Sidebar = ({ isExpanded, onToggleSidebar, isDark, onToggleTheme, mobileOpe
 
       {/* Desktop sidebar */}
       <nav
-        className={`fixed top-[45%] left-6 transform -translate-y-1/2 z-20 flex-col justify-between
+        className={`fixed top-[45%] left-6 transform -translate-y-1/2 z-[55] flex-col justify-between
             rounded-[15px] bg-slate-700 text-white p-2.5 shadow-2xl
           ${isExpanded ? "w-48" : "w-16"} transition-all duration-300 h-[85%]
           hidden lg:flex`}
