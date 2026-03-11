@@ -183,8 +183,8 @@ const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
 
   const drawer = (
     <>
-      <div className={`fixed inset-0 z-40 transition-opacity duration-300 ${visible ? "bg-black/50" : "bg-black/0"}`} onClick={handleClose} />
-      <div className={`fixed top-0 left-0 z-50 h-full w-full sm:w-[520px] bg-gray-100 dark:bg-[#132a3c] shadow-2xl overflow-y-auto scrollbar-custom transform transition-transform duration-300 ${visible ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed inset-0 lg:left-[var(--sidebar-w)] z-40 transition-opacity duration-300 ${visible ? "bg-black/50" : "bg-black/0"}`} onClick={handleClose} />
+      <div className={`fixed top-0 left-0 lg:left-[var(--sidebar-w)] z-50 h-full w-full sm:w-[520px] bg-gray-100 dark:bg-[#132a3c] shadow-2xl overflow-y-auto scrollbar-custom transform transition-transform duration-300 ${visible ? "translate-x-0" : "-translate-x-full"}`}>
         {/* Header */}
         <div className="sticky top-0 z-10 bg-gray-100 dark:bg-[#1e3344] px-5 py-4 flex items-center justify-between border-b border-gray-300 dark:border-gray-700">
           <div>

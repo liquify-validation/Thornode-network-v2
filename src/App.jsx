@@ -47,6 +47,14 @@ function App() {
     }
   }, []);
 
+  // Expose sidebar width as CSS variable so portals (e.g. NodeDrawer) can use it
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--sidebar-w",
+      isExpanded ? "12rem" : "4rem"
+    );
+  }, [isExpanded]);
+
   // Listen for mobile menu toggle from bottom nav "More" button
   useEffect(() => {
     const handler = () => setMobileOpen((prev) => !prev);
