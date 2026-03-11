@@ -128,9 +128,9 @@ function BPReport({ isDark }) {
     return td.churnHeight.map((height, idx) => ({
       height,
       date: td.date?.[idx] || "",
-      bpBond: (td.bpBond?.[idx] || 0) / 1e8,
+      bpBond: td.bpBond?.[idx] || 0,
       bpRatio: td.bpRatio?.[idx] || 0,
-      bpReward: (td.bpReward?.[idx] || 0) / 1e8,
+      bpReward: td.bpReward?.[idx] || 0,
       bpRewardDollar: td.bpRewardDollar?.[idx] || 0,
     }));
   }
