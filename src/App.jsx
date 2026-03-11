@@ -7,6 +7,11 @@ import Network from "./pages/Network";
 import Analytics from "./pages/Analytics";
 import Report from "./pages/Report";
 import Contact from "./pages/Contact";
+import Vaults from "./pages/Vaults";
+import Mimir from "./pages/Mimir";
+import Pools from "./pages/Pools";
+import Queue from "./pages/Queue";
+import BPReport from "./pages/BPReport";
 import Header from "./global/Header";
 import Footer from "./global/Footer";
 import Sidebar from "./global/Sidebar";
@@ -92,6 +97,11 @@ function App() {
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/leaderboards" element={<Leaderboards />} /> */}
 
+                <Route path="/vaults" element={<Vaults isDark={isDark} />} />
+                <Route path="/mimir" element={<Mimir isDark={isDark} />} />
+                <Route path="/pools" element={<Pools isDark={isDark} />} />
+                <Route path="/queue" element={<Queue isDark={isDark} />} />
+                <Route path="/bp-report" element={<BPReport isDark={isDark} />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route
                   path="/nodes/report/:thornodeAddress"

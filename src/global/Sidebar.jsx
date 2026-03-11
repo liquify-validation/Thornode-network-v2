@@ -9,6 +9,7 @@ import {
   ThorIcon,
   LiquifyIcon,
   LeaderboardIcon,
+  ReportIcon,
 } from "../assets";
 import DarkModeToggle from "../components/DarkModeToggle";
 
@@ -19,6 +20,11 @@ const Sidebar = ({ isExpanded, onToggleSidebar, isDark, onToggleTheme }) => {
     { name: "Thornodes", icon: ThorIcon, path: "/" },
     { name: "Home", icon: HomeIcon, path: "/" },
     { name: "Nodes", icon: NodesIcon, path: "/nodes" },
+    { name: "Vaults", icon: NetworkIcon, path: "/vaults" },
+    { name: "Pools", icon: AnalyticsIcon, path: "/pools" },
+    { name: "Mimir", icon: LeaderboardIcon, path: "/mimir" },
+    { name: "Queue", icon: NodesIcon, path: "/queue" },
+    { name: "BP Report", icon: ReportIcon, path: "/bp-report" },
     // { name: "Network", icon: NetworkIcon, path: "/network" },
     // { name: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
     // { name: "Leaderboards", icon: LeaderboardIcon, path: "/leaderboards" },
