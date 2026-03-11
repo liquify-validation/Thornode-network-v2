@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -155,6 +155,20 @@ const ExpandedChartModal = ({ title, data, isDark, onClose, renderChart }) => {
 /* ── main drawer ── */
 const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (node) {
+      // trigger slide-in on next frame
+      requestAnimationFrame(() => setVisible(true));
+    }
+  }, [node]);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 300); // wait for animation to finish
+  };
+
   if (!node) return null;
 
   const address = node.node_address;
@@ -169,8 +183,8 @@ const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
 
   const drawer = (
     <>
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
-      <div className="fixed top-0 right-0 z-50 h-full w-full sm:w-[520px] bg-gray-100 dark:bg-[#132a3c] shadow-2xl overflow-y-auto scrollbar-custom">
+      <div className={`fixed inset-0 z-40 transition-opacity duration-300 ${visible ? "bg-black/50" : "bg-black/0"}`} onClick={handleClose} />
+      <div className={`fixed top-0 left-0 z-50 h-full w-full sm:w-[520px] bg-gray-100 dark:bg-[#132a3c] shadow-2xl overflow-y-auto scrollbar-custom transform transition-transform duration-300 ${visible ? "translate-x-0" : "-translate-x-full"}`}>
         {/* Header */}
         <div className="sticky top-0 z-10 bg-gray-100 dark:bg-[#1e3344] px-5 py-4 flex items-center justify-between border-b border-gray-300 dark:border-gray-700">
           <div>
@@ -184,7 +198,7 @@ const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
             </button>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="icon-button text-gray-500 dark:text-gray-300 hover:text-white text-2xl p-1"
           >
             &#x2715;
@@ -195,7 +209,7 @@ const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
           {/* Quick action links */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
-              onClick={() => { onClose(); navigate(`/nodes/report/${address}`); }}
+              onClick={() => { handleClose(); navigate(`/nodes/report/${address}`); }}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg icon-button border border-gray-600 hover:border-[#28f3b0] hover:text-[#28f3b0] text-gray-300 transition-colors"
             >
               <img src={ReportIcon} alt="Report" className="w-4 h-4 invert dark:invert-0" />
@@ -266,7 +280,7 @@ const NodeDrawer = ({ node, onClose, isDark, runePrice = 0 }) => {
                       </button>
                       <button
                         onClick={() => {
-                          onClose();
+                          handleClose();
                           navigate(`/bp-report?node=${address}&bp=${bp.bond_address}`);
                         }}
                         className="icon-button bg-transparent p-0 text-[10px] text-gray-400 hover:text-[#28f3b0] border border-gray-600 hover:border-[#28f3b0] px-1.5 py-0.5 rounded"
