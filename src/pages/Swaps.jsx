@@ -145,6 +145,9 @@ function SwapTable({ swaps, showSavings }) {
             <th className="text-right px-3 py-3 text-xs font-bold uppercase text-gray-700 dark:text-white">
               Slip (bps)
             </th>
+            <th className="text-right px-3 py-3 text-xs font-bold uppercase text-gray-700 dark:text-white">
+              Fee Saved
+            </th>
             {showSavings && (
               <>
                 <th className="text-right px-3 py-3 text-xs font-bold uppercase text-gray-700 dark:text-white">
@@ -202,6 +205,24 @@ function SwapTable({ swaps, showSavings }) {
                 </td>
                 <td className="px-3 py-3 text-sm text-right text-gray-600 dark:text-gray-300">
                   {swap.swap_slip ?? "—"}
+                </td>
+                <td className="px-3 py-3 text-sm text-right whitespace-nowrap">
+                  {isStreaming && swap.slip_saved_bps != null ? (
+                    <span
+                      className={
+                        swap.slip_saved_bps > 0
+                          ? "text-[#28f3b0]"
+                          : "text-red-400"
+                      }
+                    >
+                      {swap.slip_saved_bps} bps{" "}
+                      <span className="text-xs text-gray-500">
+                        ({swap.slip_saved_percent}%)
+                      </span>
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </td>
                 {showSavings && (
                   <>
