@@ -211,3 +211,35 @@ export async function fetchQueueScheduled() {
   if (!res.ok) throw new Error("Failed to fetch scheduled queue");
   return await res.json();
 }
+
+// ── Swaps ──────────────────────────────────────────────
+export async function fetchStreamingSwaps() {
+  const res = await fetch(`${ApiUrl}/swaps/streaming`);
+  if (!res.ok) throw new Error("Failed to fetch streaming swaps");
+  return await res.json();
+}
+
+export async function fetchSwapHistory({ type, limit, sort, asset } = {}) {
+  const params = new URLSearchParams();
+  if (type) params.set("type", type);
+  if (limit) params.set("limit", String(limit));
+  if (sort) params.set("sort", sort);
+  if (asset) params.set("asset", asset);
+  const qs = params.toString();
+  const res = await fetch(`${ApiUrl}/swaps/history${qs ? `?${qs}` : ""}`);
+  if (!res.ok) throw new Error("Failed to fetch swap history");
+  return await res.json();
+}
+
+export async function fetchRecentSwaps(type) {
+  const qs = type ? `?type=${type}` : "";
+  const res = await fetch(`${ApiUrl}/swaps/recent${qs}`);
+  if (!res.ok) throw new Error("Failed to fetch recent swaps");
+  return await res.json();
+}
+
+export async function fetchSwapStats() {
+  const res = await fetch(`${ApiUrl}/swaps/stats`);
+  if (!res.ok) throw new Error("Failed to fetch swap stats");
+  return await res.json();
+}

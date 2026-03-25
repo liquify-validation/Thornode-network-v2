@@ -11,6 +11,7 @@ import Vaults from "./pages/Vaults";
 import Mimir from "./pages/Mimir";
 import Pools from "./pages/Pools";
 import Queue from "./pages/Queue";
+import Swaps from "./pages/Swaps";
 import BPReport from "./pages/BPReport";
 import Header from "./global/Header";
 import Footer from "./global/Footer";
@@ -142,6 +143,7 @@ function App() {
                 <Route path="/mimir" element={<Mimir isDark={isDark} />} />
                 <Route path="/pools" element={<Pools isDark={isDark} />} />
                 <Route path="/queue" element={<Queue isDark={isDark} />} />
+                <Route path="/swaps" element={<Swaps isDark={isDark} />} />
                 <Route path="/bp-report" element={<BPReport isDark={isDark} />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route

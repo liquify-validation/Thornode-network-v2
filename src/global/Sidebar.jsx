@@ -24,6 +24,7 @@ const Sidebar = ({ isExpanded, onToggleSidebar, isDark, onToggleTheme, mobileOpe
     { name: "Pools", icon: AnalyticsIcon, path: "/pools" },
     { name: "Mimir", icon: LeaderboardIcon, path: "/mimir" },
     { name: "Queue", icon: NodesIcon, path: "/queue" },
+    { name: "Swaps", icon: AnalyticsIcon, path: "/swaps" },
     { name: "BP Report", icon: ReportIcon, path: "/bp-report" },
   ];
 
