@@ -99,6 +99,7 @@ import LeaderboardIcon from "./leaderboard_icon.svg";
 import DownloadIcon from "./file_download.svg";
 import XrpIcon from "./xrp_icon.svg";
 import TronIcon from "./tron_icon.svg";
+import SolIcon from "./sol_icon.svg";
 
 export {
   DayHighIcon,
@@ -202,4 +203,5 @@ export {
   DownloadIcon,
   XrpIcon,
   TronIcon,
+  SolIcon,
 };

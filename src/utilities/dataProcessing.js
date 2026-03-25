@@ -65,11 +65,13 @@ export const processData = (
 
 function returnSearchedData(data, searchTerm) {
   if (!searchTerm) return data;
+  const lower = searchTerm.toLowerCase();
   return data.filter(
     (item) =>
-      item.node_address.includes(searchTerm) ||
+      item.node_address.toLowerCase().includes(lower) ||
       (item.bondProvidersString &&
-        item.bondProvidersString.includes(searchTerm))
+        item.bondProvidersString.toLowerCase().includes(lower)) ||
+      (item.isp && item.isp.toLowerCase().includes(lower))
   );
 }
 

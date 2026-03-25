@@ -102,6 +102,7 @@ export const getData = async () => {
       "BASE",
       "XRP",
       "TRON",
+	  "SOL",
     ];
     const maxChainHeights = chains.reduce((acc, chain) => {
       acc[chain] = getMaxHeightForChain(observeChainsData, chain);

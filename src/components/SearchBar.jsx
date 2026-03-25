@@ -7,7 +7,7 @@ const SearchBar = ({
   icons = [],
 }) => {
   return (
-    <div className="search-bar flex items-center space-x-4 w-[30%]">
+    <div className="search-bar flex items-center space-x-4 w-full sm:w-[40%] md:w-[30%] min-w-[200px]">
       <div className="relative w-full">
         <img
           src={MagnifyingGlass}
