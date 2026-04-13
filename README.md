@@ -16,7 +16,7 @@ This project is a React dashboard (bundled via Vite) that monitors THORNode info
 Clone the Repo:
 
 ```bash
-  git clone https://github.com/liquify-validation/Thornode-network-v2.git 
+  git clone https://github.com/liquify-validation/Thornode-network-v2.git
   cd Thornode-network-v2
 ```
 

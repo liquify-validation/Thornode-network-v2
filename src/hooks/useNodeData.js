@@ -96,15 +96,15 @@
 // }
 
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import semver from "semver";
 import { fetchAllNodes } from "../services/apiService";
 import {
   processNodes,
   computeMaxChainHeights,
 } from "../utilities/processNodes";
 
-async function fetchAndProcessNodes(globalData) {
-  const rawNodes = await fetchAllNodes();
-
+function transformNodeData(rawNodes, globalData) {
   const { processed, maxVersion, countriesData, totalBondedValue } =
     processNodes(rawNodes, globalData);
 
@@ -119,12 +119,105 @@ async function fetchAndProcessNodes(globalData) {
   };
 }
 
-export function useNodeData(globalData) {
+export function useAllNodesData() {
   return useQuery({
-    queryKey: ["nodeData"],
-    queryFn: () => fetchAndProcessNodes(globalData),
-    enabled: !!globalData,
+    queryKey: ["allNodes"],
+    queryFn: fetchAllNodes,
     staleTime: 60_000,
     refetchInterval: 60_000,
   });
+}
+
+export function useNodeStatusMap() {
+  const allNodesQuery = useAllNodesData();
+
+  const data = useMemo(() => {
+    if (!Array.isArray(allNodesQuery.data)) {
+      return {};
+    }
+
+    return allNodesQuery.data.reduce((accumulator, node) => {
+      if (node?.node_address) {
+        accumulator[node.node_address] = node.status;
+      }
+      return accumulator;
+    }, {});
+  }, [allNodesQuery.data]);
+
+  return {
+    ...allNodesQuery,
+    data,
+  };
+}
+
+function canonicalVersion(value = "") {
+  return String(value).trim().replace(/\u00A0/g, "");
+}
+
+export function useNodeSummaryData() {
+  const allNodesQuery = useAllNodesData();
+
+  const data = useMemo(() => {
+    if (!Array.isArray(allNodesQuery.data)) {
+      return undefined;
+    }
+
+    const versions = allNodesQuery.data
+      .map((node) => canonicalVersion(node?.version))
+      .filter(Boolean)
+      .sort(semver.rcompare);
+
+    const maxVersion = versions[0] || "";
+
+    const activeNodeCount = allNodesQuery.data.filter(
+      (node) => node?.status === "Active",
+    ).length;
+
+    const standbyNodeCount = allNodesQuery.data.filter((node) => {
+      const status = node?.status;
+      return (
+        (status === "Standby" || status === "Ready") &&
+        canonicalVersion(node?.version) === maxVersion
+      );
+    }).length;
+
+    const totalBondedRune =
+      allNodesQuery.data.reduce((sum, node) => {
+        if (node?.status !== "Active") return sum;
+        return sum + (Number(node?.bond) || 0);
+      }, 0) / 1e8;
+
+    return {
+      activeNodeCount,
+      standbyNodeCount,
+      maxVersion,
+      totalBondedRune,
+    };
+  }, [allNodesQuery.data]);
+
+  return {
+    ...allNodesQuery,
+    data,
+  };
+}
+
+export function useNodeData(globalData) {
+  const allNodesQuery = useAllNodesData();
+
+  const data = useMemo(() => {
+    if (!globalData || !Array.isArray(allNodesQuery.data)) {
+      return undefined;
+    }
+
+    return transformNodeData(allNodesQuery.data, globalData);
+  }, [
+    allNodesQuery.data,
+    globalData,
+  ]);
+
+  return {
+    ...allNodesQuery,
+    data,
+    isLoading: allNodesQuery.isLoading,
+  };
 }

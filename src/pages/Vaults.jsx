@@ -1,16 +1,68 @@
-import React, { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { LoadingSpinner, VaultStatusFilter, SearchBar } from "../components";
 import Box from "../ui/Box";
 import StatsCard from "../components/StatsCard";
-import {
-  useAsgardVaults,
-  usePendingVaults,
-} from "../hooks/useVaultsData";
+import { useAsgardVaults, usePendingVaults } from "../hooks/useVaultsData";
 import { BondIcon, BlockIcon, NodesIcon } from "../assets";
 import { chainIcons } from "../utilities/commonFunctions";
 
-function Vaults({ isDark }) {
+function parseCoins(coins) {
+  if (Array.isArray(coins)) return coins;
+  try {
+    return JSON.parse(coins || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function parseMembership(membership) {
+  if (Array.isArray(membership)) return membership;
+  try {
+    const parsed = JSON.parse(membership || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function shortenPubKey(key) {
+  if (!key || key.length < 16) return key || "";
+  return `${key.slice(0, 8)}...${key.slice(-8)}`;
+}
+
+function normalizeVaultStatus(status) {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized === "activevault") return "active";
+  if (normalized === "retiringvault") return "retiring";
+  if (normalized === "pendingvault") return "pending";
+  return normalized.replace("vault", "") || "unknown";
+}
+
+function getVaultSearchText(vault) {
+  const coins = parseCoins(vault.coins);
+  const membership = parseMembership(vault.membership);
+
+  return [
+    vault.pub_key,
+    vault.vault_type,
+    vault.status,
+    vault.node_address,
+    vault.block_height,
+    ...membership,
+    ...coins.flatMap((coin) => {
+      const asset = String(coin.asset || "");
+      const [chain = "", token = ""] = asset.split(".");
+      const ticker = token.split("-")[0] || chain;
+      return [asset, chain, ticker];
+    }),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function Vaults() {
   const [statusFilter, setStatusFilter] = useState("active");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedVaults, setExpandedVaults] = useState({});
@@ -20,73 +72,73 @@ function Vaults({ isDark }) {
   };
 
   const { data: asgardVaults, isLoading: asgardLoading } = useAsgardVaults();
-  const { data: pendingVaults, isLoading: pendingLoading } =
-    usePendingVaults();
+  const { data: pendingVaults, isLoading: pendingLoading } = usePendingVaults();
 
   const isLoading = asgardLoading || pendingLoading;
 
-  const allVaults = useMemo(() => {
-    const asgard = Array.isArray(asgardVaults) ? asgardVaults : [];
-    const pending = Array.isArray(pendingVaults) ? pendingVaults : [];
-    return [...asgard, ...pending];
-  }, [asgardVaults, pendingVaults]);
+  const activeVaults = useMemo(
+    () =>
+      (Array.isArray(asgardVaults) ? asgardVaults : []).filter(
+        (vault) => normalizeVaultStatus(vault.status) === "active",
+      ),
+    [asgardVaults],
+  );
+
+  const retiringVaults = useMemo(
+    () =>
+      (Array.isArray(asgardVaults) ? asgardVaults : []).filter(
+        (vault) => normalizeVaultStatus(vault.status) === "retiring",
+      ),
+    [asgardVaults],
+  );
+
+  const pendingVaultList = useMemo(
+    () =>
+      (Array.isArray(pendingVaults) ? pendingVaults : []).map((vault) => ({
+        ...vault,
+        status: vault.status || "PendingVault",
+      })),
+    [pendingVaults],
+  );
+
+  const allVaults = useMemo(
+    () => [...activeVaults, ...retiringVaults, ...pendingVaultList],
+    [activeVaults, retiringVaults, pendingVaultList],
+  );
 
   const filteredVaults = useMemo(() => {
-    const asgard = Array.isArray(asgardVaults) ? asgardVaults : [];
-    const pending = Array.isArray(pendingVaults) ? pendingVaults : [];
-
     let list;
-    if (statusFilter === "all") list = allVaults;
-    else if (statusFilter === "active") {
-      list = asgard.filter(
-        (v) => (v.status || "").toLowerCase() === "activevault"
-      );
-    } else if (statusFilter === "retired") {
-      list = [
-        ...asgard.filter(
-          (v) => (v.status || "").toLowerCase() === "retiringvault"
-        ),
-        ...pending,
-      ];
-    } else {
-      list = allVaults;
+
+    switch (statusFilter) {
+      case "active":
+        list = activeVaults;
+        break;
+      case "retiring":
+        list = retiringVaults;
+        break;
+      case "pending":
+        list = pendingVaultList;
+        break;
+      case "all":
+      default:
+        list = allVaults;
+        break;
     }
 
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      list = list.filter(
-        (v) =>
-          (v.pub_key || "").toLowerCase().includes(lower) ||
-          (v.node_address || "").toLowerCase().includes(lower)
-      );
-    }
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    if (!normalizedSearch) return list;
 
-    return list;
-  }, [asgardVaults, pendingVaults, allVaults, statusFilter, searchTerm]);
-
-  function parseCoins(coins) {
-    if (Array.isArray(coins)) return coins;
-    try {
-      return JSON.parse(coins || "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function parseMembership(membership) {
-    if (Array.isArray(membership)) return membership.length;
-    try {
-      const parsed = JSON.parse(membership || "[]");
-      return Array.isArray(parsed) ? parsed.length : 0;
-    } catch {
-      return 0;
-    }
-  }
-
-  function shortenPubKey(key) {
-    if (!key || key.length < 16) return key || "";
-    return `${key.slice(0, 8)}...${key.slice(-8)}`;
-  }
+    return list.filter((vault) =>
+      getVaultSearchText(vault).includes(normalizedSearch),
+    );
+  }, [
+    activeVaults,
+    allVaults,
+    pendingVaultList,
+    retiringVaults,
+    searchTerm,
+    statusFilter,
+  ]);
 
   if (isLoading) {
     return (
@@ -95,16 +147,6 @@ function Vaults({ isDark }) {
       </div>
     );
   }
-
-  const activeCount = (
-    Array.isArray(asgardVaults) ? asgardVaults : []
-  ).filter((v) => (v.status || "").toLowerCase() === "activevault").length;
-  const pendingCount = Array.isArray(pendingVaults)
-    ? pendingVaults.length
-    : 0;
-  const retiringCount = (
-    Array.isArray(asgardVaults) ? asgardVaults : []
-  ).filter((v) => (v.status || "").toLowerCase() === "retiringvault").length;
 
   return (
     <>
@@ -129,30 +171,31 @@ function Vaults({ isDark }) {
           <StatsCard
             icon={NodesIcon}
             title="Active Vaults"
-            stat={String(activeCount)}
+            stat={String(activeVaults.length)}
           />
           <StatsCard
             icon={BlockIcon}
             title="Retiring Vaults"
-            stat={String(retiringCount)}
+            stat={String(retiringVaults.length)}
           />
           <StatsCard
             icon={NodesIcon}
             title="Pending Vaults"
-            stat={String(pendingCount)}
+            stat={String(pendingVaultList.length)}
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <VaultStatusFilter
             statusFilter={statusFilter}
             onChange={setStatusFilter}
           />
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 lg:ml-auto">
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
-              placeholder="Search vaults..."
+              placeholder="Search vaults, assets, members..."
+              className="sm:w-[320px] md:w-[360px] lg:w-[420px] min-w-[240px]"
             />
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {filteredVaults.length} vault
@@ -164,22 +207,17 @@ function Vaults({ isDark }) {
         <div className="space-y-4">
           {filteredVaults.map((vault) => {
             const coins = parseCoins(vault.coins);
-            const memberCount = parseMembership(vault.membership);
-            const members = Array.isArray(vault.membership)
-              ? vault.membership
-              : [];
-            const rawStatus = (vault.status || "unknown")
-              .replace("Vault", "")
-              .replace("vault", "");
+            const members = parseMembership(vault.membership);
+            const memberCount = members.length;
+            const normalizedStatus = normalizeVaultStatus(vault.status);
             const statusLabel =
-              rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+              normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
             const isExpanded = expandedVaults[vault.pub_key] || false;
 
             const renderCoinBadge = (coin, idx) => {
               const asset = coin.asset || "";
               const chain = asset.split(".")[0] || asset;
-              const ticker =
-                asset.split(".")[1]?.split("-")[0] || chain;
+              const ticker = asset.split(".")[1]?.split("-")[0] || chain;
               const decimals = coin.decimals || 8;
               const amount = (
                 Number(coin.amount) / Math.pow(10, decimals)
@@ -190,16 +228,11 @@ function Vaults({ isDark }) {
 
               return (
                 <span
-                  key={idx}
-                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs
-                    bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
+                  key={`${asset}-${idx}`}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
                 >
                   {ChainIcon && (
-                    <img
-                      src={ChainIcon}
-                      alt={chain}
-                      className="w-4 h-4"
-                    />
+                    <img src={ChainIcon} alt={chain} className="w-4 h-4" />
                   )}
                   <span className="font-semibold">{ticker}</span>
                   <span>{amount}</span>
@@ -209,21 +242,20 @@ function Vaults({ isDark }) {
 
             return (
               <Box key={vault.pub_key} className="p-4">
-                {/* Header row - always visible */}
                 <button
                   type="button"
                   onClick={() => toggleVault(vault.pub_key)}
-                  className="w-full text-left"
+                  className="w-full text-left bg-transparent hover:border-transparent focus:ring-0 focus-visible:ring-0"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold uppercase ${
-                          statusLabel.toLowerCase() === "active"
+                          normalizedStatus === "active"
                             ? "bg-green-500/20 text-green-400"
-                            : statusLabel.toLowerCase() === "retiring"
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-gray-500/20 text-gray-400"
+                            : normalizedStatus === "retiring"
+                              ? "bg-yellow-500/20 text-yellow-400"
+                              : "bg-gray-500/20 text-gray-400"
                         }`}
                       >
                         {statusLabel}
@@ -237,8 +269,7 @@ function Vaults({ isDark }) {
                       <span>{memberCount} members</span>
                       {vault.block_height && (
                         <span>
-                          Block:{" "}
-                          {Number(vault.block_height).toLocaleString()}
+                          Block: {Number(vault.block_height).toLocaleString()}
                         </span>
                       )}
                       <svg
@@ -260,7 +291,6 @@ function Vaults({ isDark }) {
                   </div>
                 </button>
 
-                {/* Asset preview - always visible */}
                 {coins.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {coins.slice(0, 8).map(renderCoinBadge)}
@@ -268,7 +298,7 @@ function Vaults({ isDark }) {
                       <button
                         type="button"
                         onClick={() => toggleVault(vault.pub_key)}
-                        className="px-2 py-1 text-xs text-[#28f3b0] hover:underline"
+                        className="px-2 py-1 text-xs text-[#28f3b0] hover:underline bg-transparent hover:border-transparent focus:ring-0 focus-visible:ring-0"
                       >
                         +{coins.length - 8} more
                       </button>
@@ -276,10 +306,8 @@ function Vaults({ isDark }) {
                   </div>
                 )}
 
-                {/* Expanded details */}
                 {isExpanded && (
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700/50 space-y-4">
-                    {/* Full Public Key */}
                     <div>
                       <h4 className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">
                         Public Key
@@ -289,19 +317,20 @@ function Vaults({ isDark }) {
                       </p>
                     </div>
 
-                    {/* Vault details grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
                         <h4 className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-1">
                           Status
                         </h4>
-                        <p className={`text-sm font-semibold ${
-                          statusLabel.toLowerCase() === "active"
-                            ? "text-green-400"
-                            : statusLabel.toLowerCase() === "retiring"
-                            ? "text-yellow-400"
-                            : "text-gray-400"
-                        }`}>
+                        <p
+                          className={`text-sm font-semibold ${
+                            normalizedStatus === "active"
+                              ? "text-green-400"
+                              : normalizedStatus === "retiring"
+                                ? "text-yellow-400"
+                                : "text-gray-400"
+                          }`}
+                        >
                           {statusLabel}
                         </p>
                       </div>
@@ -310,7 +339,7 @@ function Vaults({ isDark }) {
                           Type
                         </h4>
                         <p className="text-sm text-gray-700 dark:text-gray-300">
-                          {vault.vault_type || "—"}
+                          {vault.vault_type || "â€”"}
                         </p>
                       </div>
                       <div>
@@ -320,7 +349,7 @@ function Vaults({ isDark }) {
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                           {vault.block_height
                             ? Number(vault.block_height).toLocaleString()
-                            : "—"}
+                            : "â€”"}
                         </p>
                       </div>
                       <div>
@@ -333,7 +362,6 @@ function Vaults({ isDark }) {
                       </div>
                     </div>
 
-                    {/* All assets */}
                     {coins.length > 8 && (
                       <div>
                         <h4 className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2">
@@ -345,7 +373,6 @@ function Vaults({ isDark }) {
                       </div>
                     )}
 
-                    {/* Membership Addresses */}
                     {members.length > 0 && (
                       <div>
                         <h4 className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-2">
@@ -373,7 +400,7 @@ function Vaults({ isDark }) {
           {filteredVaults.length === 0 && (
             <Box className="p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400">
-                No vaults found for this filter.
+                No vaults matched the current filters.
               </p>
             </Box>
           )}

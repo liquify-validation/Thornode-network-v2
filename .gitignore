@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 .env
+DESIGN_GAPS_PLAN.txt
+todoplan.txt
+TODO_CODEBASE_PLAN.md
+WEDNESDAY_MEETING_CHURN_NOTES.md
+completed.txt

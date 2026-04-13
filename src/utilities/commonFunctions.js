@@ -4,6 +4,7 @@ import {
   BitcoinIcon,
   EthIcon,
   LitecoinLogo,
+  AtomIcon,
   BaseIcon,
   BitcoinCashIcon,
   AvalancheIcon,
@@ -22,6 +23,7 @@ import {
   CogentIcon,
   MicrosoftAzureIcon,
   CloudzyIcon,
+  NetworkIcon,
   Level3Icon,
   ConstantCompanyIcon,
   OvhIcon,
@@ -34,7 +36,11 @@ import {
   XrpIcon,
   TronIcon,
   SolIcon,
-  
+  VultrIcon,
+  InterserverIcon,
+  AkamaiIcon,
+  DataNetIcon,
+  FlokiIcon,
 } from "../assets";
 import { useEffect, useState } from "react";
 
@@ -62,6 +68,7 @@ export const ispLogos = {
   Leasweb: LeasewebIcon,
   "Leaseweb UK Limited": LeasewebIcon,
   "Leaseweb DE": LeasewebIcon,
+  "LeaseWeb Netherlands B.V.": LeasewebIcon,
   "Leaseweb USA, Inc.": LeasewebIcon,
   "Zenlayer Inc": ZenLayerIcon,
   "DataCamp Limited": DataCampIcon,
@@ -76,12 +83,32 @@ export const ispLogos = {
   "Hostinger International Limited": HostingerIcon,
   HOSTINGER: HostingerIcon,
   "TIMEWARP IT Consulting GmbH": TimeWarpIcon,
+  "SGP VULTR": VultrIcon,
+  "Interserver, Inc": InterserverIcon,
+  "FlokiNET ehf": FlokiIcon,
+  "Akamai Technologies, Inc.": AkamaiIcon,
+  DATANET: DataNetIcon,
 };
+
+export const ispLogoClasses = {
+  default: "mx-auto block h-5 w-auto max-w-[4.5rem] object-contain bg-transparent",
+  "MEVSPACE sp. z o.o": "mx-auto block h-5 w-auto max-w-[5rem] object-contain bg-transparent",
+  "MEVSPACE sp. z o.o.": "mx-auto block h-5 w-auto max-w-[5rem] object-contain bg-transparent",
+  Hostinger: "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
+  "Hostinger International Limited":
+    "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
+  HOSTINGER: "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
+  DATANET: "mx-auto block h-5 w-auto max-w-[5.75rem] object-contain bg-transparent",
+  "Interserver, Inc": "mx-auto block h-5 w-auto max-w-[5.25rem] object-contain bg-transparent",
+};
+
+export const defaultIspLogo = NetworkIcon;
 
 export const chainIcons = {
   BTC: BitcoinIcon,
   ETH: EthIcon,
   LTC: LitecoinLogo,
+  GAIA: AtomIcon,
   BCH: BitcoinCashIcon,
   DOGE: DogeIcon,
   AVAX: AvalancheIcon,
@@ -153,7 +180,7 @@ export const getTimeToDisplay = (globalData) => {
   }
 };
 
-export const calculateTotalBondedValue = (nodesData, globalData) => {
+export const calculateTotalBondedValue = (nodesData) => {
   const activeNodes = nodesData.filter((node) => node.status === "Active");
 
   const totalBondedRune =
@@ -164,14 +191,20 @@ export const calculateTotalBondedValue = (nodesData, globalData) => {
   return totalBondedRune;
 };
 
-export const copyToClipboard = (text) => {
+export const copyToClipboard = (
+  text,
+  {
+    successMessage = "Node address copied to clipboard!",
+    errorMessage = "Failed to copy node address.",
+  } = {},
+) => {
   navigator.clipboard
     .writeText(text)
     .then(() => {
-      toast.success("Node address copied to clipboard!");
+      toast.success(successMessage);
     })
     .catch(() => {
-      toast.error("Failed to copy node address.");
+      toast.error(errorMessage);
     });
 };
 
@@ -432,16 +465,95 @@ function convertChainValue(value) {
 }
 
 export function getCookieValue(name) {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = document.cookie.match(new RegExp(`(^| )${safeName}=([^;]+)`));
   return match ? decodeURIComponent(match[2]) : null;
 }
 
 export function setCookie(name, value, days = 365) {
   const date = new Date();
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(
-    value
-  )}; expires=${date.toUTCString()}; path=/`;
+  const cookieParts = [
+    `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
+    `expires=${date.toUTCString()}`,
+    "path=/",
+    "SameSite=Lax",
+  ];
+
+  if (window.location.protocol === "https:") {
+    cookieParts.push("Secure");
+  }
+
+  document.cookie = cookieParts.join("; ");
+}
+
+export function getStoredJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function setStoredJson(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function parsePositiveInteger(value) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+export function normalizeNodeAddress(value) {
+  const trimmed = String(value || "").trim();
+  return /^(t)?thor1[0-9a-z]{20,}$/i.test(trimmed) ? trimmed : "";
+}
+
+function isValidIpv4Host(value) {
+  const parts = value.split(".");
+  return (
+    parts.length === 4 &&
+    parts.every(
+      (part) =>
+        /^\d{1,3}$/.test(part) && Number(part) >= 0 && Number(part) <= 255,
+    )
+  );
+}
+
+function isValidIpv6Host(value) {
+  return value.includes(":") && /^[0-9a-fA-F:]+$/.test(value);
+}
+
+function isValidHostname(value) {
+  return (
+    /^[a-zA-Z0-9.-]+$/.test(value) &&
+    !value.startsWith(".") &&
+    !value.endsWith(".")
+  );
+}
+
+export function getNodeEndpointUrl(host, port, pathname) {
+  const trimmedHost = String(host || "").trim();
+  if (!trimmedHost) return null;
+
+  let formattedHost = trimmedHost;
+  if (isValidIpv6Host(trimmedHost)) {
+    formattedHost = `[${trimmedHost}]`;
+  } else if (!isValidIpv4Host(trimmedHost) && !isValidHostname(trimmedHost)) {
+    return null;
+  }
+
+  try {
+    return new URL(`http://${formattedHost}:${port}${pathname}`).toString();
+  } catch {
+    return null;
+  }
 }
 
 export const cityToCountryMap = {

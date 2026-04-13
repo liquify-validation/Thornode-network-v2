@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+/* eslint-disable react/prop-types */
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -24,11 +25,22 @@ import {
   PositionAverageIcon,
   BlockIcon,
 } from "../assets";
+import {
+  normalizeNodeAddress,
+  parsePositiveInteger,
+} from "../utilities/commonFunctions";
+import { showErrorToast } from "../services/toastService";
+
+//todo - cleanup breakdown into components - see what can be resused
 
 function BPReport({ isDark }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [nodeAddress, setNodeAddress] = useState(searchParams.get("node") || "");
-  const [submittedNode, setSubmittedNode] = useState(searchParams.get("node") || "");
+  const [nodeAddress, setNodeAddress] = useState(
+    searchParams.get("node") || "",
+  );
+  const [submittedNode, setSubmittedNode] = useState(
+    searchParams.get("node") || "",
+  );
   const [selectedBP, setSelectedBP] = useState(searchParams.get("bp") || "");
   const [fromBlock, setFromBlock] = useState(searchParams.get("start") || "");
   const [toBlock, setToBlock] = useState(searchParams.get("end") || "");
@@ -39,22 +51,21 @@ function BPReport({ isDark }) {
   const [isBPOpen, setIsBPOpen] = useState(false);
 
   const autoSubmitDone = useRef(false);
+  const normalizedNodeAddress = normalizeNodeAddress(nodeAddress);
+  const normalizedSubmittedNode = normalizeNodeAddress(submittedNode);
 
   const {
     data: bpList = [],
     isLoading: bpLoading,
     isError: bpError,
-  } = useBPsForNode(submittedNode);
+  } = useBPsForNode(normalizedSubmittedNode);
 
-  const {
-    data: churns = [],
-    isLoading: churnsLoading,
-  } = useChurnsForNode(submittedNode);
+  const { data: churns = [], isLoading: churnsLoading } = useChurnsForNode(
+    normalizedSubmittedNode,
+  );
 
-  const {
-    mutate: generateReport,
-    isLoading: generating,
-  } = useGenerateBPReport();
+  const { mutate: generateReport, isLoading: generating } =
+    useGenerateBPReport();
 
   // Auto-generate report when loaded from URL params
   useEffect(() => {
@@ -64,19 +75,32 @@ function BPReport({ isDark }) {
     const urlStart = searchParams.get("start");
     const urlEnd = searchParams.get("end");
 
-    if (urlNode && urlBP && urlStart && urlEnd && !bpLoading && !churnsLoading) {
+    const safeUrlNode = normalizeNodeAddress(urlNode);
+    const safeStart = parsePositiveInteger(urlStart);
+    const safeEnd = parsePositiveInteger(urlEnd);
+
+    if (
+      safeUrlNode &&
+      urlBP &&
+      safeStart &&
+      safeEnd &&
+      safeStart < safeEnd &&
+      !bpLoading &&
+      !churnsLoading
+    ) {
       autoSubmitDone.current = true;
       generateReport(
         {
-          start: Number(urlStart),
-          end: Number(urlEnd),
-          node: urlNode,
+          start: safeStart,
+          end: safeEnd,
+          node: safeUrlNode,
           bp: urlBP,
         },
         {
           onSuccess: (result) => setReportData(result),
-          onError: (err) => alert(`Failed to generate report: ${err.message}`),
-        }
+          onError: (err) =>
+            showErrorToast(`Failed to generate report: ${err.message}`),
+        },
       );
     }
   }, [searchParams, bpLoading, churnsLoading, generateReport]);
@@ -87,8 +111,12 @@ function BPReport({ isDark }) {
   }, [churns, fromBlock]);
 
   function handleLookup() {
-    if (!nodeAddress.trim()) return;
-    setSubmittedNode(nodeAddress.trim());
+    if (!normalizedNodeAddress) {
+      showErrorToast("Please enter a valid THORChain node address.");
+      return;
+    }
+    setSubmittedNode(normalizedNodeAddress);
+    setNodeAddress(normalizedNodeAddress);
     setSelectedBP("");
     setFromBlock("");
     setToBlock("");
@@ -96,29 +124,43 @@ function BPReport({ isDark }) {
   }
 
   function handleSubmit() {
-    if (!selectedBP || !fromBlock || !toBlock) {
-      alert("Please select a bond provider and both block heights.");
+    const startBlock = parsePositiveInteger(fromBlock);
+    const endBlock = parsePositiveInteger(toBlock);
+
+    if (!normalizedSubmittedNode) {
+      showErrorToast("Please look up a valid THORChain node address first.");
+      return;
+    }
+
+    if (!selectedBP || !startBlock || !endBlock) {
+      showErrorToast("Please select a bond provider and both block heights.");
+      return;
+    }
+
+    if (startBlock >= endBlock) {
+      showErrorToast("The end block must be greater than the start block.");
       return;
     }
 
     setSearchParams({
-      node: submittedNode,
+      node: normalizedSubmittedNode,
       bp: selectedBP,
-      start: fromBlock,
-      end: toBlock,
+      start: String(startBlock),
+      end: String(endBlock),
     });
 
     generateReport(
       {
-        start: Number(fromBlock),
-        end: Number(toBlock),
-        node: submittedNode,
+        start: startBlock,
+        end: endBlock,
+        node: normalizedSubmittedNode,
         bp: selectedBP,
       },
       {
         onSuccess: (result) => setReportData(result),
-        onError: (err) => alert(`Failed to generate report: ${err.message}`),
-      }
+        onError: (err) =>
+          showErrorToast(`Failed to generate report: ${err.message}`),
+      },
     );
   }
 
@@ -193,8 +235,15 @@ function BPReport({ isDark }) {
           </button>
         </div>
 
+        {nodeAddress && !normalizedNodeAddress && (
+          <p className="mt-3 text-sm text-red-500">
+            Enter a valid THORChain node address before looking up bond
+            providers.
+          </p>
+        )}
+
         {/* BP + Churn selectors */}
-        {submittedNode && (
+        {normalizedSubmittedNode && (
           <div className="flex flex-wrap items-center gap-4 mt-6">
             {/* BP Selector */}
             <div className="relative">
@@ -277,9 +326,7 @@ function BPReport({ isDark }) {
                 }}
                 className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-none"
               >
-                {fromBlock
-                  ? `From: Block ${fromBlock}`
-                  : "From (Start Block)"}
+                {fromBlock ? `From: Block ${fromBlock}` : "From (Start Block)"}
                 <svg
                   className="w-4 h-4 ml-2"
                   fill="none"
@@ -391,7 +438,7 @@ function BPReport({ isDark }) {
 
         {/* Results */}
         {reportData && !generating && (
-          <div className="mx-0 lg:mx-12 mt-12">
+          <div className="mx-0 mt-12">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <StatsCard
@@ -407,23 +454,26 @@ function BPReport({ isDark }) {
               <StatsCard
                 icon={StartBondIcon}
                 title="Start BP Bond"
-                stat={`${(
-                  (reportData.startBPBond || 0) / 1e8
-                ).toLocaleString(undefined, { maximumFractionDigits: 2 })} RUNE`}
+                stat={`${((reportData.startBPBond || 0) / 1e8).toLocaleString(
+                  undefined,
+                  { maximumFractionDigits: 2 },
+                )} RUNE`}
               />
               <StatsCard
                 icon={EndBondIcon}
                 title="End BP Bond"
-                stat={`${(
-                  (reportData.endBPBond || 0) / 1e8
-                ).toLocaleString(undefined, { maximumFractionDigits: 2 })} RUNE`}
+                stat={`${((reportData.endBPBond || 0) / 1e8).toLocaleString(
+                  undefined,
+                  { maximumFractionDigits: 2 },
+                )} RUNE`}
               />
               <StatsCard
                 icon={BondOverTimeIcon}
                 title="BP Bond Change"
-                stat={`${(
-                  (reportData.bpBondChange || 0) / 1e8
-                ).toLocaleString(undefined, { maximumFractionDigits: 2 })} RUNE`}
+                stat={`${((reportData.bpBondChange || 0) / 1e8).toLocaleString(
+                  undefined,
+                  { maximumFractionDigits: 2 },
+                )} RUNE`}
               />
               <StatsCard
                 icon={PositionAverageIcon}
@@ -440,7 +490,9 @@ function BPReport({ isDark }) {
                 title="Total BP Reward"
                 stat={`${tableRows
                   .reduce((sum, r) => sum + r.bpReward, 0)
-                  .toLocaleString(undefined, { maximumFractionDigits: 2 })} RUNE`}
+                  .toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })} RUNE`}
               />
             </div>
 

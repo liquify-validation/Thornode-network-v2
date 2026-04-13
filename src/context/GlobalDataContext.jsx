@@ -1,14 +1,17 @@
-import React, { createContext, useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components, react/prop-types */
+import { createContext, useState, useEffect } from "react";
+import { getStoredJson, setStoredJson } from "../utilities/commonFunctions";
 
 export const GlobalDataContext = createContext();
 
 export const GlobalDataProvider = ({ children }) => {
   const [favoriteNodes, setFavoriteNodes] = useState(() => {
-    return JSON.parse(localStorage.getItem("favoriteNodes")) || [];
+    const storedFavorites = getStoredJson("favoriteNodes", []);
+    return Array.isArray(storedFavorites) ? storedFavorites : [];
   });
 
   useEffect(() => {
-    localStorage.setItem("favoriteNodes", JSON.stringify(favoriteNodes));
+    setStoredJson("favoriteNodes", favoriteNodes);
   }, [favoriteNodes]);
 
   const addToFavorites = (address) =>

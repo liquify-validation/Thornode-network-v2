@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { GlobalDataContext } from "../context/GlobalDataContext";
+/* eslint-disable react/prop-types */
 import {
   NodeGraphIcon,
   ReportIcon,
@@ -9,21 +8,16 @@ import {
 } from "../assets";
 import { useNavigate } from "react-router-dom";
 import InfoPopover from "./InfoPopover";
+import { copyToClipboard } from "../utilities/commonFunctions";
 
 const TableIcons = ({ node, onOpenChart }) => {
-  const { isFavorite, addToFavorites, removeFromFavorites } =
-    useContext(GlobalDataContext);
   const navigate = useNavigate();
 
   const handleCopyIpAddress = () => {
-    navigator.clipboard
-      .writeText(node.ip_address)
-      .then(() => {
-        alert("IP address copied to clipboard!");
-      })
-      .catch(() => {
-        alert("Failed to copy IP address.");
-      });
+    copyToClipboard(node.ip_address, {
+      successMessage: "IP address copied to clipboard!",
+      errorMessage: "Failed to copy IP address.",
+    });
   };
 
   return (

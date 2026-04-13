@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useMemo } from "react";
 import {
   ScatterChart,
@@ -29,8 +30,9 @@ const ModernScatterChart = ({
   xAxisLabel,
   yAxisLabel,
   yAxisMax,
-
   isDark = false,
+  showHeader = true,
+  showRangeControls = true,
 }) => {
   const [range, setRange] = useState(0);
 
@@ -60,28 +62,34 @@ const ModernScatterChart = ({
   }, [scatterPoints, yAxisKey, yAxisLabel]);
 
   return (
-    <Box className="chart-card pt-8 pb-10 px-12">
-      <h2 className="font-semibold text-md ml-8">{title}</h2>
-      <ModernDivider />
-      <div className="flex items-center gap-1.5 flex-wrap mx-5 mb-4">
-        {data && data.length > 50 && RANGE_PRESETS.map((p) => (
-          <button
-            key={p.label}
-            onClick={() => setRange(p.value)}
-            className={`text-[11px] px-2 py-0.5 rounded-md icon-button border
-              ${range === p.value
-                ? "bg-[#28f3b0] text-gray-900 border-[#28f3b0]"
-                : "bg-transparent text-gray-400 border-gray-600 hover:border-gray-400"}`}
-          >
-            {p.label}
-          </button>
-        ))}
-        {data && data.length > 50 && (
-          <span className="text-[10px] text-gray-500 ml-1">
-            {slicedData?.length || 0}/{data.length}
-          </span>
-        )}
-      </div>
+    <Box className={`chart-card px-12 pb-10 ${showHeader ? "pt-8" : "pt-6"}`}>
+      {showHeader && (
+        <>
+          <h2 className="font-semibold text-md ml-8">{title}</h2>
+          <ModernDivider />
+        </>
+      )}
+      {showRangeControls && (
+        <div className="flex items-center gap-1.5 flex-wrap mx-5 mb-4">
+          {data && data.length > 50 && RANGE_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => setRange(p.value)}
+              className={`text-[11px] px-2 py-0.5 rounded-md icon-button border
+                ${range === p.value
+                  ? "bg-[#28f3b0] text-gray-900 border-[#28f3b0]"
+                  : "bg-transparent text-gray-400 border-gray-600 hover:border-gray-400"}`}
+            >
+              {p.label}
+            </button>
+          ))}
+          {data && data.length > 50 && (
+            <span className="text-[10px] text-gray-500 ml-1">
+              {slicedData?.length || 0}/{data.length}
+            </span>
+          )}
+        </div>
+      )}
 
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart
@@ -139,6 +147,7 @@ const ModernScatterChart = ({
               dataKey={set.dataKey}
               fill={set.fillColor || "#FFAE4C"}
               shape={set.shape || "circle"}
+              isAnimationActive={false}
             />
           ))}
         </ScatterChart>

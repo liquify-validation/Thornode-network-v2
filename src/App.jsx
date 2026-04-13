@@ -1,25 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Nodes from "./pages/Nodes";
-import Network from "./pages/Network";
-import Analytics from "./pages/Analytics";
-import Report from "./pages/Report";
-import Contact from "./pages/Contact";
-import Vaults from "./pages/Vaults";
-import Mimir from "./pages/Mimir";
-import Pools from "./pages/Pools";
-import Queue from "./pages/Queue";
-import BPReport from "./pages/BPReport";
 import Header from "./global/Header";
 import Footer from "./global/Footer";
 import Sidebar from "./global/Sidebar";
 import MapBg from "./global/MapBg";
 import ScrollToTop from "./global/ScrollToTop";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Leaderboards from "./pages/Leaderboards";
+import { setCookie } from "./utilities/commonFunctions";
+
+const Home = lazy(() => import("./pages/Home"));
+const Nodes = lazy(() => import("./pages/Nodes"));
+const Network = lazy(() => import("./pages/Network"));
+const Report = lazy(() => import("./pages/Report"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Vaults = lazy(() => import("./pages/Vaults"));
+const Pools = lazy(() => import("./pages/Pools"));
+const Queue = lazy(() => import("./pages/Queue"));
+const BPReport = lazy(() => import("./pages/BPReport"));
 
 function App() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -27,7 +27,12 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
+    let storedTheme = "dark";
+    try {
+      storedTheme = localStorage.getItem("theme") || "dark";
+    } catch {
+      storedTheme = "dark";
+    }
     const dark = !storedTheme || storedTheme === "dark";
     setIsDark(dark);
 
@@ -57,7 +62,11 @@ function App() {
   const handleToggleTheme = () => {
     const newIsDark = !isDark;
     setIsDark(newIsDark);
-    localStorage.setItem("theme", newIsDark ? "dark" : "light");
+    try {
+      localStorage.setItem("theme", newIsDark ? "dark" : "light");
+    } catch {
+      // Ignore storage write failures and keep the in-memory theme state.
+    }
 
     if (newIsDark) {
       document.documentElement.classList.add("dark");
@@ -69,7 +78,7 @@ function App() {
   const handleToggleSidebar = () => {
     setIsExpanded((prev) => {
       const newVal = !prev;
-      document.cookie = `sidebarExpanded=${newVal}; path=/; max-age=31536000`;
+      setCookie("sidebarExpanded", String(newVal));
 
       return newVal;
     });
@@ -100,7 +109,9 @@ function App() {
           >
             &#9776;
           </button>
-          <span className="text-white font-semibold text-sm">THORChain Explorer</span>
+          <span className="text-white font-semibold text-sm">
+            THORChain Explorer
+          </span>
           <button
             onClick={handleToggleTheme}
             className="icon-button text-white text-xl p-1"
@@ -122,25 +133,38 @@ function App() {
             <Header />
 
             <main className="flex-grow p-4 relative">
-              <Routes>
-                <Route path="/" element={<Home isDark={isDark} />} />
-                <Route path="/nodes" element={<Nodes isDark={isDark} />} />
-                <Route path="/nodes/:tab" element={<Nodes />} />
-                {/* <Route path="/network/*" element={<Network />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/leaderboards" element={<Leaderboards />} /> */}
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Home isDark={isDark} />} />
+                  <Route
+                    path="/nodes"
+                    element={
+                      <Nodes isDark={isDark} isSidebarExpanded={isExpanded} />
+                    }
+                  />
+                  <Route
+                    path="/nodes/:tab"
+                    element={
+                      <Nodes isDark={isDark} isSidebarExpanded={isExpanded} />
+                    }
+                  />
+                  <Route path="/network/*" element={<Network />} />
+                  {/* <Route path="/leaderboards" element={<Leaderboards />} /> */}
 
-                <Route path="/vaults" element={<Vaults isDark={isDark} />} />
-                <Route path="/mimir" element={<Mimir isDark={isDark} />} />
-                <Route path="/pools" element={<Pools isDark={isDark} />} />
-                <Route path="/queue" element={<Queue isDark={isDark} />} />
-                <Route path="/bp-report" element={<BPReport isDark={isDark} />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route
-                  path="/nodes/report/:thornodeAddress"
-                  element={<Report isDark={isDark} />}
-                />
-              </Routes>
+                  <Route path="/vaults" element={<Vaults isDark={isDark} />} />
+                  <Route path="/pools" element={<Pools isDark={isDark} />} />
+                  <Route path="/queue" element={<Queue isDark={isDark} />} />
+                  <Route
+                    path="/bp-report"
+                    element={<BPReport isDark={isDark} />}
+                  />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route
+                    path="/nodes/report/:thornodeAddress"
+                    element={<Report isDark={isDark} />}
+                  />
+                </Routes>
+              </Suspense>
             </main>
           </div>
         </div>
