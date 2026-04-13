@@ -7,6 +7,7 @@ import {
   LoadingSpinner,
   Modal,
   ModernScatterChart,
+  NetworkStatsCardSection,
 } from "../components";
 
 import { useNetworkData } from "../hooks/useNetworkData";
@@ -43,11 +44,9 @@ function Home({ isDark }) {
     isError: nodeError,
   } = useNodeData(netData);
 
-  const { data: totalBondOverTimeData = [], isLoading: totalBondLoading } =
-    useBondData();
+  const { data: totalBondOverTimeData = [] } = useBondData();
 
-  const { data: maxEffectiveStakeData = [], isLoading: maxStakeLoading } =
-    useMaxEffectiveStakeData();
+  const { data: maxEffectiveStakeData = [] } = useMaxEffectiveStakeData();
 
   const handleOpenChart = (address) => {
     setSelectedAddress(address);
@@ -82,14 +81,9 @@ function Home({ isDark }) {
     return <div>No data returned yet.</div>;
   }
 
-  const {
-    processedNodes = [],
-    countriesData = [],
-    maxChainHeights = {},
-  } = nodeDataResult;
+  const { processedNodes = [], countriesData = [] } = nodeDataResult;
 
-  const { isps: rawIspData, total: totalISPs } =
-    getISPsDataWithTotal(processedNodes);
+  const { isps: rawIspData } = getISPsDataWithTotal(processedNodes);
   const ispData = shortenIspData(rawIspData);
 
   const renderScatterChart = () => {
@@ -193,6 +187,10 @@ function Home({ isDark }) {
           </div>
         </div>
 
+        <div className="mb-8 mx-2">
+          <NetworkStatsCardSection />
+        </div>
+
         {showChartModal && (
           <Modal onClose={handleCloseChart}>{renderScatterChart()}</Modal>
         )}
@@ -206,7 +204,6 @@ function Home({ isDark }) {
             gradientStartColor="#FF5733"
             xAxisKey="date"
             yAxisKey="price"
-            yAxisMax={200}
             xAxisLabel="Date"
             yAxisLabel="Price ($)"
             isDark={isDark}

@@ -1,27 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Nodes from "./pages/Nodes";
-import Network from "./pages/Network";
-import Analytics from "./pages/Analytics";
-import Report from "./pages/Report";
-import Contact from "./pages/Contact";
 import Header from "./global/Header";
 import Footer from "./global/Footer";
 import Sidebar from "./global/Sidebar";
 import MapBg from "./global/MapBg";
 import ScrollToTop from "./global/ScrollToTop";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Leaderboards from "./pages/Leaderboards";
+import { setCookie } from "./utilities/commonFunctions";
+
+const Home = lazy(() => import("./pages/Home"));
+const Nodes = lazy(() => import("./pages/Nodes"));
+const Network = lazy(() => import("./pages/Network"));
+const Report = lazy(() => import("./pages/Report"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Vaults = lazy(() => import("./pages/Vaults"));
+const Pools = lazy(() => import("./pages/Pools"));
+const Queue = lazy(() => import("./pages/Queue"));
+const BPReport = lazy(() => import("./pages/BPReport"));
 
 function App() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDark, setIsDark] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
+    let storedTheme = "dark";
+    try {
+      storedTheme = localStorage.getItem("theme") || "dark";
+    } catch {
+      storedTheme = "dark";
+    }
     const dark = !storedTheme || storedTheme === "dark";
     setIsDark(dark);
 
@@ -41,10 +52,21 @@ function App() {
     }
   }, []);
 
+  // Listen for mobile menu toggle from bottom nav "More" button
+  useEffect(() => {
+    const handler = () => setMobileOpen((prev) => !prev);
+    document.addEventListener("toggleMobileMenu", handler);
+    return () => document.removeEventListener("toggleMobileMenu", handler);
+  }, []);
+
   const handleToggleTheme = () => {
     const newIsDark = !isDark;
     setIsDark(newIsDark);
-    localStorage.setItem("theme", newIsDark ? "dark" : "light");
+    try {
+      localStorage.setItem("theme", newIsDark ? "dark" : "light");
+    } catch {
+      // Ignore storage write failures and keep the in-memory theme state.
+    }
 
     if (newIsDark) {
       document.documentElement.classList.add("dark");
@@ -56,11 +78,13 @@ function App() {
   const handleToggleSidebar = () => {
     setIsExpanded((prev) => {
       const newVal = !prev;
-      document.cookie = `sidebarExpanded=${newVal}; path=/; max-age=31536000`;
+      setCookie("sidebarExpanded", String(newVal));
 
       return newVal;
     });
   };
+
+  const handleCloseMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
     <Router>
@@ -72,11 +96,36 @@ function App() {
           onToggleSidebar={handleToggleSidebar}
           isDark={isDark}
           onToggleTheme={handleToggleTheme}
+          mobileOpen={mobileOpen}
+          onCloseMobile={handleCloseMobile}
         />
+
+        {/* Mobile top bar with hamburger */}
+        <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-slate-700 shadow-md lg:hidden">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="icon-button text-white text-2xl p-1"
+            aria-label="Open menu"
+          >
+            &#9776;
+          </button>
+          <span className="text-white font-semibold text-sm">
+            THORChain Explorer
+          </span>
+          <button
+            onClick={handleToggleTheme}
+            className="icon-button text-white text-xl p-1"
+            aria-label="Toggle theme"
+          >
+            {isDark ? "☀" : "☾"}
+          </button>
+        </div>
+
         <div
-          className={`w-full transition-all duration-300 ${
-            isExpanded ? "ml-60" : "ml-32"
-          }`}
+          className={`w-full transition-all duration-300
+            ml-0 pt-14 pb-16
+            lg:pt-0 lg:pb-0
+            ${isExpanded ? "lg:ml-60" : "lg:ml-32"}`}
         >
           <div className="flex flex-col min-h-screen relative">
             {isDark && <MapBg />}
@@ -84,20 +133,38 @@ function App() {
             <Header />
 
             <main className="flex-grow p-4 relative">
-              <Routes>
-                <Route path="/" element={<Home isDark={isDark} />} />
-                <Route path="/nodes" element={<Nodes isDark={isDark} />} />
-                <Route path="/nodes/:tab" element={<Nodes />} />
-                {/* <Route path="/network/*" element={<Network />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/leaderboards" element={<Leaderboards />} /> */}
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Home isDark={isDark} />} />
+                  <Route
+                    path="/nodes"
+                    element={
+                      <Nodes isDark={isDark} isSidebarExpanded={isExpanded} />
+                    }
+                  />
+                  <Route
+                    path="/nodes/:tab"
+                    element={
+                      <Nodes isDark={isDark} isSidebarExpanded={isExpanded} />
+                    }
+                  />
+                  <Route path="/network/*" element={<Network />} />
+                  {/* <Route path="/leaderboards" element={<Leaderboards />} /> */}
 
-                <Route path="/contact" element={<Contact />} />
-                <Route
-                  path="/nodes/report/:thornodeAddress"
-                  element={<Report isDark={isDark} />}
-                />
-              </Routes>
+                  <Route path="/vaults" element={<Vaults isDark={isDark} />} />
+                  <Route path="/pools" element={<Pools isDark={isDark} />} />
+                  <Route path="/queue" element={<Queue isDark={isDark} />} />
+                  <Route
+                    path="/bp-report"
+                    element={<BPReport isDark={isDark} />}
+                  />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route
+                    path="/nodes/report/:thornodeAddress"
+                    element={<Report isDark={isDark} />}
+                  />
+                </Routes>
+              </Suspense>
             </main>
           </div>
         </div>

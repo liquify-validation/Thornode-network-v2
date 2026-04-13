@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import {
@@ -10,10 +11,14 @@ import {
   ExportButtons,
   ModernScatterChart,
 } from "../components";
-import { transformGraphData } from "../utilities/commonFunctions";
+import {
+  normalizeNodeAddress,
+  transformGraphData,
+} from "../utilities/commonFunctions";
 
 function Report({ isDark }) {
   const { thornodeAddress } = useParams();
+  const safeThornodeAddress = normalizeNodeAddress(thornodeAddress);
   const [reportData, setReportData] = useState(null);
 
   function handleReportGenerated(data) {
@@ -63,12 +68,12 @@ function Report({ isDark }) {
             Generate Report for Address:
           </span>
           <span className="inner-glass-effect px-3 py-2 text-gray-800 dark:text-white break-all rounded-r-xl">
-            {thornodeAddress}
+            {safeThornodeAddress || "Invalid node address"}
           </span>
         </div>
 
         <ReportFilter
-          thornodeAddress={thornodeAddress}
+          thornodeAddress={safeThornodeAddress}
           onReportGenerated={handleReportGenerated}
         />
 
@@ -80,7 +85,7 @@ function Report({ isDark }) {
               <div className="mt-10 mb-10">
                 <ExportButtons
                   getTableRows={getTableRows}
-                  fileName={`report_${thornodeAddress}`}
+                  fileName={`report_${safeThornodeAddress || "invalid-node"}`}
                 />
               </div>
             </>

@@ -1,44 +1,94 @@
-import React, { useState, useEffect, useContext } from "react";
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useTable, useSortBy, usePagination } from "react-table";
 import {
   TableIcons,
   ChainStatusCell,
   Pagination,
-  Modal,
-  ModernLineChart,
   InfoPopover,
   LoadingSpinner,
-  ModernScatterChart,
   BondProvidersTable,
   Number,
+  NodeDrawer,
 } from "../components";
 
 import {
   chainIcons,
   copyToClipboard,
+  getNodeEndpointUrl,
   ispLogos,
-  parseCoingeckoData,
+  ispLogoClasses,
+  defaultIspLogo,
   cityToCountryMap,
   useViewport,
 } from "../utilities/commonFunctions";
 import { getHaltWarning, getHaltsData } from "../utilities/getHaltWarning";
+import { getNodeChartConfig } from "../utilities/nodeChartConfig";
+import {
+  baseUnitsToWholeRune,
+  parseFiniteNumber,
+} from "../utilities/nodeFormatters";
 
-import { useNodeBondData } from "../hooks/useNodeBondData";
-import { useNodeRewardsData } from "../hooks/useNodeRewardsData";
-import { useNodePositionData } from "../hooks/useNodePositionData";
-import { useNodeSlashesData } from "../hooks/useNodeSlashesData";
+import useNodeChartQueries from "../hooks/useNodeChartQueries";
+import NodeChartModal from "./NodeChartModal";
+import NodeChartRenderer from "./NodeChartRenderer";
 
 import {
   DownArrow,
   JailIcon,
   LeaveIcon,
-  MoonIcon,
-  SunIcon,
   UpArrow,
 } from "../assets";
 
 import { GlobalDataContext } from "../context/GlobalDataContext";
 import { FavouriteIcon, UnfavouriteIcon } from "../assets";
+
+const RESPONSIVE_HIDDEN_COLUMNS = ["health"];
+
+function NodeAddressCell({ value, last4, node, copyToClipboard, onOpenChart }) {
+  const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (hovered && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 4, left: rect.left });
+    }
+  }, [hovered]);
+
+  return (
+    <>
+      <span
+        ref={ref}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => copyToClipboard(value)}
+        style={{ cursor: "pointer", textDecoration: "underline" }}
+        title="Click to copy"
+      >
+        {last4}
+      </span>
+      {hovered &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: pos.top,
+              left: pos.left,
+            }}
+            className="z-[9999] flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-xl shadow-lg whitespace-nowrap"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            <TableIcons node={node} onOpenChart={onOpenChart} />
+          </div>,
+          document.getElementById("popover-root")
+        )}
+    </>
+  );
+}
 
 const NodesTable = ({
   data,
@@ -46,21 +96,19 @@ const NodesTable = ({
   maxChainHeights,
   globalData,
   isDark,
+  isSidebarExpanded,
   currentTab,
   isFiltering,
   hiddenColumns,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedNodeAddress, setSelectedNodeAddress] = useState(null);
   const [selectedChartType, setSelectedChartType] = useState(null);
   const [showProvidersModal, setShowProvidersModal] = useState(false);
   const [providersData, setProvidersData] = useState([]);
+  const [drawerNode, setDrawerNode] = useState(null);
   const width = useViewport();
   const isSmall = width < 1300;
-  const responsiveHidden = ["rpc", "bfr", "leave", "jailed"];
-
-  const [chartData, setChartData] = useState([]);
 
   const { isFavorite, addToFavorites, removeFromFavorites } =
     useContext(GlobalDataContext);
@@ -70,12 +118,9 @@ const NodesTable = ({
     return globalData.coingecko;
   }, [globalData]);
 
-  const runeCurrentPrice = coingeckoData.current_price || 0;
+  const runeCurrentPrice = parseFiniteNumber(coingeckoData.current_price);
 
-  const bondDataQuery = useNodeBondData(selectedNodeAddress);
-  const rewardsDataQuery = useNodeRewardsData(selectedNodeAddress);
-  const positionDataQuery = useNodePositionData(selectedNodeAddress);
-  const slashesDataQuery = useNodeSlashesData(selectedNodeAddress);
+  const chartQueries = useNodeChartQueries(selectedNodeAddress);
 
   const handleOpenChart = (nodeAddress, chartType) => {
     setSelectedNodeAddress(nodeAddress);
@@ -103,88 +148,30 @@ const NodesTable = ({
     setShowModal(false);
     setSelectedNodeAddress(null);
     setSelectedChartType(null);
-    setChartData([]);
   };
 
   const renderChartContent = () => {
-    const queryMap = {
-      bond: bondDataQuery,
-      rewards: rewardsDataQuery,
-      position: positionDataQuery,
-      slashes: slashesDataQuery,
-    };
+    const currentQuery = chartQueries[selectedChartType];
+    const chartConfig = getNodeChartConfig(selectedChartType);
 
-    const currentQuery = queryMap[selectedChartType];
     if (!currentQuery) return <div>No data available</div>;
-    const { data, isLoading, error } = currentQuery;
+    const { data, isLoading, isFetching, isFetched, error } = currentQuery;
+    const hasData = Boolean(data?.length);
+    const isWaitingForInitialData =
+      !error && (isLoading || (isFetching && !hasData));
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isWaitingForInitialData) return <LoadingSpinner />;
     if (error) return <div className="text-red-400">{error.message}</div>;
-    if (!data || data.length === 0) return <div>No data</div>;
-
-    if (selectedChartType === "position") {
-      const scatterPoints = [
-        {
-          dataKey: "position",
-          name: "Position",
-          fillColor: "#FFAE4C",
-        },
-        {
-          dataKey: "maxPosition",
-          name: "Max Position",
-          fillColor: "#8884d8",
-        },
-      ];
-
-      return (
-        <ModernScatterChart
-          data={data}
-          title="POSITION Over Time"
-          xAxisKey="blockHeight"
-          yAxisKey="position"
-          scatterPoints={scatterPoints}
-          xAxisLabel="Block Height"
-          yAxisLabel="Position"
-          isDark={isDark}
-        />
-      );
-    }
-
-    const chartLines = {
-      bond: [
-        {
-          dataKey: "bondValue",
-          name: "Bond Value",
-          strokeColor: "#28F3B0",
-          gradientStartColor: "#28F3B0",
-        },
-      ],
-      rewards: [
-        {
-          dataKey: "rewardsValue",
-          name: "Rewards",
-          strokeColor: "#C45985",
-          gradientStartColor: "#C45985",
-        },
-      ],
-      slashes: [
-        {
-          dataKey: "slashesValue",
-          name: "Slashes",
-          strokeColor: "#FF5733",
-          gradientStartColor: "#FF5733",
-        },
-      ],
-    };
+    if (isFetched && !isFetching && !hasData) return <div>No data</div>;
+    if (!chartConfig) return <div>No data available</div>;
 
     return (
-      <ModernLineChart
+      <NodeChartRenderer
+        chartType={selectedChartType}
         data={data}
-        title={`${selectedChartType.toUpperCase()} Over Time`}
-        xAxisKey="blockHeight"
-        yAxisLabel={selectedChartType}
-        lines={chartLines[selectedChartType]}
         isDark={isDark}
+        title={chartConfig.title}
+        showHeader={false}
       />
     );
   };
@@ -244,31 +231,18 @@ const NodesTable = ({
         id: "nodes",
         accessor: "node_address",
         disableSortBy: true,
-        Cell: ({ value }) => {
+        Cell: ({ value, row }) => {
           const last4 = value.slice(-4);
           return (
-            <InfoPopover title="Thornode Address" text={value}>
-              <span
-                onClick={() => copyToClipboard(value)}
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-                title="Click to copy"
-              >
-                {last4}
-              </span>
-            </InfoPopover>
+            <NodeAddressCell
+              value={value}
+              last4={last4}
+              node={row.original}
+              copyToClipboard={copyToClipboard}
+              onOpenChart={handleOpenChart}
+            />
           );
         },
-      },
-      {
-        Header: "Features",
-        id: "features",
-        accessor: "icons",
-        disableSortBy: true,
-        Cell: ({ row }) => (
-          <div className="overflow-visible">
-            <TableIcons node={row.original} onOpenChart={handleOpenChart} />
-          </div>
-        ),
       },
       {
         Header: (
@@ -284,6 +258,75 @@ const NodesTable = ({
         Header: "Info",
         id: "info",
         accessor: "action",
+        Cell: ({ row }) => {
+          const { action, forced_to_leave, requested_to_leave, is_jailed, jail } = row.original;
+          const isForcedToLeave =
+            forced_to_leave === 1 || forced_to_leave === "1" || forced_to_leave === true;
+          const hasRequestedToLeave =
+            requested_to_leave === 1 || requested_to_leave === "1" || requested_to_leave === true;
+          const isLeaving = isForcedToLeave || hasRequestedToLeave;
+          const isJailed =
+            is_jailed === 1 || is_jailed === "1" || is_jailed === true;
+          const normalizedAction =
+            typeof action === "string" ? action.trim() : "";
+          const hasActionLabel =
+            normalizedAction && normalizedAction !== "-";
+
+          if (hasActionLabel) {
+            return (
+              <div className="flex items-center justify-center gap-1">
+                <span>{normalizedAction}</span>
+              </div>
+            );
+          }
+
+          if (isLeaving) {
+            return (
+              <div className="flex items-center justify-center gap-1">
+                <InfoPopover
+                  title="Leaving"
+                  text={isForcedToLeave ? "Forced to leave" : "Requested to leave"}
+                >
+                  <img
+                    src={LeaveIcon}
+                    alt="Leave"
+                    className="w-4 h-4 inline invert dark:invert-0"
+                  />
+                </InfoPopover>
+              </div>
+            );
+          }
+
+          if (isJailed) {
+            const jailText = jail ? (
+              <>
+                Release Height: {jail.release_height ?? "-"}
+                <br />
+                Reason: {jail.reason || "-"}
+              </>
+            ) : (
+              "Node is jailed"
+            );
+
+            return (
+              <div className="flex items-center justify-center gap-1">
+                <InfoPopover title="Jailed Information" text={jailText}>
+                  <img
+                    src={JailIcon}
+                    alt="Jailed"
+                    className="w-4 h-4 inline invert dark:invert-0"
+                  />
+                </InfoPopover>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-center gap-1">
+              <span>-</span>
+            </div>
+          );
+        },
       },
       {
         Header: (
@@ -293,18 +336,27 @@ const NodesTable = ({
         ),
         id: "isp",
         accessor: "isp",
+        width: 90,
+        maxWidth: 120,
         Cell: ({ value }) => {
           const ispName = value || "-";
-          const logo = ispLogos[ispName];
+          const mappedLogo = ispLogos[ispName];
+          const shouldUseDefaultLogo = ispName !== "-" && !mappedLogo;
+          const logo = mappedLogo || (shouldUseDefaultLogo ? defaultIspLogo : null);
+          const logoClassName =
+            ispLogoClasses[ispName] || ispLogoClasses.default;
 
           if (logo) {
             return (
-              <div className="text-center">
-                <InfoPopover title="Provider" text={ispName}>
+              <div className="flex items-center justify-center px-1 bg-transparent">
+                <InfoPopover
+                  title={shouldUseDefaultLogo ? "Provider (Default Icon)" : "Provider"}
+                  text={ispName}
+                >
                   <img
                     src={logo}
                     alt={ispName}
-                    className="mx-auto block w-6 h-6"
+                    className={logoClassName}
                   />
                 </InfoPopover>
               </div>
@@ -384,22 +436,23 @@ const NodesTable = ({
         accessor: "bond",
         Cell: ({ row }) => {
           const nodeAddress = row.original.node_address;
-          const { data: bondData, isLoading } = useNodeBondData(nodeAddress);
+          const latestBondBaseUnits = parseFiniteNumber(row.original.bond);
 
-          if (isLoading || !bondData || bondData.length === 0) return "-";
+          if (latestBondBaseUnits <= 0) return "-";
 
-          const latestBond = Math.round(row.original.bond / 1e8);
-          const latestDollarBond = (
-            latestBond * runeCurrentPrice
-          ).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
+          const latestBond = baseUnitsToWholeRune(latestBondBaseUnits);
+          const latestDollarBond = (latestBond * runeCurrentPrice).toLocaleString(
+            undefined,
+            {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }
+          );
 
           return (
             <InfoPopover
               title="Bond Value in $"
-              text={`$${latestDollarBond.toLocaleString()}`}
+              text={`$${latestDollarBond}`}
             >
               <span
                 className="cursor-pointer underline"
@@ -417,19 +470,23 @@ const NodesTable = ({
         accessor: "current_award",
         Cell: ({ row }) => {
           const nodeAddress = row.original.node_address;
-          const { data: rewardsData, isLoading } =
-            useNodeRewardsData(nodeAddress);
-
-          if (isLoading || !rewardsData || rewardsData.length === 0) return "-";
-          const latestReward = Math.round(row.original.current_award / 1e8);
-          const latestDollarReward = (latestReward * runeCurrentPrice).toFixed(
-            2
+          const latestRewardBaseUnits = parseFiniteNumber(
+            row.original.current_award
           );
+
+          if (latestRewardBaseUnits <= 0) return "-";
+          const latestReward = baseUnitsToWholeRune(latestRewardBaseUnits);
+          const latestDollarReward = (
+            latestReward * runeCurrentPrice
+          ).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
 
           return (
             <InfoPopover
               title="Rewards in ($) Value"
-              text={`$${latestDollarReward.toLocaleString()}`}
+              text={`$${latestDollarReward}`}
             >
               <span
                 className="cursor-pointer underline"
@@ -487,97 +544,52 @@ const NodesTable = ({
         accessor: "version",
       },
       {
-        Header: "Leave",
-        accessor: "leave",
-        Cell: ({ row }) =>
-          row.original.forced_to_leave === 1 ||
-          row.original.requested_to_leave === 1
-            ? "Yes"
-            : "-",
-      },
-      {
-        Header: "Jailed",
-        id: "jailed",
-        accessor: "is_jailed",
-        Cell: ({ row }) => {
-          const { is_jailed, jail } = row.original;
-          if (is_jailed === 1 && jail) {
-            return (
-              <InfoPopover
-                title="Jailed Information"
-                text={
-                  <>
-                    Release Height: {jail.release_height}
-                    <br />
-                    Reason: {jail.reason}
-                  </>
-                }
-              >
-                <img
-                  src={JailIcon}
-                  alt="Jail Icon"
-                  className="mx-auto invert dark:invert-0"
-                />
-              </InfoPopover>
-            );
-          }
-          return "-";
-        },
-      },
-      {
-        Header: "RPC",
-        id: "rpc",
+        Header: (
+          <InfoPopover title="Health" text="RPC & Bifrost status">
+            <span>Health</span>
+          </InfoPopover>
+        ),
+        id: "health",
         accessor: "rpc",
         disableSortBy: true,
         Cell: ({ row }) => {
-          const { ip_address, rpc } = row.original;
-          const healthy = rpc !== "null";
+          const { ip_address, rpc, bifrost } = row.original;
+          const rpcOk = rpc !== "null";
+          const bfrOk = bifrost !== "null";
+          const rpcUrl = getNodeEndpointUrl(ip_address, 27147, "/health");
+          const bifrostUrl = getNodeEndpointUrl(ip_address, 6040, "/p2pid");
+          const linkClass = "font-normal text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-none";
           return (
-            <a
-              href={`http://${ip_address}:27147/health?`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-              font-normal
-              text-gray-700            
-              dark:text-white      
-              visited:text-gray-700
-              dark:visited:text-white
-              hover:underline      
-              focus:outline-none
-            "
-            >
-              {healthy ? "*" : "Bad"}
-            </a>
-          );
-        },
-      },
-      {
-        Header: "BFR",
-        id: "bfr",
-        accessor: "bfr",
-        disableSortBy: true,
-        Cell: ({ row }) => {
-          const { ip_address, bifrost } = row.original;
-          const healthy = bifrost !== "null";
-
-          return (
-            <a
-              href={`http://${ip_address}:6040/p2pid`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-              font-normal
-            text-gray-700            
-            dark:text-white      
-            visited:text-gray-700
-            dark:visited:text-white
-            hover:underline
-            focus:outline-none
-          "
-            >
-              {healthy ? "*" : "Bad"}
-            </a>
+            <div className="flex items-center justify-center gap-1">
+              <InfoPopover title="RPC" text={rpcOk ? "Healthy" : "Unhealthy"}>
+                <a
+                  href={rpcUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass}
+                  aria-disabled={!rpcUrl}
+                  onClick={(event) => {
+                    if (!rpcUrl) event.preventDefault();
+                  }}
+                >
+                  <span className={rpcOk ? "text-green-400" : "text-red-400"}>R</span>
+                </a>
+              </InfoPopover>
+              <InfoPopover title="Bifrost" text={bfrOk ? "Healthy" : "Unhealthy"}>
+                <a
+                  href={bifrostUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass}
+                  aria-disabled={!bifrostUrl}
+                  onClick={(event) => {
+                    if (!bifrostUrl) event.preventDefault();
+                  }}
+                >
+                  <span className={bfrOk ? "text-green-400" : "text-red-400"}>B</span>
+                </a>
+              </InfoPopover>
+            </div>
           );
         },
       },
@@ -610,6 +622,7 @@ const NodesTable = ({
       "BASE",
       "XRP",
       "TRON",
+	  "SOL",
     ];
     const haltsData = getHaltsData(globalData);
 
@@ -651,7 +664,10 @@ const NodesTable = ({
       data,
       initialState: {
         pageSize: 10,
-        hiddenColumns: [...(isSmall ? responsiveHidden : []), ...hiddenColumns],
+        hiddenColumns: [
+          ...(isSmall ? RESPONSIVE_HIDDEN_COLUMNS : []),
+          ...hiddenColumns,
+        ],
       },
       autoResetSortBy: false,
       defaultColumn: { sortType: "favouriteAware" },
@@ -663,7 +679,7 @@ const NodesTable = ({
 
   useEffect(() => {
     tableInstance.setHiddenColumns([
-      ...(isSmall ? responsiveHidden : []),
+      ...(isSmall ? RESPONSIVE_HIDDEN_COLUMNS : []),
       ...hiddenColumns,
     ]);
   }, [hiddenColumns, isSmall, tableInstance]);
@@ -699,7 +715,7 @@ const NodesTable = ({
           {...getTableProps()}
           className="min-w-full table-auto divide-y-4 text-center divide-gray-500"
         >
-          <thead>
+          <thead className="sticky top-0 z-10">
             {headerGroups.map((headerGroup) => {
               const headerGroupProps = headerGroup.getHeaderGroupProps();
               const { key: headerGroupKey, ...restHeaderGroupProps } =
@@ -707,7 +723,7 @@ const NodesTable = ({
 
               return (
                 <tr key={headerGroupKey} {...restHeaderGroupProps}>
-                  <th className="px-2 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344]"></th>
+                  <th className="px-2 pl-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] w-12"></th>
                   {headerGroup.headers.map((column) => {
                     const headerProps = column.getHeaderProps(
                       column.getSortByToggleProps()
@@ -718,7 +734,7 @@ const NodesTable = ({
                         key={columnKey}
                         {...restHeaderProps}
                         className="
-                          px-4 py-4 text-md text-gray-700 dark:text-gray-50
+                          px-2 py-4 text-md text-gray-700 dark:text-gray-50
                           bg-gray-200 dark:bg-[#1e3344] tracking-wider
                         "
                       >
@@ -776,10 +792,27 @@ const NodesTable = ({
                 return (
                   <tr
                     key={rowKey}
-                    className={`hover:bg-[#4dc89f] inner-glass-effect ${highlightClass}`}
+                    className={`hover:!bg-[#4dc89f] cursor-pointer ${highlightClass || (i % 2 === 0 ? "inner-glass-effect" : "bg-gray-300/80 dark:bg-gray-800/80")}`}
+                    onClick={(e) => {
+                      const el = e.target;
+                      const tr = e.currentTarget;
+                      if (
+                        el.closest("a") ||
+                        el.closest("button") ||
+                        el.closest("[data-interactive]") ||
+                        el.tagName === "IMG" && el.closest(".cursor-pointer") !== tr
+                      ) return;
+                      // Check if clicked element (or ancestor below the row) has underline/cursor-pointer
+                      let node = el;
+                      while (node && node !== tr) {
+                        if (node.classList && (node.classList.contains("underline") || node.classList.contains("cursor-pointer"))) return;
+                        node = node.parentElement;
+                      }
+                      setDrawerNode(row.original);
+                    }}
                     {...restRowProps}
                   >
-                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-gray-50">
+                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-gray-50 w-12">
                       <Number number={i + 1 + pageIndex * pageSize} />
                     </td>
 
@@ -791,7 +824,7 @@ const NodesTable = ({
                         <td
                           key={cellKey}
                           {...restCellProps}
-                          className="px-4 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
+                          className="px-2 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
                         >
                           {cell.render("Cell")}
                         </td>
@@ -817,13 +850,14 @@ const NodesTable = ({
         pageSize={pageSize}
       />
 
-      {showModal && (
-        <Modal onClose={handleCloseModal}>
-          <h2 className="text-xl font-bold text-white mb-4">
-            {selectedChartType?.toUpperCase()} Chart for {selectedNodeAddress}
-          </h2>
+      {showModal && getNodeChartConfig(selectedChartType) && (
+        <NodeChartModal
+          title={getNodeChartConfig(selectedChartType).title}
+          subtitle={selectedNodeAddress}
+          onClose={handleCloseModal}
+        >
           {renderChartContent()}
-        </Modal>
+        </NodeChartModal>
       )}
 
       <BondProvidersTable
@@ -831,6 +865,16 @@ const NodesTable = ({
         onClose={() => setShowProvidersModal(false)}
         providersData={providersData}
       />
+
+      {drawerNode && (
+        <NodeDrawer
+          node={drawerNode}
+          onClose={() => setDrawerNode(null)}
+          isDark={isDark}
+          isSidebarExpanded={isSidebarExpanded}
+          runePrice={runeCurrentPrice}
+        />
+      )}
     </>
   );
 };

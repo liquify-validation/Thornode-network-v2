@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { ArrowIcon } from "../assets";
 
 const Header = () => {
@@ -32,14 +31,14 @@ const Header = () => {
               src={ArrowIcon}
               alt="Toggle Dropdown"
               className={`ml-2 h-4 w-4 transform transition-transform duration-200 ${
-                isOpen ? "rotate-20" : "rotate-90"
+                isOpen ? "rotate-[270deg]" : "rotate-90"
               }`}
             />
           </button>
 
           {isOpen && (
             <div
-              className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-gray-800 dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
+              className="origin-top-right absolute right-0 z-50 mt-2 w-40 rounded-md shadow-lg bg-gray-800 dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"

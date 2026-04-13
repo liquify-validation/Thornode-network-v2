@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  useFloating,
-  offset,
-  flip,
-  shift,
-  autoUpdate,
-  autoPlacement,
-} from "@floating-ui/react";
 
-function InfoPopover({ title, text, children }) {
+function InfoPopover({
+  title,
+  text,
+  children,
+  as: Wrapper = "span",
+  wrapperClassName = "",
+  wrapperStyle,
+}) {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
 
@@ -19,14 +19,15 @@ function InfoPopover({ title, text, children }) {
 
   return (
     <>
-      <span
+      <Wrapper
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
         onMouseMove={handleMouseMove}
-        style={{ cursor: "pointer" }}
+        className={wrapperClassName}
+        style={{ cursor: "pointer", ...wrapperStyle }}
       >
         {children}
-      </span>
+      </Wrapper>
 
       {visible &&
         createPortal(

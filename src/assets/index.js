@@ -63,18 +63,18 @@ import DogeIcon from "./dogecoin.png";
 import ChoopaIcon from "./choopa.png";
 import ZenLayerIcon from "./zenlayer.png";
 import DataCampIcon from "./datacamp.png";
-import HostingerIcon from "./Hostinger.png";
+import HostingerIcon from "./hostinger_icon.png";
 import CogentIcon from "./cogent_logo.svg";
 import MicrosoftIcon from "./microsoft_icon.png";
 import OvhIcon from "./ovh_logo.svg";
-import ConstantCompanyIcon from "./constant_icon.jpeg";
+import ConstantCompanyIcon from "./constant_company_icon.webp";
 import Level3Icon from "./level3_icon.png";
 import CloudzyIcon from "./cloudzy_logo.svg";
 import EarthLinkIcon from "./earthlink_icon.svg";
 import AussieBroadbandIcon from "./aussiebroadband_icon.png";
 import ScaleawayIcon from "./scaleaway_icon.png";
 import IpaxIcon from "./ipax_icon.png";
-import MevSpaceIcon from "./mevspace-logo.svg";
+import MevSpaceIcon from "./mev_icon.png";
 import GithubIconLight from "./github-light.svg";
 import TwitterIconLight from "./twitter-light.svg";
 import EmailIconLight from "./email-light.svg";
@@ -99,11 +99,31 @@ import LeaderboardIcon from "./leaderboard_icon.svg";
 import DownloadIcon from "./file_download.svg";
 import XrpIcon from "./xrp_icon.svg";
 import TronIcon from "./tron_icon.svg";
+import InterserverIcon from "./interserver_icon.png";
+import VultrIcon from "./vultr-icon.webp";
+import FlokiIcon from "./floki_icon.jpeg";
+import AkamaiIcon from "./akamai_icon.png";
+import DataNetIcon from "./datanet_icon.png";
+import SolIcon from "./sol_icon.svg";
+import AaveIcon from "./aave_icon.svg";
+import BUSDIcon from "./busd_icon.svg";
+import TrustWalletIcon from "./trust_wallet_icon.svg";
+import VeniceAiIcon from "./vvv_icon.png";
+import LUSDIcon from "./lusd_icon.svg";
+import FOXIcon from "./fox_icon.svg";
+import GUSDIcon from "./gemini_usd_icon.svg";
+import LINKIcon from "./chainlink_icon.svg";
+import USDCIcon from "./usdc_icon.svg";
+import PAXOSIcon from "./paxos_icon.svg";
+import YIFIIcon from "./yifi_icon.svg";
+import RUJIIcon from "./ruji_icon.svg";
+import DAIIcon from "./dai_icon.svg";
 
 export {
   DayHighIcon,
   DayLowIcon,
   DayVolumeIcon,
+  AkamaiIcon,
   AnalyticsIcon,
   ArrowIcon,
   AtomIcon,
@@ -117,14 +137,17 @@ export {
   BnbIcon,
   ChurnTimeUntilIcon,
   ComCastIcon,
+  DataNetIcon,
   DigitalOceanIcon,
   EthIcon,
+  FlokiIcon,
   FooterMailIcon,
   GithubIcon,
   GoogleIcon,
   HetznerIcon,
   HexMapBg,
   HomeIcon,
+  InterserverIcon,
   LeasewebIcon,
   SunIcon,
   LiquifyLogo,
@@ -202,4 +225,19 @@ export {
   DownloadIcon,
   XrpIcon,
   TronIcon,
+  VultrIcon,
+  SolIcon,
+  AaveIcon,
+  BUSDIcon,
+  TrustWalletIcon,
+  VeniceAiIcon,
+  LUSDIcon,
+  FOXIcon,
+  GUSDIcon,
+  LINKIcon,
+  USDCIcon,
+  PAXOSIcon,
+  YIFIIcon,
+  RUJIIcon,
+  DAIIcon,
 };

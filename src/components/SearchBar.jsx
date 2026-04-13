@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { MagnifyingGlass } from "../assets";
 
 const SearchBar = ({
@@ -5,9 +6,12 @@ const SearchBar = ({
   setSearchTerm,
   placeholder = "Search...",
   icons = [],
+  className = "",
 }) => {
   return (
-    <div className="search-bar flex items-center space-x-4 w-[30%]">
+    <div
+      className={`search-bar flex items-center space-x-4 w-full sm:w-[40%] md:w-[30%] min-w-[200px] ${className}`.trim()}
+    >
       <div className="relative w-full">
         <img
           src={MagnifyingGlass}

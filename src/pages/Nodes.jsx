@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useParams } from "react-router-dom";
@@ -13,9 +14,14 @@ import { useNetworkData } from "../hooks/useNetworkData";
 import { useNodeData } from "../hooks/useNodeData";
 
 import { processData } from "../utilities/dataProcessing";
-import { getCookieValue, setCookie } from "../utilities/commonFunctions";
+import {
+  getCookieValue,
+  getStoredJson,
+  setCookie,
+  setStoredJson,
+} from "../utilities/commonFunctions";
 
-const Nodes = ({ isDark }) => {
+const Nodes = ({ isDark, isSidebarExpanded }) => {
   const { tab } = useParams();
   const { favoriteNodes } = useContext(GlobalDataContext);
   const [processedData, setProcessedData] = useState({
@@ -30,15 +36,12 @@ const Nodes = ({ isDark }) => {
 
   const [expandTable, setExpandTable] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("nodeHiddenColumns") || "[]");
-    } catch {
-      return [];
-    }
+    const storedColumns = getStoredJson("nodeHiddenColumns", []);
+    return Array.isArray(storedColumns) ? storedColumns : [];
   });
 
   useEffect(() => {
-    localStorage.setItem("nodeHiddenColumns", JSON.stringify(hiddenColumns));
+    setStoredJson("nodeHiddenColumns", hiddenColumns);
   }, [hiddenColumns]);
 
   useEffect(() => {
@@ -157,6 +160,7 @@ const Nodes = ({ isDark }) => {
               maxChainHeights={maxChainHeights}
               globalData={globalData}
               isDark={isDark}
+              isSidebarExpanded={isSidebarExpanded}
               expandTable={expandTable}
               onExpandChange={handleExpandChange}
               currentTab={currentTab}
@@ -211,6 +215,7 @@ const Nodes = ({ isDark }) => {
                         maxChainHeights={maxChainHeights}
                         globalData={globalData}
                         isDark={isDark}
+                        isSidebarExpanded={isSidebarExpanded}
                         expandTable={expand}
                         onExpandChange={handleExpandChange}
                         currentTab={key}

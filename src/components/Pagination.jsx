@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import {
   ArrowIcon,
@@ -5,6 +6,8 @@ import {
   DoubleArrowRightIcon,
 } from "../assets";
 import { getCookieValue, setCookie } from "../utilities/commonFunctions";
+
+const ALLOWED_PAGE_SIZES = [10, 25, 50, 100];
 
 const Pagination = ({
   canPreviousPage,
@@ -16,9 +19,8 @@ const Pagination = ({
   previousPage,
   setPageSize,
   pageIndex,
-  pageSize,
 }) => {
-  const [localPageSize, setLocalPageSize] = useState(pageSize);
+  const [localPageSize, setLocalPageSize] = useState("all");
 
   useEffect(() => {
     const saved = getCookieValue("pageSize");
@@ -28,11 +30,17 @@ const Pagination = ({
         setLocalPageSize("all");
       } else {
         const num = parseInt(saved, 10);
-        if (!isNaN(num)) {
+        if (ALLOWED_PAGE_SIZES.includes(num)) {
           setPageSize(num);
           setLocalPageSize(num);
+        } else {
+          setPageSize(9999999);
+          setLocalPageSize("all");
         }
       }
+    } else {
+      setPageSize(9999999);
+      setLocalPageSize("all");
     }
   }, [setPageSize]);
 
@@ -43,6 +51,9 @@ const Pagination = ({
       setCookie("pageSize", "all");
     } else {
       const num = parseInt(value, 10);
+      if (!ALLOWED_PAGE_SIZES.includes(num)) {
+        return;
+      }
       setPageSize(num);
       setCookie("pageSize", num.toString());
     }
@@ -77,7 +88,7 @@ const Pagination = ({
           value={localPageSize}
           onChange={(e) => handleChangePageSize(e.target.value)}
         >
-          {[10, 25, 50, 100].map((size) => (
+          {ALLOWED_PAGE_SIZES.map((size) => (
             <option key={size} value={size}>
               {size}
             </option>

@@ -110,7 +110,8 @@ export function computeMaxChainHeights(nodes) {
     "BSC",
     "BASE",
     "XRP",
-	"TRON",
+    "TRON",
+    "SOL",
   ];
   const observeChainsData = nodes.map((n) => n.observe_chains).filter(Boolean);
 

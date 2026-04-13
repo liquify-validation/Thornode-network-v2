@@ -78,7 +78,7 @@ const NetworkTable = ({ columns, data, title }) => {
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       className="px-6 py-3 text-left text-md font-semibold text-[#28F3B0] tracking-wider pb-8"
                     >
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-start">
                         {column.render("Header")}
 
                         {column.isSorted && (

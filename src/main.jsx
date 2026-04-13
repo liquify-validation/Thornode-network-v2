@@ -7,6 +7,8 @@ import { GlobalDataProvider } from "./context/GlobalDataContext.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { showErrorToast } from "./services/toastService";
 
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

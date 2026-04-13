@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useMemo, useState } from "react";
 import { useChurnsForNode } from "../hooks/useChurnsForNode";
 import { useGenerateReport } from "../hooks/useGenerateReport";
 import LoadingSpinner from "./LoadingSpinner";
+import {
+  normalizeNodeAddress,
+  parsePositiveInteger,
+} from "../utilities/commonFunctions";
+import { showErrorToast } from "../services/toastService";
 
 const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
+  const safeThornodeAddress = normalizeNodeAddress(thornodeAddress);
   const [fromBlock, setFromBlock] = useState("");
   const [toBlock, setToBlock] = useState("");
   const [isFromOpen, setIsFromOpen] = useState(false);
@@ -14,16 +21,14 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
     isLoading: churnsLoading,
     isError: churnsError,
     error: churnsErrObj,
-  } = useChurnsForNode(thornodeAddress);
+  } = useChurnsForNode(safeThornodeAddress);
 
   const {
     mutate: generateReportMutation,
     isLoading: generatingReport,
-    isError: generateError,
-    error: generateErrObj,
   } = useGenerateReport();
 
-  const possibleToChurns = React.useMemo(() => {
+  const possibleToChurns = useMemo(() => {
     if (!churns.length || !fromBlock) return churns;
     return churns.filter((c) => Number(c.churnHeight) > Number(fromBlock));
   }, [churns, fromBlock]);
@@ -52,15 +57,28 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
   }
 
   function handleSubmit() {
-    if (!fromBlock || !toBlock) {
-      alert("Please select both FROM and TO block heights.");
+    const startBlock = parsePositiveInteger(fromBlock);
+    const endBlock = parsePositiveInteger(toBlock);
+
+    if (!safeThornodeAddress) {
+      showErrorToast("Please use a valid THORChain node address.");
+      return;
+    }
+
+    if (!startBlock || !endBlock) {
+      showErrorToast("Please select both FROM and TO block heights.");
+      return;
+    }
+
+    if (startBlock >= endBlock) {
+      showErrorToast("The end block must be greater than the start block.");
       return;
     }
 
     const payload = {
-      start: Number(fromBlock),
-      end: Number(toBlock),
-      node: thornodeAddress,
+      start: startBlock,
+      end: endBlock,
+      node: safeThornodeAddress,
     };
 
     generateReportMutation(payload, {
@@ -69,7 +87,7 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
       },
       onError: (err) => {
         console.error("Error generating report:", err);
-        alert(`Failed to generate the report: ${err.message}`);
+        showErrorToast(`Failed to generate the report: ${err.message}`);
       },
     });
   }
@@ -85,6 +103,11 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
 
   return (
     <div className="flex flex-wrap items-center gap-4 mt-6 ">
+      {!safeThornodeAddress && (
+        <div className="text-sm text-red-500">
+          A valid THORChain node address is required before generating a report.
+        </div>
+      )}
       <div className="relative">
         <button
           type="button"
