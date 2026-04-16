@@ -37,6 +37,7 @@ import InfoPopover from "./InfoPopover";
 import ChainStatusCell from "./ChainStatusCell";
 import TableIcons from "./TableIcons";
 import ExportButtons from "./ExportButtons";
+import ReportDisclaimer from "./ReportDisclaimer";
 import LoadingSpinner from "./LoadingSpinner";
 import LeaderboardFilter from "./LeaderboardFilter";
 import ModernScatterChart from "./ModernScatterChart";
@@ -97,6 +98,7 @@ export {
   ChainStatusCell,
   TableIcons,
   ExportButtons,
+  ReportDisclaimer,
   LoadingSpinner,
   LeaderboardFilter,
   ModernScatterChart,

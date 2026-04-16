@@ -9,6 +9,7 @@ import {
   ReportStatsCardSection,
   ModernLineChart,
   ExportButtons,
+  ReportDisclaimer,
   ModernScatterChart,
 } from "../components";
 import {
@@ -86,6 +87,22 @@ function Report({ isDark }) {
                 <ExportButtons
                   getTableRows={getTableRows}
                   fileName={`report_${safeThornodeAddress || "invalid-node"}`}
+                  reportTitle="Node Report"
+                  columns={[
+                    { header: "Date", dataKey: "date" },
+                    { header: "Height", dataKey: "height" },
+                    { header: "Price", dataKey: "price" },
+                    {
+                      header: "Reward (RUNE)",
+                      dataKey: "rewardRune",
+                      format: (value) => Number(value).toFixed(4),
+                    },
+                    {
+                      header: "Reward ($)",
+                      dataKey: "rewardUSD",
+                      format: (value) => `$${Number(value).toFixed(2)}`,
+                    },
+                  ]}
                 />
               </div>
             </>
@@ -165,6 +182,7 @@ function Report({ isDark }) {
               />
             </div>
           )}
+          {reportData && <ReportDisclaimer isDark={isDark} />}
         </div>
       </div>
     </>

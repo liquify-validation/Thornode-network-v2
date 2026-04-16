@@ -4,7 +4,7 @@ export function showErrorToast(error) {
   const message = error instanceof Error ? error.message : String(error);
 
   toast.error(message, {
-    position: toast.POSITION.CENTER,
+    position: "top-center",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
@@ -18,7 +18,7 @@ export function showErrorToast(error) {
 
 export function showSuccessToast(message) {
   toast.success(message, {
-    position: toast.POSITION.CENTER,
+    position: "top-center",
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: true,
