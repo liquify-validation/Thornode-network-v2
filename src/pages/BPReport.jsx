@@ -7,6 +7,7 @@ import {
   LoadingSpinner,
   ModernLineChart,
   ExportButtons,
+  ReportDisclaimer,
 } from "../components";
 import Box from "../ui/Box";
 import StatsCard from "../components/StatsCard";
@@ -29,6 +30,7 @@ import {
   normalizeNodeAddress,
   parsePositiveInteger,
 } from "../utilities/commonFunctions";
+import { parseFiniteNumber } from "../utilities/nodeFormatters";
 import { showErrorToast } from "../services/toastService";
 
 //todo - cleanup breakdown into components - see what can be resused
@@ -167,13 +169,13 @@ function BPReport({ isDark }) {
   function getTableRows() {
     if (!reportData?.tableData) return [];
     const td = reportData.tableData;
-    return td.churnHeight.map((height, idx) => ({
+    return (td.churnHeight || []).map((height, idx) => ({
       height,
       date: td.date?.[idx] || "",
-      bpBond: (td.bpBond?.[idx] || 0) / 1e8,
-      bpRatio: td.bpRatio?.[idx] || 0,
-      bpReward: (td.bpReward?.[idx] || 0) / 1e8,
-      bpRewardDollar: td.bpRewardDollar?.[idx] || 0,
+      bpBond: parseFiniteNumber(td.bpBond?.[idx]),
+      bpRatio: parseFiniteNumber(td.bpRatio?.[idx]),
+      bpReward: parseFiniteNumber(td.bpReward?.[idx]),
+      bpRewardDollar: parseFiniteNumber(td.bpRewardDollar?.[idx]),
     }));
   }
 
@@ -563,6 +565,7 @@ function BPReport({ isDark }) {
               <ExportButtons
                 getTableRows={getTableRows}
                 fileName={`bp_report_${submittedNode}_${selectedBP}`}
+                reportTitle="Bond Provider Report"
               />
             </div>
 
@@ -641,6 +644,7 @@ function BPReport({ isDark }) {
                 />
               </div>
             )}
+            <ReportDisclaimer isDark={isDark} />
           </div>
         )}
       </div>
