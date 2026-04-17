@@ -1,11 +1,43 @@
 import React from "react";
+import InfoPopover from "./InfoPopover";
 
-// ChainStatusCell (optional approach)
 const ChainStatusCell = ({ value }) => {
-  if (value === Infinity) return <span className="text-red-400 font-semibold">N/A</span>;
-  if (value === 0) return <span className="text-green-400">OK</span>;
-  const isDelayed = value < -5;
-  return <span className={isDelayed ? "text-orange-400 font-semibold" : ""}>{value}</span>;
+  let color;
+  let label;
+  let glow = true;
+
+  if (value === Infinity || value == null || !isFinite(value)) {
+    color = "#475569";
+    label = "N/A";
+    glow = false;
+  } else {
+    const offset = Math.abs(value);
+    if (offset < 10) {
+      color = "#4ade80";
+      label = offset === 0 ? "In sync" : `${value > 0 ? "+" : ""}${value} blocks`;
+    } else if (offset < 200) {
+      color = "#fb923c";
+      label = `${value > 0 ? "+" : ""}${value} blocks`;
+    } else {
+      color = "#f87171";
+      label = `${value > 0 ? "+" : ""}${value} blocks`;
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center">
+      <InfoPopover title="Chain status" text={label}>
+        <span
+          className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
+          style={{
+            backgroundColor: color,
+            boxShadow: glow ? `0 0 6px ${color}` : "none",
+            opacity: glow ? 1 : 0.5,
+          }}
+        />
+      </InfoPopover>
+    </div>
+  );
 };
 
 export default ChainStatusCell;

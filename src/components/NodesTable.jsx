@@ -9,7 +9,6 @@ import {
   InfoPopover,
   LoadingSpinner,
   BondProvidersTable,
-  Number,
   NodeDrawer,
 } from "../components";
 
@@ -193,6 +192,25 @@ const NodesTable = ({
     setShowProvidersModal(true);
   };
 
+  const maxScore = React.useMemo(() => {
+    let max = 0;
+    for (const n of data || []) {
+      const v = parseFloat(n?.score);
+      if (isFinite(v) && v > max) max = v;
+    }
+    return max;
+  }, [data]);
+
+  const scoreColor = React.useCallback(
+    (score) => {
+      if (!isFinite(score) || maxScore <= 0) return "#9ca3af";
+      const ratio = Math.max(0, Math.min(1, score / maxScore));
+      const hue = Math.round(ratio * 140);
+      return `hsl(${hue}, 72%, 55%)`;
+    },
+    [maxScore]
+  );
+
   const columns = React.useMemo(() => {
     let newCols = [
       {
@@ -252,7 +270,19 @@ const NodesTable = ({
         ),
         id: "age",
         accessor: "age",
-        Cell: ({ value }) => `${value.toFixed(2)}`,
+        Cell: ({ value }) => {
+          const numeric = parseFloat(value);
+          if (!isFinite(numeric)) return "-";
+          return (
+            <span
+              className={`tabular-nums ${
+                numeric >= 180 ? "text-orange-400 font-semibold" : ""
+              }`}
+            >
+              {numeric.toFixed(2)}
+            </span>
+          );
+        },
       },
       {
         Header: "Info",
@@ -455,7 +485,7 @@ const NodesTable = ({
               text={`$${latestDollarBond}`}
             >
               <span
-                className="cursor-pointer underline"
+                className="cursor-pointer underline tabular-nums font-medium text-gray-700 dark:text-[#A9F3DB]"
                 onClick={() => handleOpenChart(nodeAddress, "bond")}
               >
                 ᚱ{latestBond.toLocaleString()}
@@ -489,7 +519,7 @@ const NodesTable = ({
               text={`$${latestDollarReward}`}
             >
               <span
-                className="cursor-pointer underline"
+                className="cursor-pointer underline tabular-nums font-medium text-gray-700 dark:text-[#A9F3DB]"
                 onClick={() => handleOpenChart(nodeAddress, "rewards")}
               >
                 ᚱ{latestReward.toLocaleString()}
@@ -505,9 +535,13 @@ const NodesTable = ({
         Cell: ({ row }) => {
           const nodeAddress = row.original.node_address;
           const slashes = row.original.slash_points;
+          const slashCount = parseFiniteNumber(slashes);
+          const isHigh = slashCount >= 10;
           return (
             <span
-              className="cursor-pointer underline"
+              className={`cursor-pointer underline tabular-nums ${
+                isHigh ? "text-red-400 font-semibold" : ""
+              }`}
               onClick={() => handleOpenChart(nodeAddress, "slashes")}
             >
               {slashes}
@@ -537,11 +571,33 @@ const NodesTable = ({
           </InfoPopover>
         ),
         accessor: "score",
+        Cell: ({ value }) => {
+          if (value === "-" || value == null) return "-";
+          const numeric = parseFloat(value);
+          if (!isFinite(numeric)) {
+            return <span className="tabular-nums">{value}</span>;
+          }
+          const color = scoreColor(numeric);
+          return (
+            <span
+              className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold tabular-nums"
+              style={{
+                color,
+                backgroundColor: `${color}33`,
+              }}
+            >
+              {value}
+            </span>
+          );
+        },
       },
       {
         Header: "Version",
         id: "version",
         accessor: "version",
+        Cell: ({ value }) => (
+          <span className="font-mono text-xs">{value}</span>
+        ),
       },
       {
         Header: (
@@ -558,9 +614,14 @@ const NodesTable = ({
           const bfrOk = bifrost !== "null";
           const rpcUrl = getNodeEndpointUrl(ip_address, 27147, "/health");
           const bifrostUrl = getNodeEndpointUrl(ip_address, 6040, "/p2pid");
-          const linkClass = "font-normal text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-none";
+          const linkClass =
+            "inline-flex items-center gap-1 font-bold text-[11px] text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-none";
+          const dotClass = (ok) =>
+            `inline-block w-[7px] h-[7px] rounded-full ${
+              ok ? "bg-green-400" : "bg-red-400"
+            }`;
           return (
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-2">
               <InfoPopover title="RPC" text={rpcOk ? "Healthy" : "Unhealthy"}>
                 <a
                   href={rpcUrl || "#"}
@@ -572,7 +633,7 @@ const NodesTable = ({
                     if (!rpcUrl) event.preventDefault();
                   }}
                 >
-                  <span className={rpcOk ? "text-green-400" : "text-red-400"}>R</span>
+                  <span className={dotClass(rpcOk)} />R
                 </a>
               </InfoPopover>
               <InfoPopover title="Bifrost" text={bfrOk ? "Healthy" : "Unhealthy"}>
@@ -586,7 +647,7 @@ const NodesTable = ({
                     if (!bifrostUrl) event.preventDefault();
                   }}
                 >
-                  <span className={bfrOk ? "text-green-400" : "text-red-400"}>B</span>
+                  <span className={dotClass(bfrOk)} />B
                 </a>
               </InfoPopover>
             </div>
@@ -607,6 +668,7 @@ const NodesTable = ({
     isFavorite,
     addToFavorites,
     removeFromFavorites,
+    scoreColor,
   ]);
 
   const chainColumns = React.useMemo(() => {
@@ -710,12 +772,15 @@ const NodesTable = ({
 
   return (
     <>
-      <div key={`table-${currentTab}`} className="rounded-t-lg mt-8 w-full">
+      <div
+        key={`table-${currentTab}`}
+        className="rounded-[15px] mt-8 w-full bg-white dark:bg-[#17364c] shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
+      >
         <table
           {...getTableProps()}
-          className="min-w-full table-auto divide-y-4 text-center divide-gray-500"
+          className="min-w-full table-auto border-separate border-spacing-0"
         >
-          <thead className="sticky top-0 z-10">
+          <thead className="sticky top-0 z-20">
             {headerGroups.map((headerGroup) => {
               const headerGroupProps = headerGroup.getHeaderGroupProps();
               const { key: headerGroupKey, ...restHeaderGroupProps } =
@@ -723,7 +788,6 @@ const NodesTable = ({
 
               return (
                 <tr key={headerGroupKey} {...restHeaderGroupProps}>
-                  <th className="px-2 pl-4 py-4 text-md text-gray-700 dark:text-gray-50 bg-gray-200 dark:bg-[#1e3344] w-12"></th>
                   {headerGroup.headers.map((column) => {
                     const headerProps = column.getHeaderProps(
                       column.getSortByToggleProps()
@@ -734,18 +798,20 @@ const NodesTable = ({
                         key={columnKey}
                         {...restHeaderProps}
                         className="
-                          px-2 py-4 text-md text-gray-700 dark:text-gray-50
-                          bg-gray-200 dark:bg-[#1e3344] tracking-wider
+                          px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap
+                          text-gray-700 dark:text-gray-300
+                          bg-gray-200 dark:bg-[#1e3344]
+                          first:rounded-tl-[15px] last:rounded-tr-[15px]
                         "
                       >
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center justify-center gap-1">
                           {column.render("Header")}
 
                           {column.isSorted && (
                             <img
                               src={column.isSortedDesc ? DownArrow : UpArrow}
                               alt="Sort Arrow"
-                              className="w-4 h-4 ml-1 inline-block"
+                              className="w-3 h-3 inline-block"
                             />
                           )}
                         </div>
@@ -758,7 +824,6 @@ const NodesTable = ({
           </thead>
           <tbody
             {...getTableBodyProps()}
-            className="divide-y-2 divide-gray-700"
           >
             {isFiltering && (
               <tr>
@@ -789,10 +854,14 @@ const NodesTable = ({
 
                 const highlightClass = getRowHighlightClass(actionValue);
 
+                const stripeClass =
+                  i % 2 === 1
+                    ? "bg-gray-100/60 dark:bg-white/[0.03]"
+                    : "";
                 return (
                   <tr
                     key={rowKey}
-                    className={`hover:!bg-[#4dc89f] cursor-pointer ${highlightClass || (i % 2 === 0 ? "inner-glass-effect" : "bg-gray-300/80 dark:bg-gray-800/80")}`}
+                    className={`hover:!bg-[#4dc89f] hover:!text-[#0f172a] cursor-pointer transition-colors ${highlightClass || stripeClass}`}
                     onClick={(e) => {
                       const el = e.target;
                       const tr = e.currentTarget;
@@ -802,7 +871,6 @@ const NodesTable = ({
                         el.closest("[data-interactive]") ||
                         el.tagName === "IMG" && el.closest(".cursor-pointer") !== tr
                       ) return;
-                      // Check if clicked element (or ancestor below the row) has underline/cursor-pointer
                       let node = el;
                       while (node && node !== tr) {
                         if (node.classList && (node.classList.contains("underline") || node.classList.contains("cursor-pointer"))) return;
@@ -812,10 +880,6 @@ const NodesTable = ({
                     }}
                     {...restRowProps}
                   >
-                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-gray-50 w-12">
-                      <Number number={i + 1 + pageIndex * pageSize} />
-                    </td>
-
                     {row.cells.map((cell) => {
                       const cellProps = cell.getCellProps();
                       const { key: cellKey, ...restCellProps } = cellProps;
@@ -824,7 +888,7 @@ const NodesTable = ({
                         <td
                           key={cellKey}
                           {...restCellProps}
-                          className="px-2 py-4 whitespace-nowrap text-md text-gray-700 dark:text-gray-50"
+                          className="px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/[0.05]"
                         >
                           {cell.render("Cell")}
                         </td>
