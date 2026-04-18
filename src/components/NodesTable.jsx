@@ -638,8 +638,14 @@ const NodesTable = ({
             <span>Score</span>
           </InfoPopover>
         ),
-        accessor: "score",
-        Cell: ({ value }) => {
+        id: "score",
+        accessor: (row) => {
+          const n = parseFloat(row.score);
+          return isFinite(n) ? n : -1;
+        },
+        sortType: "basic",
+        Cell: ({ row }) => {
+          const value = row.original.score;
           if (value === "-" || value == null) return "-";
           const numeric = parseFloat(value);
           if (!isFinite(numeric)) {
@@ -725,7 +731,7 @@ const NodesTable = ({
     ];
     if (currentTab === "standby" || currentTab === "other") {
       newCols = newCols.filter(
-        (col) => !["current_award", "apy", "score"].includes(col.accessor)
+        (col) => !["current_award", "apy", "score"].includes(col.id || col.accessor)
       );
     }
 
@@ -844,11 +850,11 @@ const NodesTable = ({
     <>
       <div
         key={`table-${currentTab}`}
-        className="rounded-[15px] mt-8 w-full bg-white dark:bg-[#17364c] shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
+        className="rounded-[15px] mt-8 w-full shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
       >
         <table
           {...getTableProps()}
-          className="min-w-full table-auto border-separate border-spacing-0"
+          className="min-w-full table-auto border-separate border-spacing-0 bg-white dark:bg-[#17364c] rounded-[15px]"
         >
           <thead className="sticky top-0 z-20">
             {headerGroups.map((headerGroup) => {
