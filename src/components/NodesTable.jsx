@@ -879,12 +879,12 @@ const NodesTable = ({
                         {...restHeaderProps}
                         className="
                           px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap
-                          text-gray-700 dark:text-gray-300
+                          text-left text-gray-700 dark:text-gray-300
                           bg-gray-200 dark:bg-[#1e3344]
                           first:rounded-tl-[15px] last:rounded-tr-[15px]
                         "
                       >
-                        <div className="flex items-center justify-center gap-1">
+                        <div className="flex items-center gap-1">
                           {column.render("Header")}
 
                           {column.isSorted && (
