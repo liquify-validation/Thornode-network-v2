@@ -112,6 +112,7 @@ export function computeMaxChainHeights(nodes) {
     "XRP",
     "TRON",
     "SOL",
+    "GAIA",
   ];
   const observeChainsData = nodes.map((n) => n.observe_chains).filter(Boolean);
 

@@ -1,7 +1,7 @@
 import React from "react";
 import InfoPopover from "./InfoPopover";
 
-const ChainStatusCell = ({ value }) => {
+const ChainStatusCell = ({ value, chain }) => {
   let color;
   let label;
   let glow = true;
@@ -26,7 +26,7 @@ const ChainStatusCell = ({ value }) => {
 
   return (
     <div className="flex items-center justify-center">
-      <InfoPopover title="Chain status" text={label}>
+      <InfoPopover title={`${chain || "Chain"} status`} text={label}>
         <span
           className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
           style={{

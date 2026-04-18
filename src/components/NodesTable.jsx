@@ -211,6 +211,25 @@ const NodesTable = ({
     [maxScore]
   );
 
+  const maxSlashes = React.useMemo(() => {
+    let max = 0;
+    for (const n of data || []) {
+      const v = parseFloat(n?.slash_points);
+      if (isFinite(v) && v > max) max = v;
+    }
+    return max;
+  }, [data]);
+
+  const slashColor = React.useCallback(
+    (slashes) => {
+      if (!isFinite(slashes) || maxSlashes <= 0) return "#4ade80";
+      const ratio = Math.max(0, Math.min(1, slashes / maxSlashes));
+      const hue = Math.round((1 - ratio) * 140);
+      return `hsl(${hue}, 72%, 55%)`;
+    },
+    [maxSlashes]
+  );
+
   const columns = React.useMemo(() => {
     let newCols = [
       {
@@ -354,6 +373,56 @@ const NodesTable = ({
           return (
             <div className="flex items-center justify-center gap-1">
               <span>-</span>
+            </div>
+          );
+        },
+      },
+      {
+        Header: (
+          <InfoPopover
+            title="Leave"
+            text="Forced or requested to leave the active set"
+          >
+            <span>Leave</span>
+          </InfoPopover>
+        ),
+        id: "leave",
+        accessor: (row) => {
+          const f = row.forced_to_leave;
+          const r = row.requested_to_leave;
+          const forced = f === 1 || f === "1" || f === true;
+          const requested = r === 1 || r === "1" || r === true;
+          return forced ? 2 : requested ? 1 : 0;
+        },
+        Cell: ({ row }) => {
+          const { forced_to_leave, requested_to_leave } = row.original;
+          const forced =
+            forced_to_leave === 1 || forced_to_leave === "1" || forced_to_leave === true;
+          const requested =
+            requested_to_leave === 1 ||
+            requested_to_leave === "1" ||
+            requested_to_leave === true;
+          const leaving = forced || requested;
+
+          const color = leaving ? "#4ade80" : "#475569";
+          const label = forced
+            ? "Forced to leave"
+            : requested
+              ? "Requested to leave"
+              : "Staying";
+
+          return (
+            <div className="flex items-center justify-center">
+              <InfoPopover title="Leave" text={label}>
+                <span
+                  className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
+                  style={{
+                    backgroundColor: color,
+                    boxShadow: leaving ? `0 0 6px ${color}` : "none",
+                    opacity: leaving ? 1 : 0.5,
+                  }}
+                />
+              </InfoPopover>
             </div>
           );
         },
@@ -536,12 +605,11 @@ const NodesTable = ({
           const nodeAddress = row.original.node_address;
           const slashes = row.original.slash_points;
           const slashCount = parseFiniteNumber(slashes);
-          const isHigh = slashCount >= 10;
+          const color = slashColor(slashCount);
           return (
             <span
-              className={`cursor-pointer underline tabular-nums ${
-                isHigh ? "text-red-400 font-semibold" : ""
-              }`}
+              className="cursor-pointer underline tabular-nums font-semibold"
+              style={{ color }}
               onClick={() => handleOpenChart(nodeAddress, "slashes")}
             >
               {slashes}
@@ -669,6 +737,7 @@ const NodesTable = ({
     addToFavorites,
     removeFromFavorites,
     scoreColor,
+    slashColor,
   ]);
 
   const chainColumns = React.useMemo(() => {
@@ -684,7 +753,8 @@ const NodesTable = ({
       "BASE",
       "XRP",
       "TRON",
-	  "SOL",
+      "SOL",
+      "GAIA",
     ];
     const haltsData = getHaltsData(globalData);
 
@@ -711,7 +781,7 @@ const NodesTable = ({
         return nodeChainHeight - maxChainHeight;
       },
       sortType: "basic",
-      Cell: ({ value }) => <ChainStatusCell value={value} />,
+      Cell: ({ value }) => <ChainStatusCell value={value} chain={chain} />,
     }));
   }, [maxChainHeights, currentTab, globalData]);
 
@@ -788,6 +858,16 @@ const NodesTable = ({
 
               return (
                 <tr key={headerGroupKey} {...restHeaderGroupProps}>
+                  <th
+                    className="
+                      px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap
+                      text-gray-700 dark:text-gray-300
+                      bg-gray-200 dark:bg-[#1e3344]
+                      first:rounded-tl-[15px] w-10 text-center
+                    "
+                  >
+                    #
+                  </th>
                   {headerGroup.headers.map((column) => {
                     const headerProps = column.getHeaderProps(
                       column.getSortByToggleProps()
@@ -827,7 +907,7 @@ const NodesTable = ({
           >
             {isFiltering && (
               <tr>
-                <td colSpan={allColumnsDef.length + 1} className="py-10">
+                <td colSpan={allColumnsDef.length + 2} className="py-10">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -836,7 +916,7 @@ const NodesTable = ({
             {!isFiltering && page.length === 0 && (
               <tr>
                 <td
-                  colSpan={allColumnsDef.length + 1}
+                  colSpan={allColumnsDef.length + 2}
                   className="py-6 text-center text-gray-700 dark:text-gray-50"
                 >
                   No node found for this search
@@ -880,6 +960,9 @@ const NodesTable = ({
                     }}
                     {...restRowProps}
                   >
+                    <td className="px-2 py-2.5 whitespace-nowrap text-[11px] text-gray-500 dark:text-gray-400 tabular-nums text-center border-t border-white/[0.05] w-8">
+                      {i + 1 + pageIndex * pageSize}
+                    </td>
                     {row.cells.map((cell) => {
                       const cellProps = cell.getCellProps();
                       const { key: cellKey, ...restCellProps } = cellProps;
