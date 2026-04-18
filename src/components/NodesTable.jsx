@@ -323,7 +323,7 @@ const NodesTable = ({
 
           if (hasActionLabel) {
             return (
-              <div className="flex items-center justify-center gap-1">
+              <div className="flex items-center justify-start gap-1">
                 <span>{normalizedAction}</span>
               </div>
             );
@@ -331,7 +331,7 @@ const NodesTable = ({
 
           if (isLeaving) {
             return (
-              <div className="flex items-center justify-center gap-1">
+              <div className="flex items-center justify-start gap-1">
                 <InfoPopover
                   title="Leaving"
                   text={isForcedToLeave ? "Forced to leave" : "Requested to leave"}
@@ -358,7 +358,7 @@ const NodesTable = ({
             );
 
             return (
-              <div className="flex items-center justify-center gap-1">
+              <div className="flex items-center justify-start gap-1">
                 <InfoPopover title="Jailed Information" text={jailText}>
                   <img
                     src={JailIcon}
@@ -371,7 +371,7 @@ const NodesTable = ({
           }
 
           return (
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-start gap-1">
               <span>-</span>
             </div>
           );
@@ -412,7 +412,7 @@ const NodesTable = ({
               : "Staying";
 
           return (
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-start">
               <InfoPopover title="Leave" text={label}>
                 <span
                   className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
@@ -447,7 +447,7 @@ const NodesTable = ({
 
           if (logo) {
             return (
-              <div className="flex items-center justify-center px-1 bg-transparent">
+              <div className="flex items-center justify-start px-1 bg-transparent">
                 <InfoPopover
                   title={shouldUseDefaultLogo ? "Provider (Default Icon)" : "Provider"}
                   text={ispName}
@@ -689,7 +689,7 @@ const NodesTable = ({
               ok ? "bg-green-400" : "bg-red-400"
             }`;
           return (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-start gap-2">
               <InfoPopover title="RPC" text={rpcOk ? "Healthy" : "Unhealthy"}>
                 <a
                   href={rpcUrl || "#"}
@@ -761,7 +761,7 @@ const NodesTable = ({
     return chains.map((chain) => ({
       id: chain,
       Header: (
-        <div className="flex justify-center">
+        <div className="flex justify-start">
           <InfoPopover title="Chain" text={chain}>
             <img
               src={chainIcons[chain]}
