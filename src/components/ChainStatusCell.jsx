@@ -25,7 +25,7 @@ const ChainStatusCell = ({ value, chain }) => {
   }
 
   return (
-    <div className="flex items-center justify-start">
+    <div className="flex items-center justify-center">
       <InfoPopover title={`${chain || "Chain"} status`} text={label}>
         <span
           className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
