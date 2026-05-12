@@ -58,7 +58,7 @@ const TableIcons = ({ node, onOpenChart }) => {
 
       <InfoPopover title="Thornode API">
         <a
-          href={`https://thornode.ninerealms.com/thorchain/node/${node.node_address}`}
+          href={`https://gateway.liquify.com/chain/thorchain_api/thorchain/node/${node.node_address}`}
           target="_blank"
           rel="noopener noreferrer"
         >

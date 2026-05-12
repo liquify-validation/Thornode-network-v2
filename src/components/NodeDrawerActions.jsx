@@ -39,7 +39,7 @@ const NodeDrawerActions = ({ address, ipAddress, onOpenNodeReport }) => (
     </a>
 
     <a
-      href={`https://thornode.ninerealms.com/thorchain/node/${address}`}
+      href={`https://gateway.liquify.com/chain/thorchain_api/thorchain/node/${address}`}
       target="_blank"
       rel="noopener noreferrer"
       className={`${actionClassName} no-underline`}

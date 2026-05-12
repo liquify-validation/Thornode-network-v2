@@ -44,6 +44,24 @@ import { GlobalDataContext } from "../context/GlobalDataContext";
 import { FavouriteIcon, UnfavouriteIcon } from "../assets";
 
 const RESPONSIVE_HIDDEN_COLUMNS = ["health"];
+const CENTERED_COLUMN_IDS = new Set([
+  "favourite",
+  "leave",
+  "isp",
+  "health",
+  "BTC",
+  "ETH",
+  "LTC",
+  "BCH",
+  "DOGE",
+  "AVAX",
+  "BSC",
+  "BASE",
+  "XRP",
+  "TRON",
+  "SOL",
+  "GAIA",
+]);
 
 function NodeAddressCell({ value, last4, node, copyToClipboard, onOpenChart }) {
   const [hovered, setHovered] = useState(false);
@@ -412,7 +430,7 @@ const NodesTable = ({
               : "Staying";
 
           return (
-            <div className="flex items-center justify-start">
+            <div className="flex items-center justify-center">
               <InfoPopover title="Leave" text={label}>
                 <span
                   className="inline-block w-2 h-2 rounded-full ring-2 ring-[#17364c] dark:ring-[#17364c]"
@@ -447,7 +465,7 @@ const NodesTable = ({
 
           if (logo) {
             return (
-              <div className="flex items-center justify-start px-1 bg-transparent">
+              <div className="flex items-center justify-center px-1 bg-transparent">
                 <InfoPopover
                   title={shouldUseDefaultLogo ? "Provider (Default Icon)" : "Provider"}
                   text={ispName}
@@ -461,7 +479,7 @@ const NodesTable = ({
               </div>
             );
           } else {
-            return ispName;
+            return <span className="block text-center">{ispName}</span>;
           }
         },
       },
@@ -695,7 +713,7 @@ const NodesTable = ({
               ok ? "bg-green-400" : "bg-red-400"
             }`;
           return (
-            <div className="flex items-center justify-start gap-2">
+            <div className="flex items-center justify-center gap-2">
               <InfoPopover title="RPC" text={rpcOk ? "Healthy" : "Unhealthy"}>
                 <a
                   href={rpcUrl || "#"}
@@ -767,13 +785,15 @@ const NodesTable = ({
     return chains.map((chain) => ({
       id: chain,
       Header: (
-        <div className="flex justify-start">
+        <div className="flex items-center justify-center gap-1">
           <InfoPopover title="Chain" text={chain}>
-            <img
-              src={chainIcons[chain]}
-              alt={chain}
-              style={{ width: 20, height: 20 }}
-            />
+            <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
+              <img
+                src={chainIcons[chain]}
+                alt={chain}
+                className="h-full w-full object-contain"
+              />
+            </span>
           </InfoPopover>
           {getHaltWarning(chain, haltsData)}
         </div>
@@ -850,11 +870,11 @@ const NodesTable = ({
     <>
       <div
         key={`table-${currentTab}`}
-        className="rounded-[15px] mt-8 w-full shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
+        className="mt-8 w-full overflow-hidden rounded-t-[15px] shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
       >
         <table
           {...getTableProps()}
-          className="min-w-full table-auto border-separate border-spacing-0 bg-white dark:bg-[#17364c] rounded-[15px]"
+          className="min-w-full table-auto border-separate border-spacing-0 bg-white dark:bg-[#17364c] rounded-t-[15px]"
         >
           <thead className="sticky top-0 z-20">
             {headerGroups.map((headerGroup) => {
@@ -885,12 +905,18 @@ const NodesTable = ({
                         {...restHeaderProps}
                         className="
                           px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap
-                          text-left text-gray-700 dark:text-gray-300
+                          text-gray-700 dark:text-gray-300
                           bg-gray-200 dark:bg-[#1e3344]
                           first:rounded-tl-[15px] last:rounded-tr-[15px]
                         "
                       >
-                        <div className="flex items-center gap-1">
+                        <div
+                          className={`flex items-center gap-1 ${
+                            CENTERED_COLUMN_IDS.has(column.id)
+                              ? "justify-center"
+                              : "justify-start text-left"
+                          }`}
+                        >
                           {column.render("Header")}
 
                           {column.isSorted && (
@@ -977,7 +1003,11 @@ const NodesTable = ({
                         <td
                           key={cellKey}
                           {...restCellProps}
-                          className="px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/[0.05]"
+                          className={`px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/[0.05] ${
+                            CENTERED_COLUMN_IDS.has(cell.column.id)
+                              ? "text-center"
+                              : ""
+                          }`}
                         >
                           {cell.render("Cell")}
                         </td>
