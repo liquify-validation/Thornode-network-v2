@@ -258,17 +258,12 @@ function Queue() {
     error: streamingError,
   } = useStreamingSwaps();
 
-  const isLoading =
-    queueLoading ||
-    outLoading ||
-    schedLoading ||
-    swapStatsLoading ||
-    streamingLoading;
+  const queuePageLoading = queueLoading || outLoading || schedLoading;
+  const queuePageError = queueError || outError || schedError;
+  const hasSwapFlowError = Boolean(swapStatsError && !swapStats);
+  const hasStreamingError = Boolean(streamingError && !streaming);
 
-  const error =
-    queueError || outError || schedError || swapStatsError || streamingError;
-
-  if (isLoading) {
+  if (queuePageLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <LoadingSpinner />
@@ -276,8 +271,8 @@ function Queue() {
     );
   }
 
-  if (error) {
-    return <div className="p-4 text-red-500">Error: {error.message}</div>;
+  if (queuePageError) {
+    return <div className="p-4 text-red-500">Error: {queuePageError.message}</div>;
   }
 
   const queue = queueData || {};
@@ -323,6 +318,12 @@ function Queue() {
         <div className="mb-4">
           <Tabs items={QUEUE_TABS} value={currentTab} onChange={setCurrentTab} />
         </div>
+
+        {hasSwapFlowError ? (
+          <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+            Swap summary data is temporarily unavailable: {swapStatsError.message}
+          </div>
+        ) : null}
 
         {currentTab === "summary" && (
           <Box className="p-6">
@@ -375,26 +376,36 @@ function Queue() {
                 <h3 className="text-sm font-bold uppercase text-gray-700 dark:text-white mb-3">
                   Swap Flow
                 </h3>
-                <div className="space-y-2">
-                  {[
-                    ["24h swaps", swapStats?.count_24h],
-                    ["24h volume", formatUsd(swapStats?.volume_24h_usd)],
-                    ["streaming 24h", swapStats?.streaming_count_24h],
-                    ["live streaming", liveStreamingCount],
-                  ].map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700/50"
-                    >
-                      <span className="text-sm capitalize text-gray-600 dark:text-gray-300">
-                        {label}
-                      </span>
-                      <span className="text-sm font-mono text-[#28f3b0]">
-                        {value != null ? value : "--"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {swapStatsLoading && !swapStats ? (
+                  <div className="py-8 flex justify-center">
+                    <LoadingSpinner />
+                  </div>
+                ) : hasSwapFlowError ? (
+                  <p className="text-sm text-amber-700 dark:text-amber-300">
+                    Swap flow metrics could not be loaded right now.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {[
+                      ["24h swaps", swapStats?.count_24h],
+                      ["24h volume", formatUsd(swapStats?.volume_24h_usd)],
+                      ["streaming 24h", swapStats?.streaming_count_24h],
+                      ["live streaming", liveStreamingCount],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700/50"
+                      >
+                        <span className="text-sm capitalize text-gray-600 dark:text-gray-300">
+                          {label}
+                        </span>
+                        <span className="text-sm font-mono text-[#28f3b0]">
+                          {value != null ? value : "--"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </Box>
@@ -418,7 +429,20 @@ function Queue() {
           />
         )}
 
-        {currentTab === "streaming" && <StreamingSwapsTable data={streaming} />}
+        {currentTab === "streaming" &&
+          (hasStreamingError ? (
+            <Box className="p-8 text-center">
+              <p className="text-amber-700 dark:text-amber-300">
+                Live streaming swaps are unavailable right now: {streamingError.message}
+              </p>
+            </Box>
+          ) : streamingLoading && !streaming ? (
+            <Box className="p-8 flex justify-center">
+              <LoadingSpinner />
+            </Box>
+          ) : (
+            <StreamingSwapsTable data={streaming} />
+          ))}
       </div>
     </>
   );

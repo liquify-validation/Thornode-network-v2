@@ -22,6 +22,10 @@ const ModernPieChart = ({
   iconMap = {},
   tooltipStyle = {},
   disclaimerText,
+  chartHeight = 340,
+  legendColumns,
+  legendMaxHeight,
+  contentClassName = "",
 }) => {
   const COLORS = [
     "#183E5A",
@@ -67,6 +71,9 @@ const ModernPieChart = ({
   const onLegendClick = (index) => {
     setActiveIndex(index === activeIndex ? undefined : index);
   };
+  const resolvedLegendColumns =
+    legendColumns ?? (safeData.length > 16 ? 2 : safeData.length > 8 ? 2 : 1);
+  const isLegendOnRight = legendPosition === "right";
 
   const renderActiveShape = (props) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
@@ -87,17 +94,11 @@ const ModernPieChart = ({
   };
 
   const renderCustomLegend = () => {
-    const shouldUseTwoColumns = safeData.length > 12;
     return (
       <ul
+        className="m-0 grid list-none gap-x-4 gap-y-2 p-0 text-xs text-slate-600 dark:text-slate-200"
         style={{
-          listStyle: "none",
-          margin: 0,
-          padding: 0,
-          display: shouldUseTwoColumns ? "grid" : "block",
-          gridTemplateColumns: shouldUseTwoColumns ? "repeat(2, auto)" : "none",
-          columnGap: "16px",
-          rowGap: "8px",
+          gridTemplateColumns: `repeat(${resolvedLegendColumns}, minmax(0, 1fr))`,
         }}
       >
         {safeData.map((entry, index) => {
@@ -112,12 +113,7 @@ const ModernPieChart = ({
             <li
               key={`legend-item-${index}`}
               onClick={() => onLegendClick(index)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                marginBottom: 8,
-              }}
+              className="mb-0 flex cursor-pointer items-start"
             >
               {useIconsInLegend && iconSrc ? (
                 <img
@@ -144,6 +140,7 @@ const ModernPieChart = ({
                     height: 12,
                     borderRadius: "50%",
                     marginRight: 8,
+                    marginTop: 3,
                     border: isActive
                       ? "2px solid white"
                       : "2px solid transparent",
@@ -154,7 +151,7 @@ const ModernPieChart = ({
               {useIconsInLegend ? (
                 <span style={{ display: "none" }}>{labelText}</span>
               ) : (
-                <span>{labelText}</span>
+                <span className="break-words leading-5">{labelText}</span>
               )}
             </li>
           );
@@ -193,7 +190,7 @@ const ModernPieChart = ({
       <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
         <tspan
           x="50%"
-          fontSize="48"
+          fontSize="42"
           fontWeight="bold"
           className="fill-gray-700 dark:fill-white"
         >
@@ -224,26 +221,42 @@ const ModernPieChart = ({
 
   return (
     <Box className="chart-card h-full flex flex-col pt-8 pb-16 relative">
-      <h2 className="font-semibold text-md ml-8">{title}</h2>
+      <h2 className="font-semibold text-md ml-8 text-slate-700 dark:text-white">{title}</h2>
       <ModernDivider />
 
-      {legendPosition === "right" ? (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ flex: 1, position: "relative" }}>
-            <ResponsiveContainer width="100%" height={400}>
+      {isLegendOnRight ? (
+        <div
+          className={`flex flex-col gap-4 px-4 pb-2 xl:flex-row xl:items-center ${contentClassName}`.trim()}
+        >
+          <div className="relative min-h-0 xl:min-w-0 xl:flex-[0_0_46%]">
+            <ResponsiveContainer width="100%" height={chartHeight}>
               {renderPieChart()}
             </ResponsiveContainer>
           </div>
-          <div style={{ paddingRight: 24 }}>{renderCustomLegend()}</div>
+          <div
+            className="min-w-0 px-4 xl:flex-[1_1_54%] xl:pr-6"
+            style={{
+              maxHeight: legendMaxHeight ?? chartHeight,
+              overflowY: legendMaxHeight ? "auto" : "visible",
+            }}
+          >
+            {renderCustomLegend()}
+          </div>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ width: "100%", position: "relative" }}>
-            <ResponsiveContainer width="100%" height={400}>
+        <div className={`flex flex-col px-4 pb-2 ${contentClassName}`.trim()}>
+          <div className="relative w-full">
+            <ResponsiveContainer width="100%" height={chartHeight}>
               {renderPieChart()}
             </ResponsiveContainer>
           </div>
-          <div style={{ marginTop: 16, alignSelf: "center" }}>
+          <div
+            className="mt-4 px-4"
+            style={{
+              maxHeight: legendMaxHeight,
+              overflowY: legendMaxHeight ? "auto" : "visible",
+            }}
+          >
             {renderCustomLegend()}
           </div>
         </div>

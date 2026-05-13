@@ -66,7 +66,8 @@ function getVoteStatus(entry) {
     return {
       key: "in_progress",
       label: "No Votes",
-      className: "border-slate-400/30 bg-slate-400/10 text-slate-300",
+      className:
+        "border-slate-300 bg-slate-200 text-slate-700 dark:border-slate-400/30 dark:bg-slate-400/10 dark:text-slate-300",
     };
   }
 
@@ -74,14 +75,16 @@ function getVoteStatus(entry) {
     return {
       key: "passed",
       label: "Passed",
-      className: "border-[#28f3b0]/45 bg-[#28f3b0]/10 text-[#7EF7D6]",
+      className:
+        "border-emerald-300 bg-emerald-200 text-emerald-800 dark:border-[#28f3b0]/45 dark:bg-[#28f3b0]/10 dark:text-[#7EF7D6]",
     };
   }
 
   return {
     key: "in_progress",
     label: "In Progress",
-    className: "border-[#F3D65C]/45 bg-[#F3D65C]/10 text-[#F3D65C]",
+    className:
+      "border-amber-300 bg-amber-200 text-amber-800 dark:border-[#F3D65C]/45 dark:bg-[#F3D65C]/10 dark:text-[#F3D65C]",
   };
 }
 
@@ -211,7 +214,7 @@ function VotePollLine({ option, totalNodes, currentValueNormalized }) {
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-3 text-[12px] text-gray-300">
+      <div className="flex items-center justify-between gap-3 text-[12px] text-slate-700 dark:text-gray-300">
         <div className="flex items-center gap-2 min-w-0">
           <span className="truncate">{option.label}</span>
           {isCurrent && (
@@ -220,19 +223,19 @@ function VotePollLine({ option, totalNodes, currentValueNormalized }) {
             </span>
           )}
         </div>
-        <span className="shrink-0 text-gray-400">
+        <span className="shrink-0 text-slate-500 dark:text-gray-400">
           {option.count}/{totalNodes}
         </span>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-[11px] rounded-full bg-white/6 border border-white/5 overflow-hidden">
+        <div className="flex-1 h-[11px] overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-white/5 dark:bg-white/6">
           <div
             className="h-full rounded-full bg-[#28f3b0] shadow-[0_0_14px_rgba(40,243,176,0.35)]"
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>
-        <div className="w-10 text-right text-[12px] text-gray-300">
+        <div className="w-10 text-right text-[12px] text-slate-600 dark:text-gray-300">
           {percentage.toFixed(0)}%
         </div>
       </div>
@@ -246,20 +249,20 @@ function OverviewRow({ entry, totalNodes }) {
   const notVotedCount = Math.max(totalNodes - entry.totalVotes, 0);
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,300px)_120px_minmax(0,1fr)] gap-6 px-7 py-6 border-t border-white/10 text-center">
-      <div className="flex items-center text-sm text-gray-100 min-h-[44px] ml-8 ">
+    <div className="grid grid-cols-1 gap-6 border-t border-slate-200 px-7 py-6 text-center dark:border-white/10 xl:grid-cols-[minmax(0,300px)_120px_minmax(0,1fr)] xl:items-center">
+      <div className="ml-8 flex min-h-[44px] items-center text-sm text-slate-700 dark:text-gray-100">
         {prettifyKey(entry.key)}
       </div>
 
-      <div className="xl:pt-1">
+      <div className="flex min-h-[44px] items-center justify-center">
         <span
-          className={`inline-flex items-center px-3 py-1 rounded-full border text-[11px] uppercase tracking-[0.12em] ${voteStatus.className}`}
+          className={`inline-flex min-h-[32px] items-center justify-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${voteStatus.className}`}
         >
           {voteStatus.label}
         </span>
       </div>
 
-      <div className="space-y-3 ml-8">
+      <div className="ml-8 space-y-3">
         {displayedOptions.map((option) => (
           <VotePollLine
             key={`${entry.key}-${option.rawOption}`}
@@ -269,7 +272,7 @@ function OverviewRow({ entry, totalNodes }) {
           />
         ))}
 
-        <div className="flex items-center gap-3 text-[12px] text-[#F26F8A]">
+        <div className="flex items-center gap-3 text-[12px] text-rose-500 dark:text-[#F26F8A]">
           <span className="font-medium">Not Voted:</span>
           <span className="px-2 py-[2px] rounded-full border border-[#F26F8A]/35 bg-[#F26F8A]/10">
             {notVotedCount}
@@ -426,19 +429,19 @@ function Voting() {
       </Helmet>
 
       <div className="p-4">
-        <div className="mb-7">
-          <h1 className="text-2xl text-gray-800 dark:text-white font-bold mb-3">
-            Voting
-          </h1>
-        </div>
-
-        <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <Tabs
-            items={VOTING_FILTER_OPTIONS}
-            value={statusFilter}
-            onChange={setStatusFilter}
-          />
-          <div className="flex justify-end">
+        <div className="mb-7 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-5">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Voting
+            </h1>
+            <Tabs
+              items={VOTING_FILTER_OPTIONS}
+              value={statusFilter}
+              onChange={setStatusFilter}
+              inactiveClassName="bg-slate-200 text-slate-700 hover:bg-slate-300 border-slate-300 dark:bg-white/10 dark:text-gray-50 dark:hover:bg-white/12 dark:border-white/10"
+            />
+          </div>
+          <div className="flex justify-end xl:min-w-[420px]">
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -489,7 +492,7 @@ function Voting() {
           </div>
         </Box>
 
-        <Box className="relative overflow-hidden rounded-[28px] border border-white/10 pb-4">
+        <Box className="relative overflow-hidden rounded-[28px] border border-slate-200 pb-4 dark:border-white/10">
           <img
             src={HexMapBg}
             alt=""
@@ -503,7 +506,7 @@ function Voting() {
             </div>
             <ModernDivider mt="mt-3" mb="mb-4" ml="ml-0" />
 
-            <div className="hidden xl:grid xl:grid-cols-[minmax(0,300px)_120px_minmax(0,1fr)] gap-6 px-7 pb-3 text-[12px] uppercase tracking-[0.16em] text-[#28f3b0] mt-12 text-left">
+            <div className="mt-12 hidden gap-6 px-7 pb-3 text-left text-[12px] uppercase tracking-[0.16em] text-emerald-600 dark:text-[#28f3b0] xl:grid xl:grid-cols-[minmax(0,300px)_120px_minmax(0,1fr)]">
               <div>Vote</div>
               <div>Result</div>
               <div>Vote Poll</div>

@@ -1,4 +1,28 @@
 const ApiUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+const DEFAULT_FETCH_TIMEOUT_MS = 15_000;
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    DEFAULT_FETCH_TIMEOUT_MS
+  );
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error(`Request timed out after ${DEFAULT_FETCH_TIMEOUT_MS / 1000}s`);
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
 
 function encodePathParam(value) {
   return encodeURIComponent(String(value ?? "").trim());
@@ -254,27 +278,27 @@ export async function fetchQueueScheduled() {
 
 // —— Swaps ———————————————————————————————————————————————————————————————
 export async function fetchSwapStats() {
-  const res = await fetch(`${ApiUrl}/swaps/stats`);
+  const res = await fetchWithTimeout(`${ApiUrl}/swaps/stats`);
   if (!res.ok) throw new Error("Failed to fetch swap stats");
   return await res.json();
 }
 
 export async function fetchRecentSwaps(type) {
   const query = buildQueryString({ type });
-  const res = await fetch(`${ApiUrl}/swaps/recent${query}`);
+  const res = await fetchWithTimeout(`${ApiUrl}/swaps/recent${query}`);
   if (!res.ok) throw new Error("Failed to fetch recent swaps");
   return await res.json();
 }
 
 export async function fetchSwapHistory(params = {}) {
   const query = buildQueryString(params);
-  const res = await fetch(`${ApiUrl}/swaps/history${query}`);
+  const res = await fetchWithTimeout(`${ApiUrl}/swaps/history${query}`);
   if (!res.ok) throw new Error("Failed to fetch swap history");
   return await res.json();
 }
 
 export async function fetchStreamingSwaps() {
-  const res = await fetch(`${ApiUrl}/swaps/streaming`);
+  const res = await fetchWithTimeout(`${ApiUrl}/swaps/streaming`);
   if (!res.ok) throw new Error("Failed to fetch live streaming swaps");
   return await res.json();
 }

@@ -80,20 +80,29 @@ const Pagination = ({
   }, [pageIndex, pageOptions]);
 
   return (
-    <div className="flex items-center inner-glass-effect py-6 px-4 rounded-b-xl">
+    <div className="flex items-center inner-glass-effect rounded-b-xl border border-t-0 border-slate-200 py-6 px-4 text-slate-700 dark:border-white/10 dark:text-white">
       <div className="flex items-center space-x-2">
         <span>Show</span>
         <select
-          className="border rounded p-1 bg-slate-500"
+          className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-gray-200 focus:border-slate-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           value={localPageSize}
           onChange={(e) => handleChangePageSize(e.target.value)}
         >
           {ALLOWED_PAGE_SIZES.map((size) => (
-            <option key={size} value={size}>
+            <option
+              key={size}
+              value={size}
+              className="bg-slate-800 text-gray-200 dark:bg-gray-700 dark:text-gray-200"
+            >
               {size}
             </option>
           ))}
-          <option value="all">All</option>
+          <option
+            value="all"
+            className="bg-slate-800 text-gray-200 dark:bg-gray-700 dark:text-gray-200"
+          >
+            All
+          </option>
         </select>
         <span>results per page</span>
       </div>
@@ -131,7 +140,7 @@ const Pagination = ({
               className={`px-2 py-1 rounded ${
                 page === pageIndex
                   ? "bg-[#28f3b0] text-gray-900"
-                  : "bg-transparent text-gray-700 dark:text-[#28f3b0] hover:bg-blue-200"
+                  : "bg-transparent text-slate-600 hover:bg-slate-100 dark:text-[#28f3b0] dark:hover:bg-white/10"
               }`}
             >
               {page + 1}

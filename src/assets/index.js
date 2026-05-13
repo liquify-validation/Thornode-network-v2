@@ -105,6 +105,7 @@ import FlokiIcon from "./floki_icon.jpeg";
 import AkamaiIcon from "./akamai_icon.png";
 import DataNetIcon from "./datanet_icon.png";
 import SolIcon from "./sol_icon.svg";
+import SwapIcon from "./swap_icon.svg";
 import AaveIcon from "./aave_icon.svg";
 import BUSDIcon from "./busd_icon.svg";
 import TrustWalletIcon from "./trust_wallet_icon.svg";
@@ -227,6 +228,7 @@ export {
   TronIcon,
   VultrIcon,
   SolIcon,
+  SwapIcon,
   AaveIcon,
   BUSDIcon,
   TrustWalletIcon,
