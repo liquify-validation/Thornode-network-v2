@@ -4,8 +4,10 @@ import ModernDivider from "./ModernDivider";
 
 const NetworkStatsCard = ({ title, stats, chartData }) => {
   return (
-    <div className="glass-effect shadow rounded-xl pt-4 w-full h-80 flex flex-col">
-      <h2 className="text-lg font-medium mb-2 ml-4">{title}</h2>
+    <div className="rounded-xl border border-slate-200/90 bg-white pt-4 text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.08)] w-full h-80 flex flex-col dark:border-white/10 dark:bg-white/10 dark:text-white dark:shadow-[0_4px_6px_rgba(0,0,0,0.3)]">
+      <h2 className="ml-4 mb-2 text-lg font-semibold text-slate-700 dark:text-white">
+        {title}
+      </h2>
       <ModernDivider mt="mt-2" mb="mb-8" ml="ml-4" />
 
       <div className="flex-1 overflow-y-auto text-right mx-6 scrollbar-custom">
@@ -18,9 +20,11 @@ const NetworkStatsCard = ({ title, stats, chartData }) => {
               {stat.icon && (
                 <img src={stat.icon} alt="" className="w-6 h-6 mr-2" />
               )}
-              <span className="text-md font-medium">{stat.subtitle}:</span>
+              <span className="text-md font-medium text-slate-600 dark:text-slate-200">
+                {stat.subtitle}:
+              </span>
             </div>
-            <div className="ml-2 text-md font-bold text-[#28F3B0CC]">
+            <div className="ml-2 text-md font-bold text-emerald-500 dark:text-[#28F3B0CC]">
               <span>{stat.value}</span>
             </div>
           </div>

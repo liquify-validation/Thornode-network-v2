@@ -42,7 +42,7 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
         Cell: ({ value, row }) => {
           const shortText = row.original.last4;
           return (
-            <InfoPopover title="Thornode Address" text={value}>
+            <InfoPopover title="THORNode Address" text={value}>
               <span
                 onClick={() => copyToClipboard(value)}
                 style={{ cursor: "pointer", textDecoration: "underline" }}
@@ -95,7 +95,7 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
       initialState: { pageSize: 10 },
     },
     useSortBy,
-    usePagination
+    usePagination,
   );
 
   if (!isOpen) return null;
@@ -115,7 +115,7 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => {
                     const headerProps = column.getHeaderProps(
-                      column.getSortByToggleProps()
+                      column.getSortByToggleProps(),
                     );
                     return (
                       <th

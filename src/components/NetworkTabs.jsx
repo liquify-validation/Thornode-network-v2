@@ -26,11 +26,19 @@ const NetworkTabs = () => {
             key={tab.name}
             to={tab.path}
             className={({ isActive }) =>
-              `px-6 py-2 border-4 border-gray-400 rounded-full font-bold ${
+              `rounded-full border px-6 py-2 text-sm font-bold tracking-[0.08em] transition-colors duration-200 ${
                 isActive
-                  ? "bg-[#28f3b0] text-gray-800"
-                  : "inner-glass-effect text-gray-50"
+                  ? "bg-[#28f3b0] text-slate-900"
+                  : "border-slate-200/95 bg-white text-slate-600 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:border-slate-400 hover:bg-slate-50 hover:text-slate-800 dark:border-white/10 dark:bg-white/10 dark:text-gray-50 dark:shadow-[0_4px_6px_rgba(0,0,0,0.3)] dark:hover:border-[#28f3b0]/45 dark:hover:text-white"
               }`
+            }
+            style={({ isActive }) =>
+              isActive
+                ? {
+                    border: "1px solid #28f3b0",
+                    boxShadow: "0 10px 24px rgba(40, 243, 176, 0.22)",
+                  }
+                : undefined
             }
           >
             {tab.name}

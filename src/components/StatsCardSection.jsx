@@ -21,18 +21,18 @@ import {
 import InfoPopover from "./InfoPopover";
 
 const StatsCardSection = ({ netData, nodeData }) => {
-  const cleanBondedValueString = nodeData.totalBondedValue.replace(
+  const cleanBondedValueString = String(nodeData?.totalBondedValue || "0").replace(
     /[^0-9.-]+/g,
     ""
   );
   const totalBondedValueRune = Number(cleanBondedValueString) || 0;
 
-  const coingeckoData = netData.coingecko || {};
+  const coingeckoData = netData?.coingecko || {};
   const currentPrice = coingeckoData.current_price || 0;
 
   const totalBondedValueUsd = (totalBondedValueRune * currentPrice).toFixed(0);
 
-  const maxEffectiveStakeRune = (netData.maxEffectiveStake || 0) / 1e8;
+  const maxEffectiveStakeRune = (netData?.maxEffectiveStake || 0) / 1e8;
   const maxEffectiveStakeUsd = (maxEffectiveStakeRune * currentPrice).toFixed(
     0
   );
@@ -41,12 +41,12 @@ const StatsCardSection = ({ netData, nodeData }) => {
     {
       icon: BlockIcon,
       title: "CURRENT BLOCK",
-      stat: netData.maxHeight?.toLocaleString() || "N/A",
+      stat: netData?.maxHeight?.toLocaleString() || "N/A",
     },
     {
       icon: ChurnTimeUntilIcon,
-      title: getChurnTitle(netData),
-      stat: getTimeToDisplay(netData),
+      title: netData ? getChurnTitle(netData) : "(CHURN) TIME UNTIL",
+      stat: netData ? getTimeToDisplay(netData) : "--",
     },
     {
       icon: BondIcon,
@@ -85,7 +85,7 @@ const StatsCardSection = ({ netData, nodeData }) => {
     {
       icon: BondOverTimeIcon,
       title: "SECONDS PER BLOCK",
-      stat: (Number(netData.secondsPerBlock) || 0).toLocaleString(),
+      stat: (Number(netData?.secondsPerBlock) || 0).toLocaleString(),
     },
     {
       icon: PriceIcon,

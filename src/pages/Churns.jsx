@@ -67,16 +67,16 @@ function Churns() {
     if (!networkData || !Array.isArray(churns)) return [];
 
     const ordered = [...churns].sort((a, b) => b - a);
-    const currentHeight = Number(networkData.maxHeight || 0);
-    const lastChurn = Number(networkData.lastChurn || 0);
-    const interval = Number(networkData.churnInterval || 0);
+    const currentHeight = Number(networkData?.maxHeight || 0);
+    const lastChurn = Number(networkData?.lastChurn || 0);
+    const interval = Number(networkData?.churnInterval || 0);
     const nextChurn = lastChurn + interval;
-    const secondsPerBlock = Number(networkData.secondsPerBlock || 0);
+    const secondsPerBlock = Number(networkData?.secondsPerBlock || 0);
     const blocksSinceLastChurn = Number(
-      networkData.blocksSinceLastChurn ?? Math.max(0, currentHeight - lastChurn),
+      networkData?.blocksSinceLastChurn ?? Math.max(0, currentHeight - lastChurn),
     );
     const blocksUntilChurn = Number(
-      networkData.blocksUntilChurn ?? nextChurn - currentHeight,
+      networkData?.blocksUntilChurn ?? nextChurn - currentHeight,
     );
     const completedCycleBlocks =
       interval > 0
@@ -87,9 +87,9 @@ function Churns() {
     const progress = interval > 0 ? (completedCycleBlocks / interval) * 100 : 0;
     const elapsedSeconds = blocksSinceLastChurn * secondsPerBlock;
     const totalSeconds = interval * secondsPerBlock;
-    const retrySeconds = Number(networkData.secondsUntilRetry || 0);
-    const isCurrentlyChurning = networkData.retiring === "true";
-    const isRetryWindow = Boolean(networkData.churnTry) && !isCurrentlyChurning;
+    const retrySeconds = Number(networkData?.secondsUntilRetry || 0);
+    const isCurrentlyChurning = networkData?.retiring === "true";
+    const isRetryWindow = Boolean(networkData?.churnTry) && !isCurrentlyChurning;
 
     const approxStart = new Date(Date.now() - elapsedSeconds * 1000);
     const approxFinish = new Date(
@@ -192,18 +192,18 @@ function Churns() {
     if (!Array.isArray(churns) || !networkData) return [];
 
     const ordered = [...churns].sort((a, b) => b - a);
-    const secondsPerBlock = Number(networkData.secondsPerBlock || 0);
+    const secondsPerBlock = Number(networkData?.secondsPerBlock || 0);
 
     return ordered.map((height, index) => {
       const previousHeight = ordered[index + 1];
       const deltaBlocks = previousHeight ? height - previousHeight : null;
-      const blocksAgo = Number(networkData.maxHeight || 0) - height;
+      const blocksAgo = Number(networkData?.maxHeight || 0) - height;
       const approxDaysAgo = (blocksAgo * secondsPerBlock) / 86400;
 
       return {
         height: formatNumber(height),
         type:
-          height === Number(networkData.lastChurn)
+          height === Number(networkData?.lastChurn)
             ? "Last Churn"
             : index === 0
               ? "Most Recent Indexed"

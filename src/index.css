@@ -68,8 +68,8 @@
     background: rgba(255, 255, 255, 1) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(226, 232, 240, 0.95) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
   }
 
   .dark .glass-card,
@@ -79,8 +79,8 @@
     color: #f9fafb !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
   }
 
   .dark .inner-glass-effect {
@@ -111,7 +111,17 @@
     background: rgba(255, 255, 255, 1) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
+    border: 2px solid rgba(148, 163, 184, 0.95) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12) !important;
+  }
+
+  .dark .glass-card,
+  .dark .glass-effect,
+  .dark .inner-glass-effect {
+    background: #324154 !important;
+    color: #f9fafb !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.34) !important;
   }
 
   .glass-card::before,
@@ -143,7 +153,7 @@ body {
   place-items: center; */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f1f1f1;
+  background-color: #f5f7fb;
   color: black;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -182,17 +192,57 @@ button:focus-visible {
 }
 
 @layer components {
-  .glass-effect {
-    @apply rounded-[15px] 
-           bg-white 
-           text-gray-700
-           shadow-md
-           backdrop-filter-none;
+  .network-surface-card {
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+    background: #ffffff;
+  }
 
-    @apply dark:bg-white/10     
-           dark:text-white
-           dark:backdrop-blur-[30px]
-           dark:shadow-[0_4px_6px_rgba(0,0,0,0.3)];
+  .dark .network-surface-card {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .network-surface-panel {
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06) !important;
+    background: #ffffff;
+  }
+
+  .dark .network-surface-panel {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .network-surface-tab {
+    border: 1px solid rgba(226, 232, 240, 0.95) !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06) !important;
+    background: #ffffff;
+  }
+
+  .network-surface-tab:hover {
+    border-color: rgba(148, 163, 184, 0.95) !important;
+    background: #f8fafc;
+  }
+
+  .dark .network-surface-tab {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-effect {
+    @apply rounded-[15px] bg-white text-slate-700 backdrop-filter-none;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .dark .glass-effect {
+    @apply bg-white/10 text-white dark:backdrop-blur-[30px];
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   }
 
   .glass-card {
@@ -233,13 +283,15 @@ button:focus-visible {
 
 @layer components {
   .inner-glass-effect {
-    @apply bg-white text-black shadow-md;
-    @apply backdrop-filter-none;
+    @apply bg-white text-slate-800 backdrop-filter-none;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  }
 
-    @apply dark:bg-white/10         
-           dark:text-white
-           dark:backdrop-blur-[30px]
-           dark:shadow-[0_4px_6px_rgba(0,0,0,0.3)];
+  .dark .inner-glass-effect {
+    @apply bg-white/10 text-white dark:backdrop-blur-[30px];
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -310,7 +362,7 @@ button:focus-visible {
 
 .straight-line {
   height: 2px;
-  background-color: #232e42;
+  background-color: #475569;
 }
 
 .diagonal-line {
@@ -339,9 +391,14 @@ button:focus-visible {
   left: -1px;
   width: 200%;
   height: 2px;
-  background-color: #232e42;
+  background-color: #475569;
   transform: rotate(-35deg);
   transform-origin: left center;
+}
+
+.dark .straight-line,
+.dark .diagonal-line::before {
+  background-color: #232e42;
 }
 
 .recharts-pie * {

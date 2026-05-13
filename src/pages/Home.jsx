@@ -212,21 +212,22 @@ function Home({ isDark }) {
 
         {/* Leaderboard */}
 
-        <div className="flex flex-wrap mt-6 mb-4 items-stretch">
-          <div className="w-full lg:w-1/2 px-2 mb-4 flex flex-col">
+        <div className="mt-6 mb-4 grid grid-cols-1 gap-4 xl:grid-cols-12">
+          <div className="flex flex-col px-2 xl:col-span-4">
             <ModernPieChart
               data={countriesData}
               title="User Locations"
               subtitle="Total Users"
               centerValueMode="sum"
-              legendPosition="right"
+              legendPosition="bottom"
               showValueInLegend
+              chartHeight={300}
+              legendColumns={2}
               disclaimerText="Based on public IP address"
-              isDark={isDark}
             />
           </div>
 
-          <div className="w-full lg:w-1/2 px-2 mb-4 flex flex-col">
+          <div className="flex flex-col px-2 xl:col-span-8">
             <ModernPieChart
               data={ispData}
               title="Internet Service Providers"
@@ -234,6 +235,8 @@ function Home({ isDark }) {
               centerValueMode="count"
               legendPosition="right"
               showValueInLegend
+              chartHeight={320}
+              legendColumns={2}
             />
           </div>
         </div>

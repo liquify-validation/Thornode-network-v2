@@ -54,16 +54,18 @@ const NetworkTable = ({ columns, data, title }) => {
 
   return (
     <div className="mt-4">
-      <div className="inner-glass-effect rounded-t-xl">
+      <div className="rounded-t-xl border border-slate-200/90 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:border-white/10 dark:bg-white/10 dark:shadow-[0_4px_6px_rgba(0,0,0,0.3)]">
         <div className="py-4">
-          <h2 className="text-md font-bold ml-8 mt-4">{title}</h2>
+          <h2 className="ml-8 mt-4 text-md font-bold text-slate-700 dark:text-white">
+            {title}
+          </h2>
           <ModernDivider />
         </div>
 
         <div className="overflow-x-auto">
           <table
             {...getTableProps()}
-            className="min-w-full divide-y-2 divide-gray-800"
+            className="min-w-full divide-y divide-slate-200 dark:divide-gray-800"
           >
             <thead>
               {headerGroups.map((headerGroup) => (
@@ -76,7 +78,7 @@ const NetworkTable = ({ columns, data, title }) => {
                     <th
                       key={column.id}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
-                      className="px-6 py-3 text-left text-md font-semibold text-[#28F3B0] tracking-wider pb-8"
+                      className="px-6 py-3 pb-8 text-left text-md font-semibold tracking-wider text-slate-700 dark:text-[#28F3B0]"
                     >
                       <div className="flex items-center justify-start">
                         {column.render("Header")}
@@ -96,20 +98,24 @@ const NetworkTable = ({ columns, data, title }) => {
             </thead>
             <tbody
               {...getTableBodyProps()}
-              className="divide-y-2 divide-gray-800 text-left"
+              className="divide-y divide-slate-200 text-left dark:divide-gray-800"
             >
               {currentRows.map((row, i) => {
                 prepareRow(row);
                 return (
-                  <tr key={row.id} {...row.getRowProps()}>
-                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-gray-50">
+                  <tr
+                    key={row.id}
+                    {...row.getRowProps()}
+                    className="transition-colors hover:bg-slate-50/80 dark:hover:bg-white/5"
+                  >
+                    <td className="px-2 pl-4 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-gray-50">
                       <Number number={i + 1 + pageIndex * pageSize} />
                     </td>
                     {row.cells.map((cell) => (
                       <td
                         key={cell.column.id}
                         {...cell.getCellProps()}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-50"
+                        className="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-gray-50"
                       >
                         {cell.render("Cell")}
                       </td>

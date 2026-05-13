@@ -11,7 +11,7 @@ const Header = () => {
       <div className="flex items-center justify-between px-4">
         <div>
           <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Welcome to Thornodes
+            Welcome to THORNodes
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Here are the latest stats for you!

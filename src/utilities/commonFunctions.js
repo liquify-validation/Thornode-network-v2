@@ -428,6 +428,10 @@ export const ispMappings = {
   "TIMEWARP IT Consulting GmbH": {
     shortName: "Timewarp",
   },
+  "Registered Cogent Communications Customer - LifeinCloud LTD": {
+    shortName: "Cogent / LifeinCloud",
+    icon: CogentIcon,
+  },
 };
 
 export function shortenIspData(ispArray) {

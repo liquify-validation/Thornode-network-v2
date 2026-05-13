@@ -11,6 +11,7 @@ import {
   LiquifyIcon,
   LeaderboardIcon,
   ReportIcon,
+  SwapIcon,
 } from "../assets";
 import DarkModeToggle from "../components/DarkModeToggle";
 
@@ -26,7 +27,7 @@ const Sidebar = ({
 
   const menuItems = [
     {
-      name: "THORnodes",
+      name: "THORNodes",
       icon: ThorIcon,
       path: "/",
       disableActiveStyle: true,
@@ -37,6 +38,13 @@ const Sidebar = ({
     { name: "Network", icon: NetworkIcon, path: "/network" },
     { name: "Pools", icon: AnalyticsIcon, path: "/pools" },
     { name: "Queue", icon: NodesIcon, path: "/queue" },
+    {
+      name: "Swaps",
+      icon: SwapIcon,
+      href: "https://swap.thorchain.org",
+      external: true,
+      iconClassName: "w-6 h-6 lg:w-7 lg:h-7 brightness-0 invert",
+    },
     { name: "BP Report", icon: ReportIcon, path: "/bp-report" },
   ];
 
@@ -59,6 +67,69 @@ const Sidebar = ({
     );
   };
 
+  const renderMenuItem = (
+    item,
+    className,
+    iconClassName = "w-6 h-6",
+    onClick,
+  ) => {
+    const isActive =
+      !item.disableActiveStyle && !item.external && isItemActive(item.path);
+    const sharedClassName =
+      `flex items-center gap-2 p-2 rounded-md hover:bg-slate-600 ${
+        isActive ? "bg-slate-600" : ""
+      } ${className || ""}`.trim();
+    const imageClassName = item.iconClassName
+      ? item.iconClassName
+      : iconClassName;
+    const label =
+      isExpanded || className?.includes("gap-3") ? (
+        <span
+          className={`text-sm font-semibold ${
+            className?.includes("gap-3") ? "" : "ml-2"
+          } text-gray-50 ${item.wordmark ? "thorchain-wordmark" : ""}`.trim()}
+        >
+          {item.name}
+        </span>
+      ) : null;
+
+    if (item.external) {
+      return (
+        <a
+          key={item.name}
+          href={item.href}
+          target="_blank"
+          rel="noreferrer"
+          className={sharedClassName}
+          onClick={onClick}
+        >
+          <img
+            src={item.icon}
+            alt={`${item.name} icon`}
+            className={`${imageClassName} transition-transform duration-300 transform hover:scale-110`}
+          />
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <Link
+        key={item.name}
+        to={item.path}
+        className={sharedClassName}
+        onClick={onClick}
+      >
+        <img
+          src={item.icon}
+          alt={`${item.name} icon`}
+          className={`${imageClassName} transition-transform duration-300 transform hover:scale-110`}
+        />
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <>
       {/* Mobile overlay */}
@@ -77,33 +148,7 @@ const Sidebar = ({
           hidden lg:flex`}
       >
         <div className="flex flex-col gap-4">
-          {menuItems.map((item) => {
-            const isActive =
-              !item.disableActiveStyle && isItemActive(item.path);
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`flex items-center gap-2 p-2 rounded-md hover:bg-slate-600
-                  ${isActive ? "bg-slate-600" : ""}`}
-              >
-                <img
-                  src={item.icon}
-                  alt={`${item.name} icon`}
-                  className="w-6 h-6 transition-transform duration-300 transform hover:scale-110"
-                />
-                {isExpanded && (
-                  <span
-                    className={`text-sm font-semibold ml-2 text-gray-50 ${
-                      item.wordmark ? "thorchain-wordmark" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+          {menuItems.map((item) => renderMenuItem(item))}
         </div>
 
         <div className="flex flex-col gap-3 mt-16">
@@ -189,32 +234,9 @@ const Sidebar = ({
           </button>
         </div>
         <div className="flex flex-col gap-2">
-          {menuItems.map((item) => {
-            const isActive =
-              !item.disableActiveStyle && isItemActive(item.path);
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                onClick={onCloseMobile}
-                className={`flex items-center gap-3 p-3 rounded-md hover:bg-slate-600
-                  ${isActive ? "bg-slate-600" : ""}`}
-              >
-                <img
-                  src={item.icon}
-                  alt={`${item.name} icon`}
-                  className="w-5 h-5"
-                />
-                <span
-                  className={`text-sm font-semibold ${
-                    item.wordmark ? "thorchain-wordmark" : ""
-                  }`}
-                >
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
+          {menuItems.map((item) =>
+            renderMenuItem(item, "gap-3 p-3", "w-5 h-5", onCloseMobile),
+          )}
         </div>
         <div className="mt-8 flex flex-col gap-2">
           <button

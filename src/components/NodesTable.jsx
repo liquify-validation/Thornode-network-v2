@@ -868,14 +868,12 @@ const NodesTable = ({
 
   return (
     <>
-      <div
-        key={`table-${currentTab}`}
-        className="mt-8 w-full overflow-hidden rounded-t-[15px] shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]"
-      >
-        <table
-          {...getTableProps()}
-          className="min-w-full table-auto border-separate border-spacing-0 bg-white dark:bg-[#17364c] rounded-t-[15px]"
-        >
+      <div key={`table-${currentTab}`} className="mt-8 min-w-full w-max pr-4">
+        <div className="w-full overflow-visible rounded-t-[15px] shadow-md dark:shadow-[0_5px_20px_rgba(0,0,0,0.5)]">
+          <table
+            {...getTableProps()}
+            className="min-w-max w-full table-auto border-separate border-spacing-0 rounded-t-[15px] bg-white dark:bg-[#17364c]"
+          >
           <thead className="sticky top-0 z-20">
             {headerGroups.map((headerGroup) => {
               const headerGroupProps = headerGroup.getHeaderGroupProps();
@@ -1017,21 +1015,22 @@ const NodesTable = ({
                 );
               })}
           </tbody>
-        </table>
-      </div>
+          </table>
+        </div>
 
-      <Pagination
-        canPreviousPage={canPreviousPage}
-        canNextPage={canNextPage}
-        pageOptions={pageOptions}
-        pageCount={pageCount}
-        gotoPage={gotoPage}
-        nextPage={nextPage}
-        previousPage={previousPage}
-        setPageSize={setPageSize}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-      />
+        <Pagination
+          canPreviousPage={canPreviousPage}
+          canNextPage={canNextPage}
+          pageOptions={pageOptions}
+          pageCount={pageCount}
+          gotoPage={gotoPage}
+          nextPage={nextPage}
+          previousPage={previousPage}
+          setPageSize={setPageSize}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+        />
+      </div>
 
       {showModal && getNodeChartConfig(selectedChartType) && (
         <NodeChartModal

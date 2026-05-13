@@ -67,13 +67,13 @@ function formatDurationObject(value) {
 
 function getChurnSummary(networkData) {
   if (!networkData) return "--";
-  if (networkData.retiring === true || networkData.retiring === "true") {
+  if (networkData?.retiring === true || networkData?.retiring === "true") {
     return "Churning";
   }
-  if (networkData.churnTry) {
-    return `Retry in ${formatDurationObject(networkData.timeUntilRetry)}`;
+  if (networkData?.churnTry) {
+    return `Retry in ${formatDurationObject(networkData?.timeUntilRetry)}`;
   }
-  return formatDurationObject(networkData.timeUntilChurn);
+  return formatDurationObject(networkData?.timeUntilChurn);
 }
 
 const NetworkStatsCardSection = ({ className = "" }) => {
@@ -115,6 +115,7 @@ const NetworkStatsCardSection = ({ className = "" }) => {
     const poolStats = poolStatsQuery.data || {};
     const swapStats = swapStatsQuery.data || {};
     const coingecko = networkData?.coingecko || {};
+    const isRetryWindow = Boolean(networkData?.churnTry);
     const blocksUntilChurn = Number(networkData?.blocksUntilChurn || 0);
     const churnInterval = Number(networkData?.churnInterval || 0);
     const churnNumber =
@@ -203,9 +204,9 @@ const NetworkStatsCardSection = ({ className = "" }) => {
             ),
           },
           {
-            subtitle: networkData.churnTry ? "Overdue By" : "Blocks Left",
+            subtitle: isRetryWindow ? "Overdue By" : "Blocks Left",
             value: formatNumber(
-              networkData.churnTry
+              isRetryWindow
                 ? Math.max(0, -blocksUntilChurn)
                 : blocksUntilChurn,
             ),

@@ -9,7 +9,7 @@ const Number = ({ number }) => {
         text-xl 
         sm:text-lg
         font-bold mr-5
-        text-[#28f3b0] bg-slate-700 dark:bg-slate-600
+        text-emerald-500 bg-slate-100 dark:text-[#28f3b0] dark:bg-slate-600
         rounded-full
         overflow-hidden
       "
