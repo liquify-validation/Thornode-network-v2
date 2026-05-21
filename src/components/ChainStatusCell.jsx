@@ -1,7 +1,7 @@
 import React from "react";
 import InfoPopover from "./InfoPopover";
 
-const ChainStatusCell = ({ value, chain }) => {
+const ChainStatusCell = ({ value, chain, halted = false }) => {
   let color;
   let label;
   let glow = true;
@@ -22,6 +22,10 @@ const ChainStatusCell = ({ value, chain }) => {
       color = "#f87171";
       label = `${value > 0 ? "+" : ""}${value} blocks`;
     }
+  }
+
+  if (halted) {
+    label = label === "N/A" ? "Halted" : `${label} - Halted`;
   }
 
   return (
