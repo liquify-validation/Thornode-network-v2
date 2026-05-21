@@ -22,7 +22,11 @@ import {
   cityToCountryMap,
   useViewport,
 } from "../utilities/commonFunctions";
-import { getHaltWarning, getHaltsData } from "../utilities/getHaltWarning";
+import {
+  getHaltWarning,
+  getHaltsData,
+  isChainHalted,
+} from "../utilities/getHaltWarning";
 import { getNodeChartConfig } from "../utilities/nodeChartConfig";
 import {
   baseUnitsToWholeRune,
@@ -782,33 +786,48 @@ const NodesTable = ({
     ];
     const haltsData = getHaltsData(globalData);
 
-    return chains.map((chain) => ({
-      id: chain,
-      Header: (
-        <div className="flex items-center justify-center gap-1">
-          <InfoPopover title="Chain" text={chain}>
-            <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
-              <img
-                src={chainIcons[chain]}
-                alt={chain}
-                className="h-full w-full object-contain"
-              />
-            </span>
-          </InfoPopover>
-          {getHaltWarning(chain, haltsData)}
-        </div>
-      ),
-      accessor: (row) => {
-        const nodeChainHeight = row.obchains[chain];
-        const maxChainHeight = maxChainHeights[chain];
-        if (nodeChainHeight === undefined || maxChainHeight === undefined) {
-          return Infinity;
-        }
-        return nodeChainHeight - maxChainHeight;
-      },
-      sortType: "basic",
-      Cell: ({ value }) => <ChainStatusCell value={value} chain={chain} />,
-    }));
+    return chains.map((chain) => {
+      const halted = isChainHalted(chain, haltsData);
+
+      return {
+        id: chain,
+        isHalted: halted,
+        Header: (
+          <div
+            className={`flex items-center justify-center gap-1 ${
+              halted ? "text-orange-700 dark:text-orange-200" : ""
+            }`}
+          >
+            <InfoPopover title="Chain" text={chain}>
+              <span
+                className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                  halted ? "bg-orange-100/80 dark:bg-orange-500/10" : ""
+                }`}
+              >
+                <img
+                  src={chainIcons[chain]}
+                  alt={chain}
+                  className="h-full w-full object-contain"
+                />
+              </span>
+            </InfoPopover>
+            {getHaltWarning(chain, haltsData)}
+          </div>
+        ),
+        accessor: (row) => {
+          const nodeChainHeight = row.obchains[chain];
+          const maxChainHeight = maxChainHeights[chain];
+          if (nodeChainHeight === undefined || maxChainHeight === undefined) {
+            return Infinity;
+          }
+          return nodeChainHeight - maxChainHeight;
+        },
+        sortType: "basic",
+        Cell: ({ value }) => (
+          <ChainStatusCell value={value} chain={chain} halted={halted} />
+        ),
+      };
+    });
   }, [maxChainHeights, currentTab, globalData]);
 
   const allColumnsDef = React.useMemo(
@@ -901,12 +920,17 @@ const NodesTable = ({
                       <th
                         key={columnKey}
                         {...restHeaderProps}
-                        className="
+                        className={`
                           px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap
                           text-gray-700 dark:text-gray-300
                           bg-gray-200 dark:bg-[#1e3344]
                           first:rounded-tl-[15px] last:rounded-tr-[15px]
-                        "
+                          ${
+                            column.isHalted
+                              ? "bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-200"
+                              : ""
+                          }
+                        `}
                       >
                         <div
                           className={`flex items-center gap-1 ${
@@ -1002,6 +1026,10 @@ const NodesTable = ({
                           key={cellKey}
                           {...restCellProps}
                           className={`px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/[0.05] ${
+                            cell.column.isHalted
+                              ? "bg-orange-50/70 dark:bg-orange-500/[0.08] text-orange-700 dark:text-orange-100"
+                              : ""
+                          } ${
                             CENTERED_COLUMN_IDS.has(cell.column.id)
                               ? "text-center"
                               : ""
