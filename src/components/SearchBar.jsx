@@ -32,9 +32,10 @@ const SearchBar = ({
         <input
           className="
             border 
+            bg-white
             text-black
             border-black 
-            rounded 
+            rounded-sm
             p-2 
             w-full 
             pl-10 

@@ -13,6 +13,8 @@ This project is a React dashboard (bundled via Vite) that monitors THORNode info
 
 ## Installation
 
+Use Node.js 20.19+ or 22.12+. Tailwind CSS 4 requires Safari 16.4+, Chrome 111+, or Firefox 128+.
+
 Clone the Repo:
 
 ```bash

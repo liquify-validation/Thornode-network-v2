@@ -14,7 +14,7 @@ const NetworkStatsCard = ({ title, stats, chartData }) => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="grid grid-cols-[_auto_1fr] gap-2 items-center mb-2"
+            className="grid grid-cols-[auto_1fr] gap-2 items-center mb-2"
           >
             <div className="flex items-center">
               {stat.icon && (

@@ -415,7 +415,7 @@ function AssetFilterDropdown({ options, value, onChange }) {
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className={`flex w-full items-center justify-between rounded-xl border px-4 py-2 text-left text-sm transition-colors focus:outline-none focus:ring-0 focus-visible:ring-0 ${
+        className={`flex w-full items-center justify-between rounded-xl border px-4 py-2 text-left text-sm transition-colors focus:outline-hidden focus:ring-0 focus-visible:ring-0 ${
           isOpen
             ? "border-[#28f3b0]/60 bg-[#173449] text-white"
             : "border-transparent inner-glass-effect bg-white text-gray-800 hover:border-[#28f3b0]/40 dark:bg-[#173449] dark:text-white"
@@ -427,15 +427,15 @@ function AssetFilterDropdown({ options, value, onChange }) {
         <img
           src={ArrowIcon}
           alt=""
-          className={`ml-3 h-4 w-4 flex-shrink-0 transform transition-transform duration-200 ${
-            isOpen ? "rotate-[270deg] opacity-100 invert" : "rotate-90 opacity-70 dark:invert"
+          className={`ml-3 h-4 w-4 shrink-0 transform transition-transform duration-200 ${
+            isOpen ? "rotate-270 opacity-100 invert" : "rotate-90 opacity-70 dark:invert"
           }`}
         />
       </button>
 
       {isOpen && (
         <div
-          className="absolute right-0 top-full z-[70] mt-2 max-h-72 w-full overflow-y-auto rounded-xl border border-[#28f3b0]/20 bg-[#173449] p-2 shadow-2xl shadow-black/25"
+          className="absolute right-0 top-full z-70 mt-2 max-h-72 w-full overflow-y-auto rounded-xl border border-[#28f3b0]/20 bg-[#173449] p-2 shadow-2xl shadow-black/25"
           role="listbox"
         >
           {options.map((option) => {
@@ -449,7 +449,7 @@ function AssetFilterDropdown({ options, value, onChange }) {
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`flex w-full items-center justify-start rounded-none border-0 border-b border-white/10 bg-transparent px-3 py-2.5 text-left text-sm shadow-none transition-colors hover:border-b hover:border-white/10 focus:outline-none focus:ring-0 focus-visible:ring-0 last:border-b-0 ${
+                className={`flex w-full items-center justify-start rounded-none border-0 border-b border-white/10 bg-transparent px-3 py-2.5 text-left text-sm shadow-none transition-colors hover:border-b hover:border-white/10 focus:outline-hidden focus:ring-0 focus-visible:ring-0 last:border-b-0 ${
                   isSelected
                     ? "font-semibold text-[#28f3b0]"
                     : "text-gray-100 hover:bg-white/8"

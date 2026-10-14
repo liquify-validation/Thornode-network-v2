@@ -44,6 +44,8 @@ import { GlobalDataContext } from "../context/GlobalDataContext";
 import { FavouriteIcon, UnfavouriteIcon } from "../assets";
 
 const RESPONSIVE_HIDDEN_COLUMNS = ["health"];
+// React Table memoizes columns by this reference; recreating it loops parent updates.
+const DEFAULT_COLUMN = { sortType: "favouriteAware" };
 const CENTERED_COLUMN_IDS = new Set([
   "favourite",
   "leave",
@@ -95,7 +97,7 @@ function NodeAddressCell({ value, last4, node, copyToClipboard, onOpenChart }) {
               top: pos.top,
               left: pos.left,
             }}
-            className="z-[9999] flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-xl shadow-lg whitespace-nowrap"
+            className="z-9999 flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-xl shadow-lg whitespace-nowrap"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
@@ -707,7 +709,7 @@ const NodesTable = ({
           const rpcUrl = getNodeEndpointUrl(ip_address, 27147, "/health");
           const bifrostUrl = getNodeEndpointUrl(ip_address, 6040, "/p2pid");
           const linkClass =
-            "inline-flex items-center gap-1 font-bold text-[11px] text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-none";
+            "inline-flex items-center gap-1 font-bold text-[11px] text-gray-700 dark:text-white visited:text-gray-700 dark:visited:text-white hover:underline focus:outline-hidden";
           const dotClass = (ok) =>
             `inline-block w-[7px] h-[7px] rounded-full ${
               ok ? "bg-green-400" : "bg-red-400"
@@ -828,7 +830,7 @@ const NodesTable = ({
         ],
       },
       autoResetSortBy: false,
-      defaultColumn: { sortType: "favouriteAware" },
+      defaultColumn: DEFAULT_COLUMN,
       sortTypes: { favouriteAware: favouriteAwareSort },
     },
     useSortBy,
@@ -966,12 +968,12 @@ const NodesTable = ({
 
                 const stripeClass =
                   i % 2 === 1
-                    ? "bg-gray-100/60 dark:bg-white/[0.03]"
+                    ? "bg-gray-100/60 dark:bg-white/3"
                     : "";
                 return (
                   <tr
                     key={rowKey}
-                    className={`hover:!bg-[#4dc89f] hover:!text-[#0f172a] cursor-pointer transition-colors ${highlightClass || stripeClass}`}
+                    className={`hover:bg-[#4dc89f]! hover:text-[#0f172a]! cursor-pointer transition-colors ${highlightClass || stripeClass}`}
                     onClick={(e) => {
                       const el = e.target;
                       const tr = e.currentTarget;
@@ -990,7 +992,7 @@ const NodesTable = ({
                     }}
                     {...restRowProps}
                   >
-                    <td className="px-2 py-2.5 whitespace-nowrap text-[11px] text-gray-500 dark:text-gray-400 tabular-nums text-center border-t border-white/[0.05] w-8">
+                    <td className="px-2 py-2.5 whitespace-nowrap text-[11px] text-gray-500 dark:text-gray-400 tabular-nums text-center border-t border-white/5 w-8">
                       {i + 1 + pageIndex * pageSize}
                     </td>
                     {row.cells.map((cell) => {
@@ -1001,7 +1003,7 @@ const NodesTable = ({
                         <td
                           key={cellKey}
                           {...restCellProps}
-                          className={`px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/[0.05] ${
+                          className={`px-3 py-2.5 whitespace-nowrap text-xs text-gray-700 dark:text-gray-50 border-t border-white/5 ${
                             CENTERED_COLUMN_IDS.has(cell.column.id)
                               ? "text-center"
                               : ""

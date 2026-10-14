@@ -34,7 +34,7 @@ const NodeBondProvidersList = ({
                 onClick={() =>
                   onOpenBondProviderReport(address, provider.bond_address)
                 }
-                className="icon-button rounded border border-gray-600 bg-transparent px-1.5 py-0.5 text-[10px] text-gray-400 hover:border-[#28f3b0] hover:text-[#28f3b0]"
+                className="icon-button rounded-sm border border-gray-600 bg-transparent px-1.5 py-0.5 text-[10px] text-gray-400 hover:border-[#28f3b0] hover:text-[#28f3b0]"
                 title="Generate BP Report"
               >
                 BP Report

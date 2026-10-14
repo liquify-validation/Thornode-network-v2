@@ -151,7 +151,7 @@ const ModernPieChart = ({
               {useIconsInLegend ? (
                 <span style={{ display: "none" }}>{labelText}</span>
               ) : (
-                <span className="break-words leading-5">{labelText}</span>
+                <span className="wrap-break-word leading-5">{labelText}</span>
               )}
             </li>
           );

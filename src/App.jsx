@@ -132,7 +132,7 @@ function App() {
 
             <Header />
 
-            <main className="flex-grow p-4 relative">
+            <main className="grow p-4 relative">
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<Home isDark={isDark} />} />

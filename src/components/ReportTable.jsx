@@ -153,7 +153,7 @@ const ReportTable = ({ data }) => {
         <select
           value={pageSize}
           onChange={(e) => setPageSize(Number(e.target.value))}
-          className="bg-gray-700 text-white p-1 rounded"
+          className="bg-gray-700 text-white p-1 rounded-sm"
         >
           {[10, 20, 30, 40, 50].map((ps) => (
             <option key={ps} value={ps}>

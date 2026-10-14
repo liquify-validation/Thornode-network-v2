@@ -37,7 +37,7 @@ function InfoPopover({
               top: coords.y,
               left: coords.x,
             }}
-            className="z-[9999] px-4 py-3 bg-gray-800 text-white text-sm rounded-xl shadow-lg text-center"
+            className="z-9999 px-4 py-3 bg-gray-800 text-white text-sm rounded-xl shadow-lg text-center"
           >
             <div className="font-semibold">{title}</div>
             {text && <hr className="my-1 border-gray-600" />}

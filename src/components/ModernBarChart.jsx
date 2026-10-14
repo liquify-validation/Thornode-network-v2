@@ -79,7 +79,7 @@ const ModernBarChart = ({ chartData, keys, maxVotes, title }) => {
     const missingVotes = maxVotes - totalVotes;
 
     return (
-      <div className="z-[9999] px-4 py-3 bg-gray-800 text-white text-sm rounded-xl shadow-lg text-center">
+      <div className="z-9999 px-4 py-3 bg-gray-800 text-white text-sm rounded-xl shadow-lg text-center">
         <div className="font-semibold mb-2">{rowData.title}</div>
 
         {relevantSegments.map((seg) => (
