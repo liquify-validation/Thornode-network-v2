@@ -105,7 +105,7 @@ function BondProvidersTable({ isOpen, onClose, providersData = [] }) {
       <div className="bg-gray-800 rounded-lg p-4">
         <h2 className="text-xl font-bold text-white mb-4">Bond Providers</h2>
 
-        <div className="bg-gray-700 rounded p-0 max-h-[600px] overflow-y-auto overflow-x-auto scrollbar-custom">
+        <div className="bg-gray-700 rounded-sm p-0 max-h-[600px] overflow-y-auto overflow-x-auto scrollbar-custom">
           <table
             {...getTableProps()}
             className="min-w-full table-auto divide-y-2 divide-gray-500 text-left"

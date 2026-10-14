@@ -224,14 +224,14 @@ function BPReport({ isDark }) {
               onChange={(e) => setNodeAddress(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleLookup()}
               placeholder="thor1..."
-              className="inner-glass-effect px-3 py-2 text-gray-800 dark:text-white flex-1 outline-none
+              className="inner-glass-effect px-3 py-2 text-gray-800 dark:text-white flex-1 outline-hidden
                 placeholder-gray-400 focus:ring-2 focus:ring-[#28f3b0]/50"
             />
           </div>
           <button
             onClick={handleLookup}
             className="bg-gray-900 dark:bg-[#28f3b0] text-gray-50 dark:text-black px-4 py-2
-              rounded-xl hover:shadow-md focus:outline-none font-semibold"
+              rounded-xl hover:shadow-md focus:outline-hidden font-semibold"
           >
             Lookup
           </button>
@@ -256,7 +256,7 @@ function BPReport({ isDark }) {
                   setIsFromOpen(false);
                   setIsToOpen(false);
                 }}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-none"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-hidden"
               >
                 {selectedBP
                   ? `BP: ${selectedBP.slice(0, 10)}...${selectedBP.slice(-6)}`
@@ -326,7 +326,7 @@ function BPReport({ isDark }) {
                   setIsToOpen(false);
                   setIsBPOpen(false);
                 }}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-none"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-hidden"
               >
                 {fromBlock ? `From: Block ${fromBlock}` : "From (Start Block)"}
                 <svg
@@ -380,7 +380,7 @@ function BPReport({ isDark }) {
                   setIsFromOpen(false);
                   setIsBPOpen(false);
                 }}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-none"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-[#17364CCC] text-white hover:bg-[#17364ce0] focus:outline-hidden"
               >
                 {toBlock ? `To: Block ${toBlock}` : "To (End Block)"}
                 <svg
@@ -424,7 +424,7 @@ function BPReport({ isDark }) {
               onClick={handleSubmit}
               disabled={generating}
               className="bg-gray-900 dark:bg-[#28f3b0] text-gray-50 dark:text-black px-4 py-2
-                rounded hover:shadow-md focus:outline-none font-semibold"
+                rounded hover:shadow-md focus:outline-hidden font-semibold"
             >
               {generating ? "Generating..." : "Generate BP Report"}
             </button>

@@ -84,7 +84,7 @@ const Pagination = ({
       <div className="flex items-center space-x-2">
         <span>Show</span>
         <select
-          className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-gray-200 focus:border-slate-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+          className="rounded-sm border border-slate-600 bg-slate-800 px-2 py-1 text-gray-200 focus:border-slate-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           value={localPageSize}
           onChange={(e) => handleChangePageSize(e.target.value)}
         >
@@ -107,7 +107,7 @@ const Pagination = ({
         <span>results per page</span>
       </div>
 
-      <div className="flex items-center space-x-1 flex-grow justify-center">
+      <div className="flex items-center space-x-1 grow justify-center">
         <button
           onClick={() => gotoPage(0)}
           disabled={!canPreviousPage}

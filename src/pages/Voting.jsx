@@ -218,7 +218,7 @@ function VotePollLine({ option, totalNodes, currentValueNormalized }) {
         <div className="flex items-center gap-2 min-w-0">
           <span className="truncate">{option.label}</span>
           {isCurrent && (
-            <span className="shrink-0 px-2 py-[3px] rounded-full border border-[#28f3b0]/40 bg-[#28f3b0]/10 text-[#7EF7D6] text-[10px] uppercase tracking-[0.1em]">
+            <span className="shrink-0 px-2 py-[3px] rounded-full border border-[#28f3b0]/40 bg-[#28f3b0]/10 text-[#7EF7D6] text-[10px] uppercase tracking-widest">
               Current
             </span>
           )}

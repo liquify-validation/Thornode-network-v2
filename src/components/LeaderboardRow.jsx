@@ -18,14 +18,14 @@ function LeaderboardRow({ address, index, onAnalyticsClick }) {
     >
       <Number number={index + 1} />
 
-      <div className="flex-grow text-base text-gray-700 dark:text-gray-50">
+      <div className="grow text-base text-gray-700 dark:text-gray-50">
         <InfoPopover title="Node Address" text={address}>
           {address.slice(-4)}
         </InfoPopover>
       </div>
 
       <button
-        className="focus:outline-none ml-2 bg-transparent"
+        className="focus:outline-hidden ml-2 bg-transparent"
         onClick={onAnalyticsClick}
         aria-label="Open chart for node performance"
       >
@@ -37,7 +37,7 @@ function LeaderboardRow({ address, index, onAnalyticsClick }) {
       </button>
 
       <button
-        className="focus:outline-none bg-transparent"
+        className="focus:outline-hidden bg-transparent"
         onClick={() => copyToClipboard(address)}
         aria-label="Copy node address"
       >

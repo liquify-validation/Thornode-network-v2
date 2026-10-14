@@ -91,15 +91,15 @@ export const ispLogos = {
 };
 
 export const ispLogoClasses = {
-  default: "mx-auto block h-5 w-auto max-w-[4.5rem] object-contain bg-transparent",
-  "MEVSPACE sp. z o.o": "mx-auto block h-5 w-auto max-w-[5rem] object-contain bg-transparent",
-  "MEVSPACE sp. z o.o.": "mx-auto block h-5 w-auto max-w-[5rem] object-contain bg-transparent",
-  Hostinger: "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
+  default: "mx-auto block h-5 w-auto max-w-18 object-contain bg-transparent",
+  "MEVSPACE sp. z o.o": "mx-auto block h-5 w-auto max-w-20 object-contain bg-transparent",
+  "MEVSPACE sp. z o.o.": "mx-auto block h-5 w-auto max-w-20 object-contain bg-transparent",
+  Hostinger: "mx-auto block h-5 w-auto max-w-19 object-contain bg-transparent",
   "Hostinger International Limited":
-    "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
-  HOSTINGER: "mx-auto block h-5 w-auto max-w-[4.75rem] object-contain bg-transparent",
-  DATANET: "mx-auto block h-5 w-auto max-w-[5.75rem] object-contain bg-transparent",
-  "Interserver, Inc": "mx-auto block h-5 w-auto max-w-[5.25rem] object-contain bg-transparent",
+    "mx-auto block h-5 w-auto max-w-19 object-contain bg-transparent",
+  HOSTINGER: "mx-auto block h-5 w-auto max-w-19 object-contain bg-transparent",
+  DATANET: "mx-auto block h-5 w-auto max-w-23 object-contain bg-transparent",
+  "Interserver, Inc": "mx-auto block h-5 w-auto max-w-21 object-contain bg-transparent",
 };
 
 export const defaultIspLogo = NetworkIcon;

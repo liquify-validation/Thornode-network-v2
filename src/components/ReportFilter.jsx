@@ -115,7 +115,7 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
           className="
             inline-flex items-center px-4 py-2
             rounded-lg bg-[#17364CCC] text-white
-            hover:bg-[#17364ce0] focus:outline-none
+            hover:bg-[#17364ce0] focus:outline-hidden
           "
         >
           {fromBlock ? `From: Block ${fromBlock}` : "From (Start Block)"}
@@ -168,7 +168,7 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
           className="
             inline-flex items-center px-4 py-2
             rounded-lg bg-[#17364CCC] text-white
-            hover:bg-[#17364ce0] focus:outline-none
+            hover:bg-[#17364ce0] focus:outline-hidden
           "
         >
           {toBlock ? `To: Block ${toBlock}` : "To (End Block)"}
@@ -219,7 +219,7 @@ const ReportFilter = ({ thornodeAddress, onReportGenerated }) => {
         disabled={generatingReport}
         className="
           bg-gray-900 dark:bg-[#28f3b0] text-gray-50 dark:text-black px-4 py-2
-          rounded hover:shadow-md focus:outline-none
+          rounded hover:shadow-md focus:outline-hidden
         "
       >
         {generatingReport ? "Generating..." : "Submit"}

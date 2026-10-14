@@ -1,11 +1,4 @@
-import { useState } from "react";
-import { ArrowIcon } from "../assets";
-
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
   return (
     <header className="bg-transparent py-4 mt-6">
       <div className="flex items-center justify-between px-4">
@@ -17,46 +10,8 @@ const Header = () => {
             Here are the latest stats for you!
           </p>
         </div>
-
-        <div className="relative inline-block text-left">
-          <button
-            onClick={toggleDropdown}
-            className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-800 dark:hover:bg-gray-600 focus:outline-none"
-            aria-haspopup="true"
-            aria-expanded={isOpen}
-          >
-            <span className="inline-block w-2 h-2 mr-2 bg-green-500 rounded-full animate-pulse"></span>
-            Version 2.0
-            <img
-              src={ArrowIcon}
-              alt="Toggle Dropdown"
-              className={`ml-2 h-4 w-4 transform transition-transform duration-200 ${
-                isOpen ? "rotate-[270deg]" : "rotate-90"
-              }`}
-            />
-          </button>
-
-          {isOpen && (
-            <div
-              className="origin-top-right absolute right-0 z-50 mt-2 w-40 rounded-md shadow-lg bg-gray-800 dark:bg-gray-700 ring-1 ring-black ring-opacity-5"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-            >
-              <div className="py-1">
-                <a
-                  href="https://www.thornode.network/v1"
-                  className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 dark:hover:bg-gray-600"
-                  role="menuitem"
-                >
-                  Version 1.8
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
-      <hr className="mt-4 border-t-1  border-gray-500 dark:border-gray-50" />
+      <hr className="mt-4 border-t  border-gray-500 dark:border-gray-50" />
     </header>
   );
 };

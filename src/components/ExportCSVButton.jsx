@@ -33,7 +33,7 @@ function ExportCSVButton({ data = [], filename = "data.csv", iconSrc }) {
     <button
       type="button"
       onClick={handleExportClick}
-      className="focus:outline-none"
+      className="focus:outline-hidden"
       title="Export as CSV"
       aria-label="Export data as CSV"
       style={{ cursor: "pointer" }}

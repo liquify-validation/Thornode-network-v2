@@ -26,8 +26,8 @@ function Tabs({
               index > 0 ? "-ml-px" : ""
             } ${
               isActive
-                ? "border-slate-800 bg-slate-800 text-white shadow-[0_10px_24px_rgba(15,23,42,0.16)] outline-none ring-0 dark:border-[#28f3b0] dark:bg-[#28f3b0] dark:text-gray-800 dark:shadow-none"
-                : "inner-glass-effect border-slate-300 text-slate-700 shadow-sm outline-none ring-0 hover:border-slate-400 hover:bg-slate-50 dark:border-white/10 dark:text-gray-50 dark:hover:border-[#28f3b0]/45 dark:hover:bg-white/12"
+                ? "border-slate-800 bg-slate-800 text-white shadow-[0_10px_24px_rgba(15,23,42,0.16)] outline-hidden ring-0 dark:border-[#28f3b0] dark:bg-[#28f3b0] dark:text-gray-800 dark:shadow-none"
+                : "inner-glass-effect border-slate-300 text-slate-700 shadow-xs outline-hidden ring-0 hover:border-slate-400 hover:bg-slate-50 dark:border-white/10 dark:text-gray-50 dark:hover:border-[#28f3b0]/45 dark:hover:bg-white/12"
             } ${isActive ? activeClassName : inactiveClassName} ${buttonClassName}`.trim()}
           >
             {item.label}
